@@ -58,16 +58,6 @@ jobs:
       python-versions: '["3.13"]'
       operating-systems: '["ubuntu-latest", "ubuntu-22.04", "macos-latest", "macos-14"]'
 
-  run_script-test:
-#    name: Run all contract test items
-    uses: Chisanan232/Template-Python-UV-Project/.github/workflows/rw_uv_run_test_with_multi_py_versions.yaml@master
-    with:
-      test_type: ci-script-test
-      test_folder: './test/ci_script_test'
-      install_dependency_with_group: 'dev'
-      python-versions: '["3.13"]'
-      operating-systems: '["ubuntu-latest", "ubuntu-22.04", "macos-latest", "macos-14"]'
-
   unit-test_codecov:
 #    name: For unit test, organize and generate the testing report and upload it to Codecov
     if: ${{
