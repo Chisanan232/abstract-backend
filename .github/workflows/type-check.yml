@@ -4,28 +4,28 @@ on:
   # Run on push to master and pull requests
   push:
     branches:
-      - "your_base_branch"
+      - "master"
     paths:
       # GitHub Action workflow files
       - ".github/workflows/type-check.yml"
       # Type definition files
-      - "slack_mcp/types.py"
-      - "slack_mcp/py.typed"
-      - "slack_mcp/__init__.py"
+      - "abe/types.py"
+      - "abe/py.typed"
+      - "abe/__init__.py"
       # Configuration files
       - "pyproject.toml"
       - "uv.lock"
 
   pull_request:
     branches:
-      - "your_base_branch"
+      - "master"
     paths:
       # GitHub Action workflow files
       - ".github/workflows/type-check.yml"
       # Type definition files
-      - "slack_mcp/types.py"
-      - "slack_mcp/py.typed"
-      - "slack_mcp/__init__.py"
+      - "abe/types.py"
+      - "abe/py.typed"
+      - "abe/__init__.py"
       # Configuration files
       - "pyproject.toml"
       - "uv.lock"
@@ -49,7 +49,7 @@ jobs:
 
       - name: Verify py.typed marker exists
         run: |
-          if [ ! -f "slack_mcp/py.typed" ]; then
+          if [ ! -f "abe/py.typed" ]; then
             echo "❌ Error: py.typed marker file not found!"
             echo "PEP 561 requires a py.typed file in the package directory."
             exit 1
@@ -58,7 +58,7 @@ jobs:
 
       - name: Verify types.py module exists
         run: |
-          if [ ! -f "slack_mcp/types.py" ]; then
+          if [ ! -f "abe/types.py" ]; then
             echo "❌ Error: types.py module not found!"
             exit 1
           fi
@@ -66,7 +66,7 @@ jobs:
 
       - name: Check types.py has __all__ export
         run: |
-          if ! grep -q "__all__" slack_mcp/types.py; then
+          if ! grep -q "__all__" abe/types.py; then
             echo "❌ Error: types.py missing __all__ export!"
             exit 1
           fi
@@ -86,7 +86,7 @@ jobs:
           
           # Check sdist
           echo "Checking source distribution..."
-          if tar -tzf dist/*.tar.gz | grep -q "slack_mcp/py.typed"; then
+          if tar -tzf dist/*.tar.gz | grep -q "abe/py.typed"; then
             echo "✅ py.typed found in source distribution"
           else
             echo "❌ Error: py.typed not found in source distribution!"
@@ -95,7 +95,7 @@ jobs:
           
           # Check wheel
           echo "Checking wheel distribution..."
-          if unzip -l dist/*.whl | grep -q "slack_mcp/py.typed"; then
+          if unzip -l dist/*.whl | grep -q "abe/py.typed"; then
             echo "✅ py.typed found in wheel distribution"
           else
             echo "❌ Error: py.typed not found in wheel distribution!"
@@ -104,14 +104,14 @@ jobs:
           
           # Check types.py in distributions
           echo "Checking types.py in distributions..."
-          if tar -tzf dist/*.tar.gz | grep -q "slack_mcp/types.py"; then
+          if tar -tzf dist/*.tar.gz | grep -q "abe/types.py"; then
             echo "✅ types.py found in source distribution"
           else
             echo "❌ Error: types.py not found in source distribution!"
             exit 1
           fi
           
-          if unzip -l dist/*.whl | grep -q "slack_mcp/types.py"; then
+          if unzip -l dist/*.whl | grep -q "abe/types.py"; then
             echo "✅ types.py found in wheel distribution"
           else
             echo "❌ Error: types.py not found in wheel distribution!"
@@ -138,7 +138,7 @@ jobs:
       - name: Test importing types module
         run: |
           uv run python -c "
-          from slack_mcp import types
+          from abe import types
           print('✅ Successfully imported types module')
           print(f'✅ Available types: {len(types.__all__)} exports')
           "
@@ -146,7 +146,7 @@ jobs:
       - name: Test importing SlackEvent
         run: |
           uv run python -c "
-          from slack_mcp import SlackEvent
+          from abe import SlackEvent
           print('✅ Successfully imported SlackEvent')
           print(f'✅ Total events: {len(SlackEvent)}')
           "
@@ -154,7 +154,7 @@ jobs:
       - name: Test type definitions are accessible
         run: |
           uv run python -c "
-          from slack_mcp import types
+          from abe import types
           
           # Test JSON types
           assert hasattr(types, 'JSONValue')
@@ -186,7 +186,7 @@ jobs:
       - name: Test type guards functionality
         run: |
           uv run python -c "
-          from slack_mcp import types
+          from abe import types
           
           # Test channel ID validation
           assert types.is_slack_channel_id('C1234567890') == True

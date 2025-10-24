@@ -186,9 +186,9 @@ Example 3: Type Guards
 
 Update these links to point to your project's documentation:
 
-**For Template Repository (`docs_with_docusarus/`):**
-- [Type Checking with MyPy](../../docs_with_docusarus/contents/development/type-checking.mdx)
-- [Type Checking Workflow](../../docs_with_docusarus/contents/development/ci-cd/type-checking-workflow.mdx)
+**For Template Repository (`docs/`):**
+- [Type Checking with MyPy](../../docs/contents/development/type-checking.mdx)
+- [Type Checking Workflow](../../docs/contents/development/ci-cd/type-checking-workflow.mdx)
 
 **For Child Repositories (typically `docs/`):**
 - Type Checking with MyPy: `../../docs/development/type-checking.md`
@@ -196,7 +196,7 @@ Update these links to point to your project's documentation:
 
 **Common Documentation:**
 - [Quick Reference Guide](../../TYPE_CHECKING_GUIDE.md)
-- [Types Module README](../../src/types.README.md) *(if you create one)*
+- [Types Module README](../../abe/types.README.md) *(if you create one)*
 
 > **Note**: Child projects should update these paths to match their documentation structure.
 

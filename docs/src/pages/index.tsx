@@ -34,7 +34,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to={stableDocsPath}>
-            UV-Template Documentation
+            Abstract-BackEnd Documentation
           </Link>
         </div>
       </div>

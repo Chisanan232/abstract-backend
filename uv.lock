@@ -3,6 +3,45 @@ revision = 2
 requires-python = ">=3.12, <4.0"
 
 [[package]]
+name = "abstract-backend"
+version = "0.0.0"
+source = { editable = "." }
+
+[package.dev-dependencies]
+dev = [
+    { name = "aiohttp" },
+    { name = "coverage" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-cov" },
+    { name = "pytest-rerunfailures" },
+    { name = "python-dotenv" },
+]
+pre-commit-ci = [
+    { name = "mypy" },
+    { name = "pre-commit" },
+    { name = "pylint" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "aiohttp", specifier = ">=3.12.13,<4" },
+    { name = "coverage", specifier = ">=7.9.2,<8" },
+    { name = "pytest", specifier = ">=8.4.1,<9" },
+    { name = "pytest-asyncio", specifier = ">=1.0.0,<2" },
+    { name = "pytest-cov", specifier = ">=6.2.1,<7" },
+    { name = "pytest-rerunfailures", specifier = ">=15.1,<16" },
+    { name = "python-dotenv", specifier = ">=1.1.1,<2" },
+]
+pre-commit-ci = [
+    { name = "mypy", specifier = ">=1.16.1,<2" },
+    { name = "pre-commit", specifier = ">=4.2.0,<5" },
+    { name = "pylint", specifier = ">=3.3.7,<4" },
+]
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.6.1"
 source = { registry = "https://pypi.org/simple" }
@@ -586,28 +625,29 @@ wheels = [
 
 [[package]]
 name = "pytest-cov"
-version = "5.0.0"
+version = "6.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coverage" },
+    { name = "pluggy" },
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/74/67/00efc8d11b630c56f15f4ad9c7f9223f1e5ec275aaae3fa9118c6a223ad2/pytest-cov-5.0.0.tar.gz", hash = "sha256:5837b58e9f6ebd335b0f8060eecce69b662415b16dc503883a02f45dfeb14857", size = 63042, upload-time = "2024-03-24T20:16:34.856Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/30/4c/f883ab8f0daad69f47efdf95f55a66b51a8b939c430dadce0611508d9e99/pytest_cov-6.3.0.tar.gz", hash = "sha256:35c580e7800f87ce892e687461166e1ac2bcb8fb9e13aea79032518d6e503ff2", size = 70398, upload-time = "2025-09-06T15:40:14.361Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/3a/af5b4fa5961d9a1e6237b530eb87dd04aea6eb83da09d2a4073d81b54ccf/pytest_cov-5.0.0-py3-none-any.whl", hash = "sha256:4f0764a1219df53214206bf1feea4633c3b558a2925c8b59f144f682861ce652", size = 21990, upload-time = "2024-03-24T20:16:32.444Z" },
+    { url = "https://files.pythonhosted.org/packages/80/b4/bb7263e12aade3842b938bc5c6958cae79c5ee18992f9b9349019579da0f/pytest_cov-6.3.0-py3-none-any.whl", hash = "sha256:440db28156d2468cafc0415b4f8e50856a0d11faefa38f30906048fe490f1749", size = 25115, upload-time = "2025-09-06T15:40:12.44Z" },
 ]
 
 [[package]]
 name = "pytest-rerunfailures"
-version = "16.0.1"
+version = "15.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/26/53/a543a76f922a5337d10df22441af8bf68f1b421cadf9aedf8a77943b81f6/pytest_rerunfailures-16.0.1.tar.gz", hash = "sha256:ed4b3a6e7badb0a720ddd93f9de1e124ba99a0cb13bc88561b3c168c16062559", size = 27612, upload-time = "2025-09-02T06:48:25.193Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/78/e6e358545537a8e82c4dc91e72ec0d6f80546a3786dd27c76b06ca09db77/pytest_rerunfailures-15.1.tar.gz", hash = "sha256:c6040368abd7b8138c5b67288be17d6e5611b7368755ce0465dda0362c8ece80", size = 26981, upload-time = "2025-05-08T06:36:33.483Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/38/73/67dc14cda1942914e70fbb117fceaf11e259362c517bdadd76b0dd752524/pytest_rerunfailures-16.0.1-py3-none-any.whl", hash = "sha256:0bccc0e3b0e3388275c25a100f7077081318196569a121217688ed05e58984b9", size = 13610, upload-time = "2025-09-02T06:48:23.615Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/30/11d836ff01c938969efa319b4ebe2374ed79d28043a12bfc908577aab9f3/pytest_rerunfailures-15.1-py3-none-any.whl", hash = "sha256:f674c3594845aba8b23c78e99b1ff8068556cc6a8b277f728071fdc4f4b0b355", size = 13274, upload-time = "2025-05-08T06:36:32.029Z" },
 ]
 
 [[package]]
@@ -643,45 +683,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/0f/25911a9f080464c59fab9027482f822b86bf0608957a5fcc6eaac85aa515/PyYAML-6.0.2-cp313-cp313-musllinux_1_1_x86_64.whl", hash = "sha256:68ccc6023a3400877818152ad9a1033e3db8625d899c72eacb5a668902e4d652", size = 751597, upload-time = "2024-08-06T20:32:56.985Z" },
     { url = "https://files.pythonhosted.org/packages/14/0d/e2c3b43bbce3cf6bd97c840b46088a3031085179e596d4929729d8d68270/PyYAML-6.0.2-cp313-cp313-win32.whl", hash = "sha256:bc2fa7c6b47d6bc618dd7fb02ef6fdedb1090ec036abab80d4681424b84c1183", size = 140527, upload-time = "2024-08-06T20:33:03.001Z" },
     { url = "https://files.pythonhosted.org/packages/fa/de/02b54f42487e3d3c6efb3f89428677074ca7bf43aae402517bc7cca949f3/PyYAML-6.0.2-cp313-cp313-win_amd64.whl", hash = "sha256:8388ee1976c416731879ac16da0aff3f63b286ffdd57cdeb95f3f2e085687563", size = 156446, upload-time = "2024-08-06T20:33:04.33Z" },
-]
-
-[[package]]
-name = "test-python-uv-project-template"
-version = "0.0.3"
-source = { editable = "." }
-
-[package.dev-dependencies]
-dev = [
-    { name = "aiohttp" },
-    { name = "coverage" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-rerunfailures" },
-    { name = "python-dotenv" },
-]
-pre-commit-ci = [
-    { name = "mypy" },
-    { name = "pre-commit" },
-    { name = "pylint" },
-]
-
-[package.metadata]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "aiohttp", specifier = ">=3.12.13" },
-    { name = "coverage", specifier = "~=7.10" },
-    { name = "pytest", specifier = ">=8.1.1,<9" },
-    { name = "pytest-asyncio", specifier = ">=0.23.0,<2" },
-    { name = "pytest-cov", specifier = ">=5.0.0,<8" },
-    { name = "pytest-rerunfailures", specifier = ">=14.0,<17" },
-    { name = "python-dotenv", specifier = ">=1.0.1,<2" },
-]
-pre-commit-ci = [
-    { name = "mypy", specifier = ">=1.2.0,<2" },
-    { name = "pre-commit", specifier = ">=3.5.0,<5" },
-    { name = "pylint", specifier = ">=3.1.0,<4" },
 ]
 
 [[package]]
