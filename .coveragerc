@@ -1,11 +1,11 @@
 [run]
 parallel = True
 relative_files = True
-include=./src
+include=./abe
 
 omit =
 #    */__init__.py
-    ./src/__main__.py
+    */__main__.py
 
 
 [report]
