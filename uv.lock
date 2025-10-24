@@ -647,7 +647,7 @@ wheels = [
 
 [[package]]
 name = "test-python-uv-project-template"
-version = "0.0.3"
+version = "0.0.0"
 source = { editable = "." }
 
 [package.dev-dependencies]
@@ -681,7 +681,7 @@ dev = [
 pre-commit-ci = [
     { name = "mypy", specifier = ">=1.2.0,<2" },
     { name = "pre-commit", specifier = ">=3.5.0,<5" },
-    { name = "pylint", specifier = ">=3.1.0,<4" },
+    { name = "pylint", specifier = ">=3.1.0,<5" },
 ]
 
 [[package]]
