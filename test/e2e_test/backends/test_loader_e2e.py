@@ -12,7 +12,7 @@ import pytest
 
 # Import the components to test
 from abe.backends.loader import load_backend
-from abe.backends.queue.memory import MemoryBackend
+from abe.backends.queue.service.memory import MemoryBackend
 
 
 @pytest.fixture

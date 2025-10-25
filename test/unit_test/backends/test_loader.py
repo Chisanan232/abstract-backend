@@ -17,7 +17,7 @@ import pytest
 
 from abe.backends.queue.base import QueueBackend
 from abe.backends.loader import BACKEND_ENTRY_POINT_GROUP, load_backend
-from abe.backends.queue.memory import MemoryBackend
+from abe.backends.queue.service.memory import MemoryBackend
 
 
 class MockEntryPoint:
