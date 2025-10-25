@@ -12,7 +12,7 @@ import logging
 import warnings
 from typing import Any, AsyncIterator, Dict, Tuple
 
-from abe.backends.base.protocol import QueueBackend
+from abe.backends.queue.base import QueueBackend
 from abe.types import ConsumerGroup, QueueKey, QueueMessage, QueuePayload
 
 # Set up logger for the memory backend
