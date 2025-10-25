@@ -2,16 +2,6 @@ name: Run test and organize test coverage reports
 
 on:
   workflow_call:
-    inputs:
-      run_e2e:
-        description: "The testing type. In generally, it only has 2 options: 'unit-test' and 'integration-test'."
-        type: boolean
-        required: false
-        default: false
-    secrets:
-      e2e_test_api_token:
-        description: "Set the Slack bot token for end-to-end test."
-        required: false
 
 jobs:
   run_unit-test:
