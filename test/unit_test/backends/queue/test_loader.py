@@ -42,7 +42,6 @@ def create_mock_entry_points(names: List[str]) -> List[MockEntryPoint]:
 
 def reset_env_func() -> None:
     """Helper function for reset_env fixture."""
-    pass
 
 
 @pytest.fixture  # type: ignore[misc]
