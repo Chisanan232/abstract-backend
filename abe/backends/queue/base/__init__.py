@@ -2,7 +2,7 @@
 Package for the queue backend abstract.
 """
 
+from .consumer import AsyncLoopConsumer, EventConsumer
 from .protocol import QueueBackend
-from .consumer import EventConsumer, AsyncLoopConsumer
 
 __all__ = ["QueueBackend", "EventConsumer", "AsyncLoopConsumer"]
