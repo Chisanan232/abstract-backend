@@ -7,6 +7,7 @@ This module handles discovery and loading of queue backends from entry points.
 import os
 import warnings
 from importlib.metadata import entry_points
+from typing import cast
 
 from abe.backends.queue.base import QueueBackend
 from abe.backends.queue.service.memory import MemoryBackend
@@ -47,7 +48,7 @@ def load_backend() -> QueueBackend:
         if requested_backend in backend_dict:
             # Load the requested backend
             backend_class = backend_dict[requested_backend].load()
-            return backend_class.from_env()
+            return cast(QueueBackend, backend_class.from_env())
         else:
             # Backend not found, suggest installation
             raise RuntimeError(
@@ -62,7 +63,7 @@ def load_backend() -> QueueBackend:
     for name, ep in backend_dict.items():
         if name != "memory":
             backend_class = ep.load()
-            return backend_class.from_env()
+            return cast(QueueBackend, backend_class.from_env())
 
     # Fall back to memory backend
     warnings.warn("No external backend found — using MemoryBackend (dev only).", UserWarning)

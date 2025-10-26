@@ -10,12 +10,13 @@ import warnings
 from typing import Any, Dict, List
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from abe.backends.queue.base import QueueBackend
 from abe.backends.queue.service.memory import MemoryBackend
 
 
-@pytest.fixture
+@pytest.fixture  # type: ignore[misc]
 def memory_backend() -> MemoryBackend:
     """Reset the queue and return a fresh MemoryBackend instance for each test."""
     # Reset the queue before each test to ensure isolation
@@ -57,7 +58,7 @@ def test_class_level_queue_shared() -> None:
 
 
 # Basic publish/consume tests
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_basic_publish_consume(memory_backend: MemoryBackend) -> None:
     """Test that a basic message can be published and consumed."""
     # Publish a test message
@@ -76,7 +77,7 @@ async def test_basic_publish_consume(memory_backend: MemoryBackend) -> None:
     assert received == test_message
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_complex_payload(memory_backend: MemoryBackend) -> None:
     """Test with a complex nested message payload."""
     # Create a complex nested message
@@ -109,7 +110,7 @@ async def test_complex_payload(memory_backend: MemoryBackend) -> None:
     assert received["content"]["flags"]["urgent"] is True
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_multiple_messages_order(memory_backend: MemoryBackend) -> None:
     """Test that multiple messages are consumed in the order they were published."""
     # Publish multiple messages with different keys
@@ -137,7 +138,7 @@ async def test_multiple_messages_order(memory_backend: MemoryBackend) -> None:
         assert received[i]["id"] == i
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_group_parameter_ignored(memory_backend: MemoryBackend) -> None:
     """Test that the group parameter is ignored in MemoryBackend."""
     # Publish a message
@@ -157,7 +158,7 @@ async def test_group_parameter_ignored(memory_backend: MemoryBackend) -> None:
 
 
 # Concurrency Tests
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_multiple_consumers(memory_backend: MemoryBackend) -> None:
     """Test that multiple consumers can receive messages from the same queue."""
     # Create a list to track which consumer received each message
@@ -199,7 +200,7 @@ async def test_multiple_consumers(memory_backend: MemoryBackend) -> None:
     assert len(received_by) == 10
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_many_publishers_one_consumer(memory_backend: MemoryBackend) -> None:
     """Test that many publishers with one consumer works correctly."""
     received: List[Dict[str, Any]] = []
@@ -248,7 +249,7 @@ async def test_many_publishers_one_consumer(memory_backend: MemoryBackend) -> No
     assert received_ids == list(range(100))
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_cancellation_handling(memory_backend: MemoryBackend) -> None:
     """Test that cancellation is handled properly during consume."""
 
@@ -275,7 +276,7 @@ async def test_cancellation_handling(memory_backend: MemoryBackend) -> None:
     await asyncio.gather(consumer_task, return_exceptions=True)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # type: ignore[misc]
 async def test_queue_size_accurate(memory_backend: MemoryBackend) -> None:
     """Test that the queue size is accurately reflected."""
     # Queue should start empty
@@ -300,8 +301,8 @@ async def test_queue_size_accurate(memory_backend: MemoryBackend) -> None:
     assert memory_backend._queue.qsize() == 4
 
 
-@pytest.mark.asyncio
-async def test_task_done_called(monkeypatch) -> None:
+@pytest.mark.asyncio  # type: ignore[misc]
+async def test_task_done_called(monkeypatch: MonkeyPatch) -> None:
     """Test that task_done is called for each consumed message."""
     # Reset the queue
     MemoryBackend._queue = asyncio.Queue()

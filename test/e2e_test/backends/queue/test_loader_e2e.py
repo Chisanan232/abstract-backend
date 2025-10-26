@@ -7,6 +7,7 @@ focusing on error messages and behavior that can be reliably tested.
 
 import os
 import warnings
+from typing import Any
 
 import pytest
 
@@ -15,8 +16,8 @@ from abe.backends.queue.loader import load_backend
 from abe.backends.queue.service.memory import MemoryBackend
 
 
-@pytest.fixture
-def reset_env():
+@pytest.fixture  # type: ignore[misc]
+def reset_env() -> Any:
     """Reset environment variables before each test."""
     old_env = os.environ.copy()
     # Remove QUEUE_BACKEND if present
@@ -28,7 +29,7 @@ def reset_env():
     os.environ.update(old_env)
 
 
-def test_memory_backend_fallback_e2e(reset_env):
+def test_memory_backend_fallback_e2e(reset_env: Any) -> None:
     """Test fallback to memory backend when no plugins are specified."""
     # Reset the environment and ensure no backend is specified
     if "QUEUE_BACKEND" in os.environ:
@@ -51,7 +52,7 @@ def test_memory_backend_fallback_e2e(reset_env):
         assert any(("No queue backends" in text) or ("No external backend found" in text) for text in warning_texts)
 
 
-def test_nonexistent_backend_error_message_e2e(reset_env):
+def test_nonexistent_backend_error_message_e2e(reset_env: Any) -> None:
     """
     Test the behavior when a non-existent backend is requested.
 
@@ -99,7 +100,7 @@ def test_nonexistent_backend_error_message_e2e(reset_env):
             assert "uv add abe-this_backend_definitely_does_not_exist_xyz123" in error_msg
 
 
-def test_existing_backend_loaded_correctly(reset_env):
+def test_existing_backend_loaded_correctly(reset_env: Any) -> None:
     """
     Test that the memory backend is loaded correctly when specifically requested.
 
