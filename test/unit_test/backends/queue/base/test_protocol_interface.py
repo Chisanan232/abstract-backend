@@ -13,7 +13,7 @@ from abe.backends.queue.base import QueueBackend
 class TestQueueBackendInterface:
     """Tests focused on the QueueBackend protocol interface structure."""
 
-    def test_protocol_definition(self):
+    def test_protocol_definition(self) -> None:
         """Verify the protocol interface is correctly defined with required methods.
 
         This test checks that:

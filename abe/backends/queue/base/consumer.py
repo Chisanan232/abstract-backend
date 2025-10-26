@@ -69,7 +69,7 @@ class AsyncLoopConsumer(EventConsumer):
 
         self._running = True
 
-        async def _consume():
+        async def _consume() -> None:
             async for message in self.backend.consume(group=self.group):
                 try:
                     await handler(message)

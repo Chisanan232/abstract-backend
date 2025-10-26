@@ -4,7 +4,7 @@ Unit tests for the event consumer implementations.
 
 import asyncio
 import logging
-from typing import Any, AsyncIterator, Dict, Optional
+from typing import Any, AsyncIterator, Dict, List, Optional
 from unittest import mock
 
 import pytest
@@ -15,19 +15,19 @@ from abe.backends.queue.base.consumer import AsyncLoopConsumer
 class MockBackend:
     """Test double that directly implements QueueBackend for testing purposes."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the mock backend with default values."""
-        self.items = []
-        self.sleep_time = 0
-        self.group_used = None
-        self.publish_called = False
-        self.publish_messages = []
-        self.consumed_count = 0
+        self.items: List[Dict[str, Any]] = []
+        self.sleep_time: float = 0
+        self.group_used: Optional[str] = None
+        self.publish_called: bool = False
+        self.publish_messages: List[Dict[str, Any]] = []
+        self.consumed_count: int = 0
 
-    async def publish(self, message: Dict[str, Any]) -> None:
+    async def publish(self, key: str, payload: Dict[str, Any]) -> None:
         """Mock implementation of publish that records calls."""
         self.publish_called = True
-        self.publish_messages.append(message)
+        self.publish_messages.append(payload)
 
     async def consume(self, *, group: Optional[str] = None) -> AsyncIterator[Dict[str, Any]]:
         """Mock implementation of consume that yields configured items."""
@@ -48,9 +48,9 @@ class MockBackend:
 class ErrorThrowingBackend(MockBackend):
     """A mock backend that throws errors during consume cleanup."""
 
-    def __init__(self, error_type=Exception):
+    def __init__(self, error_type: type = Exception) -> None:
         super().__init__()
-        self.error_type = error_type
+        self.error_type: type = error_type
 
     async def consume(self, *, group: Optional[str] = None) -> AsyncIterator[Dict[str, Any]]:
         """Mock implementation that raises an exception when cancelled."""
@@ -67,8 +67,8 @@ class ErrorThrowingBackend(MockBackend):
 class TestAsyncLoopConsumer:
     """Test the AsyncLoopConsumer implementation."""
 
-    @pytest.mark.asyncio
-    async def test_run_calls_handler_for_each_message(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_run_calls_handler_for_each_message(self) -> None:
         """Test that the handler is called for each consumed message."""
         # Create a mock backend
         mock_backend = MockBackend()
@@ -91,8 +91,8 @@ class TestAsyncLoopConsumer:
         mock_handler.assert_any_call({"id": 1})
         mock_handler.assert_any_call({"id": 2})
 
-    @pytest.mark.asyncio
-    async def test_run_with_consumer_group(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_run_with_consumer_group(self) -> None:
         """Test running the consumer with a consumer group."""
         # Create a mock backend
         mock_backend = MockBackend()
@@ -115,8 +115,8 @@ class TestAsyncLoopConsumer:
         # Verify the backend was called with the group
         assert mock_backend.group_used == group_name
 
-    @pytest.mark.asyncio
-    async def test_handler_error_doesnt_stop_consumer(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_handler_error_doesnt_stop_consumer(self) -> None:
         """Test that the consumer continues even if the handler raises an exception."""
         # Create a mock backend
         mock_backend = MockBackend()
@@ -127,7 +127,7 @@ class TestAsyncLoopConsumer:
         # Create a handler that raises an exception on the second message
         processed_ids = []
 
-        async def failing_handler(msg):
+        async def failing_handler(msg: Dict[str, Any]) -> None:
             if msg["id"] == 2:
                 raise ValueError("Test error")
             processed_ids.append(msg["id"])
@@ -146,15 +146,15 @@ class TestAsyncLoopConsumer:
         assert 3 in processed_ids
         assert 2 not in processed_ids
 
-    @pytest.mark.asyncio
-    async def test_shutdown(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_shutdown(self) -> None:
         """Test that shutdown cancels the consumer task."""
         # Create a mock backend that blocks indefinitely
         mock_backend = MockBackend()
 
         # Set up the mock to simulate a long-running process
         mock_backend.items = [{"id": 1}, {"id": 2}, {"id": 3}]
-        mock_backend.sleep_time = 1.0  # Simulate slow message processing
+        mock_backend.sleep_time = 1  # Simulate slow message processing
 
         # Create a mock handler
         mock_handler = mock.AsyncMock()
@@ -174,13 +174,13 @@ class TestAsyncLoopConsumer:
         # Verify the task was cancelled
         assert task.cancelled() or task.done()
 
-    @pytest.mark.asyncio
-    async def test_idempotent_run(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_idempotent_run(self) -> None:
         """Test that calling run multiple times doesn't restart the consumer."""
         # Create a mock backend
         mock_backend = MockBackend()
         # Add some items so the consumer doesn't exit immediately
-        mock_backend.sleep_time = 0.5
+        mock_backend.sleep_time = 0
         mock_backend.items = [{"id": 1}]
 
         # Create a mock handler
@@ -209,8 +209,8 @@ class TestAsyncLoopConsumer:
         # Only one consume call should happen
         assert mock_backend.consumed_count == 1
 
-    @pytest.mark.asyncio
-    async def test_shutdown_handles_not_running(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_shutdown_handles_not_running(self) -> None:
         """Test that shutdown gracefully handles the case when not running."""
         # Create a mock backend
         mock_backend = MockBackend()
@@ -225,15 +225,15 @@ class TestAsyncLoopConsumer:
         assert not consumer._running
         assert consumer._task is None
 
-    @pytest.mark.asyncio
-    async def test_shutdown_logs_cancellation(self, caplog):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_shutdown_logs_cancellation(self, caplog: Any) -> None:
         """Test that shutdown logs task cancellation."""
         # Set up logging capture
         caplog.set_level(logging.DEBUG)
 
         # Create a mock backend
         mock_backend = MockBackend()
-        mock_backend.sleep_time = 1.0  # Make it slow to ensure cancellation
+        mock_backend.sleep_time = 1  # Make it slow to ensure cancellation
         mock_backend.items = [{"id": 1}]
 
         # Create a mock handler
@@ -255,8 +255,8 @@ class TestAsyncLoopConsumer:
         assert "Consumer task cancelled successfully" in caplog.text
         assert "Consumer shutdown complete" in caplog.text
 
-    @pytest.mark.asyncio
-    async def test_shutdown_handles_unexpected_errors(self, caplog):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_shutdown_handles_unexpected_errors(self, caplog: Any) -> None:
         """Test that shutdown handles unexpected errors during task cancellation."""
         # Set up logging capture
         caplog.set_level(logging.WARNING)
@@ -285,8 +285,8 @@ class TestAsyncLoopConsumer:
         assert consumer._task is None
         assert not consumer._running
 
-    @pytest.mark.asyncio
-    async def test_shutdown_with_already_done_task(self, caplog):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_shutdown_with_already_done_task(self, caplog: Any) -> None:
         """Test shutdown when the task is already done."""
         # Set up logging capture
         caplog.set_level(logging.DEBUG)

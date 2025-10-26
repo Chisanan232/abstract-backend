@@ -19,7 +19,7 @@ from abe.backends.queue.base import QueueBackend
 class MockQueueBackend(QueueBackend):
     """A mock implementation of the QueueBackend protocol for testing."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.messages: List[Dict[str, Any]] = []
         self.keys: List[str] = []
         self.groups: List[Optional[str]] = []
@@ -62,7 +62,7 @@ class FailingQueueBackend(QueueBackend):
 class AsyncGenQueueBackend(QueueBackend):
     """A mock implementation that specifically tests async generator behavior."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.messages: List[Dict[str, Any]] = []
 
     async def publish(self, key: str, payload: Dict[str, Any]) -> None:
@@ -85,7 +85,7 @@ class AsyncGenQueueBackend(QueueBackend):
 class TestQueueBackendProtocol:
     """Tests specifically for the QueueBackend protocol itself."""
 
-    def test_protocol_methods(self):
+    def test_protocol_methods(self) -> None:
         """Test that the protocol requires the expected methods."""
         # Get the instance methods defined on the QueueBackend protocol
         protocol_methods = {
@@ -106,7 +106,7 @@ class TestQueueBackendProtocol:
         # by inspect because it's a classmethod in a Protocol. We'll verify it's usage instead
         # in other tests.
 
-    def test_method_signatures(self):
+    def test_method_signatures(self) -> None:
         """Test that the protocol methods have the correct signatures."""
         # Check publish method
         publish_sig = inspect.signature(QueueBackend.publish)
@@ -126,7 +126,7 @@ class TestQueueBackendProtocol:
         # Skip from_env signature check since it's not directly accessible
         # as a method on the Protocol class. We'll test the implementation behavior instead.
 
-    def test_mock_implementation_type_check(self):
+    def test_mock_implementation_type_check(self) -> None:
         """Test that our mock implementation satisfies the protocol's type checking."""
         # This would raise TypeError if MockQueueBackend doesn't implement the protocol
         backend: QueueBackend = cast(QueueBackend, MockQueueBackend())
@@ -136,8 +136,8 @@ class TestQueueBackendProtocol:
         assert hasattr(backend, "consume")
         assert hasattr(type(backend), "from_env")
 
-    @pytest.mark.asyncio
-    async def test_protocol_usage(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_protocol_usage(self) -> None:
         """Test using a backend through protocol annotations."""
 
         async def use_backend(backend: QueueBackend) -> Dict[str, Any]:
@@ -159,8 +159,8 @@ class TestQueueBackendProtocol:
         assert result == {"value": 42}
         assert mock_backend.keys == ["test"]
 
-    @pytest.mark.asyncio
-    async def test_async_generator_protocol(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_async_generator_protocol(self) -> None:
         """Test that consume() correctly follows async generator protocol."""
         # Create an AsyncGenQueueBackend that properly implements async generator
         backend = AsyncGenQueueBackend()
@@ -184,8 +184,8 @@ class TestQueueBackendProtocol:
         assert messages[0] == {"id": 1}
         assert messages[1] == {"id": 2}
 
-    @pytest.mark.asyncio
-    async def test_error_handling(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_error_handling(self) -> None:
         """Test error handling behavior when using protocol implementations."""
         failing_backend = FailingQueueBackend()
 
@@ -203,7 +203,7 @@ class TestQueueBackendProtocol:
         with pytest.raises(ValueError, match="Simulated from_env failure"):
             FailingQueueBackend.from_env()
 
-    def test_from_env_class_method(self):
+    def test_from_env_class_method(self) -> None:
         """Test that from_env is properly implemented as a classmethod."""
         # This test verifies that implementations should have from_env as a classmethod
 
@@ -221,7 +221,7 @@ class TestQueueBackendProtocol:
 class DictBackend:
     """A backend that uses simple dictionaries for testing."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Each topic/key maps to a list of messages
         self.topics: Dict[str, List[Dict[str, Any]]] = {}
 
@@ -250,8 +250,8 @@ class DictBackend:
 class TestExtendedBackendCompliance:
     """Test additional backend implementations for protocol compliance."""
 
-    @pytest.mark.asyncio
-    async def test_dict_backend_compliance(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_dict_backend_compliance(self) -> None:
         """Test that DictBackend complies with the QueueBackend protocol."""
         # Create a backend
         backend: QueueBackend = cast(QueueBackend, DictBackend())
@@ -272,8 +272,8 @@ class TestExtendedBackendCompliance:
         assert {"value": "test1"} in messages
         assert {"value": "test2"} in messages
 
-    @pytest.mark.asyncio
-    async def test_from_env_factory_pattern(self):
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_from_env_factory_pattern(self) -> None:
         """Test that the from_env method follows the factory pattern correctly."""
         # This test verifies that from_env is properly implemented as a class method
 
