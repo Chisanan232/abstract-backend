@@ -143,12 +143,12 @@ jobs:
           print(f'✅ Available types: {len(types.__all__)} exports')
           "
 
-      - name: Test importing SlackEvent
+      - name: Test importing types from abe
         run: |
           uv run python -c "
-          from abe import SlackEvent
-          print('✅ Successfully imported SlackEvent')
-          print(f'✅ Total events: {len(SlackEvent)}')
+          from abe.types import WebhookEventPayload, EventHandlerProtocol, QueueBackendProtocol
+          print('✅ Successfully imported core types')
+          print('✅ WebhookEventPayload, EventHandlerProtocol, QueueBackendProtocol available')
           "
 
       - name: Test type definitions are accessible
@@ -163,47 +163,47 @@ jobs:
           assert hasattr(types, 'JSONPrimitive')
           print('✅ JSON types accessible')
           
-          # Test Slack types
-          assert hasattr(types, 'SlackChannelID')
-          assert hasattr(types, 'SlackUserID')
-          assert hasattr(types, 'SlackTimestamp')
-          assert hasattr(types, 'SlackToken')
-          assert hasattr(types, 'SlackEventPayload')
-          print('✅ Slack types accessible')
+          # Test Event types
+          assert hasattr(types, 'WebhookEventPayload')
+          print('✅ Event types accessible')
+          
+          # Test Handler types
+          assert hasattr(types, 'EventHandlerFunc')
+          assert hasattr(types, 'AsyncEventHandlerFunc')
+          assert hasattr(types, 'SyncEventHandlerFunc')
+          print('✅ Handler types accessible')
+          
+          # Test Queue types
+          assert hasattr(types, 'QueueKey')
+          assert hasattr(types, 'QueuePayload')
+          assert hasattr(types, 'QueueMessage')
+          assert hasattr(types, 'QueueBackendConfig')
+          assert hasattr(types, 'ConsumerGroup')
+          print('✅ Queue types accessible')
           
           # Test Protocol types
           assert hasattr(types, 'EventHandlerProtocol')
           assert hasattr(types, 'QueueBackendProtocol')
           print('✅ Protocol types accessible')
-          
-          # Test type guards
-          assert hasattr(types, 'is_slack_channel_id')
-          assert hasattr(types, 'is_slack_user_id')
-          assert hasattr(types, 'is_slack_timestamp')
-          print('✅ Type guards accessible')
           "
 
-      - name: Test type guards functionality
+      - name: Test protocol implementations
         run: |
           uv run python -c "
-          from abe import types
+          from abe.types import EventHandlerProtocol, QueueBackendProtocol
+          from typing import get_type_hints
           
-          # Test channel ID validation
-          assert types.is_slack_channel_id('C1234567890') == True
-          assert types.is_slack_channel_id('#general') == True
-          assert types.is_slack_channel_id('invalid') == False
-          print('✅ Channel ID type guard works')
+          # Test EventHandlerProtocol has handle_event method
+          assert hasattr(EventHandlerProtocol, 'handle_event')
+          print('✅ EventHandlerProtocol has handle_event method')
           
-          # Test user ID validation
-          assert types.is_slack_user_id('U1234567890') == True
-          assert types.is_slack_user_id('W1234567890') == True
-          assert types.is_slack_user_id('invalid') == False
-          print('✅ User ID type guard works')
+          # Test QueueBackendProtocol has required methods
+          assert hasattr(QueueBackendProtocol, 'publish')
+          assert hasattr(QueueBackendProtocol, 'consume')
+          assert hasattr(QueueBackendProtocol, 'from_env')
+          print('✅ QueueBackendProtocol has all required methods')
           
-          # Test timestamp validation
-          assert types.is_slack_timestamp('1234567890.123456') == True
-          assert types.is_slack_timestamp('invalid') == False
-          print('✅ Timestamp type guard works')
+          print('✅ Protocol implementations verified')
           "
 
   summary:
