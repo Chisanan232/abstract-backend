@@ -33,6 +33,8 @@ __all__ = [
     "JSONDict",
     "JSONList",
     "JSONPrimitive",
+    # Event types
+    "WebhookEventPayload",
     # Handler types
     "EventHandlerFunc",
     "AsyncEventHandlerFunc",
