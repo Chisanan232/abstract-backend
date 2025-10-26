@@ -13,7 +13,7 @@ from typing import Any, AsyncIterator, Dict, List, Optional, cast
 
 import pytest
 
-from abe.backends.base.protocol import QueueBackend
+from abe.backends.queue.base import QueueBackend
 
 
 class MockQueueBackend(QueueBackend):

@@ -8,8 +8,8 @@ import os
 import warnings
 from importlib.metadata import entry_points
 
-from abe.backends.base.protocol import QueueBackend
-from abe.backends.queue.memory import MemoryBackend
+from abe.backends.queue.base import QueueBackend
+from abe.backends.queue.service.memory import MemoryBackend
 
 # Entry point group name for queue backends
 BACKEND_ENTRY_POINT_GROUP = "abe.backends.queue"

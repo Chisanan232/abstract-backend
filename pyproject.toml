@@ -31,6 +31,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.entry-points."abe.backends.queue.service"]
+memory = "abe.backends.queue.service.memory:MemoryBackend"
+
 [project.urls]
 Homepage = "https://github.com/Chisanan232/abstract-backend"
 Repository = "https://github.com/Chisanan232/abstract-backend"

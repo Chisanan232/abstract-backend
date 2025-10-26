@@ -8,7 +8,7 @@ import asyncio
 import logging
 from typing import Any, Awaitable, Callable, Dict, Optional, Protocol
 
-from abe.backends.base.protocol import QueueBackend
+from abe.backends.queue.base.protocol import QueueBackend
 
 # Set up logger for this module
 logger = logging.getLogger(__name__)

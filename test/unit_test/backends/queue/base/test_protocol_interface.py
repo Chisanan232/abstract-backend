@@ -7,7 +7,7 @@ Protocol methods with ellipsis (...) placeholders are excluded from coverage
 reporting via .coveragerc configuration.
 """
 
-from abe.backends.base.protocol import QueueBackend
+from abe.backends.queue.base import QueueBackend
 
 
 class TestQueueBackendInterface:
