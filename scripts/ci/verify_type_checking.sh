@@ -63,7 +63,7 @@ set -e  # Exit on error
 # === CONFIGURATION (Customize for your project) ===
 # Default package name - override by setting environment variable:
 # PACKAGE_NAME=your_package ./scripts/ci/verify_type_checking.sh
-PACKAGE_NAME="${PACKAGE_NAME:-src}"
+PACKAGE_NAME="${PACKAGE_NAME:-abe}"
 
 # Documentation directory name - override by setting environment variable:
 # DOCS_DIR=docs ./scripts/ci/verify_type_checking.sh
@@ -72,8 +72,8 @@ PACKAGE_NAME="${PACKAGE_NAME:-src}"
 DOCS_DIR="${DOCS_DIR:-docs}"
 
 # Expected type definitions in types.py (customize for your project)
-# Example: EXPECTED_TYPES=("MyEventPayload" "HandlerProtocol" "ConfigDict")
-EXPECTED_TYPES=("")
+# Example: EXPECTED_TYPES=("WebhookEventPayload" "EventHandlerProtocol" "QueueBackendProtocol")
+EXPECTED_TYPES=("WebhookEventPayload" "EventHandlerProtocol" "QueueBackendProtocol" "QueueKey" "QueuePayload" "EventHandlerFunc")
 
 echo "=========================================="
 echo "Type Checking Implementation Verification"
