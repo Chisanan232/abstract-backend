@@ -10,7 +10,13 @@ authors = [{ name = "Chisanan232", email = "chi10211201@cycu.org.tw" }]
 requires-python = ">=3.12,<4.0"
 readme = "README.md"
 license = { file = "LICENSE" }
-keywords = []
+keywords = [
+    "backend",
+    "queue",
+    "message-queue",
+    "abstraction",
+    "abstract-layer",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -38,16 +44,16 @@ Changelog = "https://chisanan232.github.io/abstract-backend/docs/next/changelog"
 [dependency-groups]
 dev = [
     "pytest>=8.4.1,<9",
-    "pytest-cov>=6.2.1,<7",
+    "pytest-cov>=6.2.1,<8",
     "coverage>=7.9.2,<8",
-    "pytest-rerunfailures>=15.1,<16",
+    "pytest-rerunfailures>=15.1,<17",
     "aiohttp>=3.12.13,<4",
     "pytest-asyncio>=1.0.0,<2",
     "python-dotenv>=1.1.1,<2",
 ]
 pre-commit-ci = [
     "pre-commit>=4.2.0,<5",
-    "pylint>=3.3.7,<4",
+    "pylint>=3.3.7,<5",
     "mypy>=1.16.1,<2",
 ]
 
