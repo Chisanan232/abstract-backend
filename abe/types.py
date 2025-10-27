@@ -262,7 +262,7 @@ class QueueBackendProtocol(Protocol):
     subtyping, enabling plugin-based queue backend implementations.
 
     All queue backend plugins should implement this protocol to ensure
-    compatibility with the Slack MCP server. The protocol uses type aliases
+    compatibility with the abstract backend. The protocol uses type aliases
     defined in this module for consistency across all implementations.
 
     Plugin Architecture:
