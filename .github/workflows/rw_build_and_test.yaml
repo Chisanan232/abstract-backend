@@ -11,7 +11,7 @@ jobs:
       test_type: unit-test
       test_folder: './test/unit_test'
       install_dependency_with_group: 'dev'
-      python-versions: '["3.13"]'
+      python-versions: '["3.12", "3.13", "3.14"]'
       operating-systems: '["ubuntu-latest", "ubuntu-22.04", "macos-latest", "macos-14"]'
 
   run_integration-test:
@@ -21,7 +21,7 @@ jobs:
       test_type: integration-test
       test_folder: './test/integration_test'
       install_dependency_with_group: 'dev'
-      python-versions: '["3.13"]'
+      python-versions: '["3.12", "3.13", "3.14"]'
       operating-systems: '["ubuntu-latest", "ubuntu-22.04", "macos-latest", "macos-14"]'
 
   run_contract-test:
@@ -31,7 +31,7 @@ jobs:
       test_type: contract-test
       test_folder: './test/contract_test'
       install_dependency_with_group: 'dev'
-      python-versions: '["3.13"]'
+      python-versions: '["3.12", "3.13", "3.14"]'
       operating-systems: '["ubuntu-latest", "ubuntu-22.04", "macos-latest", "macos-14"]'
 
   run_e2e-test:
@@ -41,7 +41,7 @@ jobs:
       test_type: e2e-test
       test_folder: './test/e2e_test'
       install_dependency_with_group: 'dev'
-      python-versions: '["3.13"]'
+      python-versions: '["3.12", "3.13", "3.14"]'
       operating-systems: '["ubuntu-latest", "ubuntu-22.04", "macos-latest", "macos-14"]'
 
   unit-test_codecov:
