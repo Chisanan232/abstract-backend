@@ -50,6 +50,8 @@ class AsyncLoopConsumer(EventConsumer):
             async for message in self.backend.consume(group=self.group):
                 try:
                     await handler(message)
+                except asyncio.CancelledError:
+                    raise
                 except Exception as e:
                     # In a real implementation, this would include better error handling
                     # such as dead-letter queues, retries, etc.
@@ -83,6 +85,8 @@ class AsyncLoopConsumer(EventConsumer):
                 await self._task
             except asyncio.CancelledError:
                 logger.debug("Consumer task cancelled successfully")
+            except asyncio.TimeoutError as e:
+                logger.warning(f"Timeout during consumer shutdown: {e}", exc_info=True)
             except Exception as e:
                 # Log unexpected exceptions but don't re-raise them to ensure cleanup happens
                 logger.warning(f"Unexpected error during consumer shutdown: {e}", exc_info=True)
