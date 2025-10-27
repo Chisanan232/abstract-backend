@@ -8,8 +8,6 @@ from __future__ import annotations
 import logging
 import os
 import tempfile
-from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -123,10 +121,7 @@ class TestGetLoggingDictConfig:
             dict_config = get_logging_dict_config(config)
 
             assert "file" in dict_config["handlers"]
-            assert (
-                dict_config["handlers"]["file"]["class"]
-                == "logging.handlers.RotatingFileHandler"
-            )
+            assert dict_config["handlers"]["file"]["class"] == "logging.handlers.RotatingFileHandler"
             assert dict_config["handlers"]["file"]["filename"] == log_file
 
     def test_config_with_logger_levels(self) -> None:

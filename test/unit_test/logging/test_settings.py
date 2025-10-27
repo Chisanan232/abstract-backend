@@ -9,8 +9,8 @@ import pytest
 
 from abe.logging.settings import (
     LogFormat,
-    LogLevel,
     LoggingConfig,
+    LogLevel,
     get_default_logging_config,
 )
 

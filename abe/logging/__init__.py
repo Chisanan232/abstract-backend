@@ -44,8 +44,8 @@ from .config import (
 )
 from .settings import (
     LogFormat,
-    LogLevel,
     LoggingConfig,
+    LogLevel,
     get_default_logging_config,
 )
 from .utils import (

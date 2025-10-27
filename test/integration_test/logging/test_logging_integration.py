@@ -5,12 +5,10 @@ Tests the complete logging system with real file I/O and logging output.
 
 from __future__ import annotations
 
-import logging
 import os
 import tempfile
 from pathlib import Path
 
-import pytest
 
 from abe.logging import (
     LoggingConfig,

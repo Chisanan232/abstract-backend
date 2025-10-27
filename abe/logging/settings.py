@@ -7,7 +7,6 @@ the application code.
 
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
@@ -120,16 +119,13 @@ class LoggingConfig:
 
         # Validate root level
         if self.level.upper() not in valid_levels:
-            raise ValueError(
-                f"Invalid log level '{self.level}'. Must be one of {valid_levels}"
-            )
+            raise ValueError(f"Invalid log level '{self.level}'. Must be one of {valid_levels}")
 
         # Validate logger-specific levels
         for logger_name, level in self.logger_levels.items():
             if level.upper() not in valid_levels:
                 raise ValueError(
-                    f"Invalid log level '{level}' for logger '{logger_name}'. "
-                    f"Must be one of {valid_levels}"
+                    f"Invalid log level '{level}' for logger '{logger_name}'. " f"Must be one of {valid_levels}"
                 )
 
         # Validate file-related settings

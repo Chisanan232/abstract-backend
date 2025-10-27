@@ -204,9 +204,7 @@ def set_logger_level(logger_name: str, level: str) -> None:
     level_upper = level.upper()
 
     if level_upper not in valid_levels:
-        raise ValueError(
-            f"Invalid log level '{level}'. Must be one of {valid_levels}"
-        )
+        raise ValueError(f"Invalid log level '{level}'. Must be one of {valid_levels}")
 
     logger = logging.getLogger(logger_name)
     logger.setLevel(level_upper)
