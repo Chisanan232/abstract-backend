@@ -13,7 +13,8 @@ from unittest import mock
 import pytest
 
 from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.base.consumer import AsyncLoopConsumer, EventConsumer
+from abe.backends.queue.base.consumer import EventConsumer
+from abe.backends.queue.consumer import AsyncLoopConsumer
 from abe.backends.queue.service.memory import MemoryBackend
 
 

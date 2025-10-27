@@ -9,7 +9,7 @@ from unittest import mock
 
 import pytest
 
-from abe.backends.queue.base.consumer import AsyncLoopConsumer
+from abe.backends.queue.consumer import AsyncLoopConsumer
 
 
 class MockBackend:
