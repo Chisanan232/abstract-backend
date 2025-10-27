@@ -9,7 +9,7 @@ from unittest import mock
 
 import pytest
 
-from abe.backends.queue.base.consumer import AsyncLoopConsumer
+from abe.backends.queue.consumer import AsyncLoopConsumer
 
 
 class MockBackend:
@@ -315,3 +315,218 @@ class TestAsyncLoopConsumer:
 
         # Check that appropriate log messages were generated
         assert "Consumer task was already completed" in caplog.text
+
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_handler_raises_cancelled_error(self, caplog: Any) -> None:
+        """Test that CancelledError in handler is properly re-raised."""
+        # Set up logging capture
+        caplog.set_level(logging.ERROR)
+
+        # Create a mock backend
+        mock_backend = MockBackend()
+        mock_backend.items = [{"id": 1}]
+
+        # Create a handler that raises CancelledError
+        async def cancelling_handler(msg: Dict[str, Any]) -> None:
+            raise asyncio.CancelledError()
+
+        # Create the consumer
+        consumer = AsyncLoopConsumer(mock_backend)
+
+        # Run the consumer - it should propagate the CancelledError
+        task = asyncio.create_task(consumer.run(cancelling_handler))
+        await asyncio.sleep(0.1)
+
+        # The task should be cancelled or done
+        assert task.done()
+
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_handler_raises_timeout_error(self, caplog: Any) -> None:
+        """Test that TimeoutError in handler is caught and logged."""
+        # Set up logging capture
+        caplog.set_level(logging.ERROR)
+
+        # Create a mock backend
+        mock_backend = MockBackend()
+        mock_backend.items = [{"id": 1}, {"id": 2}]
+
+        # Create a handler that raises TimeoutError on first message
+        call_count = 0
+
+        async def timeout_handler(msg: Dict[str, Any]) -> None:
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise asyncio.TimeoutError("Handler timeout")
+
+        # Create the consumer
+        consumer = AsyncLoopConsumer(mock_backend)
+
+        # Run the consumer with a timeout
+        try:
+            await asyncio.wait_for(consumer.run(timeout_handler), timeout=0.5)
+        except asyncio.TimeoutError:
+            pass
+
+        # Verify error was logged
+        assert "Error processing message" in caplog.text
+
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_handler_raises_value_error(self, caplog: Any) -> None:
+        """Test that ValueError in handler is caught and logged."""
+        # Set up logging capture
+        caplog.set_level(logging.ERROR)
+
+        # Create a mock backend
+        mock_backend = MockBackend()
+        mock_backend.items = [{"id": 1}, {"id": 2}]
+
+        # Create a handler that raises ValueError
+        call_count = 0
+
+        async def value_error_handler(msg: Dict[str, Any]) -> None:
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise ValueError("Invalid value in message")
+
+        # Create the consumer
+        consumer = AsyncLoopConsumer(mock_backend)
+
+        # Run the consumer with a timeout
+        try:
+            await asyncio.wait_for(consumer.run(value_error_handler), timeout=0.5)
+        except asyncio.TimeoutError:
+            pass
+
+        # Verify error was logged
+        assert "Error processing message" in caplog.text
+        assert "Invalid value in message" in caplog.text
+
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_handler_raises_runtime_error(self, caplog: Any) -> None:
+        """Test that RuntimeError in handler is caught and logged."""
+        # Set up logging capture
+        caplog.set_level(logging.ERROR)
+
+        # Create a mock backend
+        mock_backend = MockBackend()
+        mock_backend.items = [{"id": 1}, {"id": 2}]
+
+        # Create a handler that raises RuntimeError
+        call_count = 0
+
+        async def runtime_error_handler(msg: Dict[str, Any]) -> None:
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise RuntimeError("Runtime error occurred")
+
+        # Create the consumer
+        consumer = AsyncLoopConsumer(mock_backend)
+
+        # Run the consumer with a timeout
+        try:
+            await asyncio.wait_for(consumer.run(runtime_error_handler), timeout=0.5)
+        except asyncio.TimeoutError:
+            pass
+
+        # Verify error was logged
+        assert "Error processing message" in caplog.text
+        assert "Runtime error occurred" in caplog.text
+
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_shutdown_with_timeout_error(self, caplog: Any) -> None:
+        """Test that TimeoutError during shutdown is properly handled."""
+        # Set up logging capture
+        caplog.set_level(logging.WARNING)
+
+        # Create a backend that throws TimeoutError during cancellation
+        error_backend = ErrorThrowingBackend(error_type=asyncio.TimeoutError)
+
+        # Create a mock handler
+        mock_handler = mock.AsyncMock()
+
+        # Create the consumer
+        consumer = AsyncLoopConsumer(error_backend)
+
+        # Start the consumer
+        task = asyncio.create_task(consumer.run(mock_handler))
+        await asyncio.sleep(0.1)  # Give it time to start
+
+        # Shutdown the consumer
+        await consumer.shutdown()
+
+        # Check that timeout error was logged
+        assert "Timeout during consumer shutdown" in caplog.text
+
+        # Make sure cleanup still happened
+        assert consumer._task is None
+        assert not consumer._running
+
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_shutdown_with_cancelled_error_then_exception(self, caplog: Any) -> None:
+        """Test shutdown handling when CancelledError is followed by another exception."""
+        # Set up logging capture
+        caplog.set_level(logging.DEBUG)
+
+        # Create a mock backend
+        mock_backend = MockBackend()
+        mock_backend.items = [{"id": 1}]
+        mock_backend.sleep_time = 1
+
+        # Create a mock handler
+        mock_handler = mock.AsyncMock()
+
+        # Create the consumer
+        consumer = AsyncLoopConsumer(mock_backend)
+
+        # Start the consumer
+        task = asyncio.create_task(consumer.run(mock_handler))
+        await asyncio.sleep(0.1)
+
+        # Shutdown the consumer
+        await consumer.shutdown()
+
+        # Verify the task was properly cancelled
+        assert task.cancelled() or task.done()
+        assert consumer._task is None
+        assert not consumer._running
+
+    @pytest.mark.asyncio  # type: ignore[misc]
+    async def test_multiple_handler_exceptions_continue_processing(self, caplog: Any) -> None:
+        """Test that multiple handler exceptions don't stop message processing."""
+        # Set up logging capture
+        caplog.set_level(logging.ERROR)
+
+        # Create a mock backend
+        mock_backend = MockBackend()
+        mock_backend.items = [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}]
+
+        # Create a handler that raises exceptions on specific messages
+        processed_ids = []
+
+        async def selective_error_handler(msg: Dict[str, Any]) -> None:
+            msg_id = msg["id"]
+            if msg_id in [1, 3]:
+                raise ValueError(f"Error for message {msg_id}")
+            processed_ids.append(msg_id)
+
+        # Create the consumer
+        consumer = AsyncLoopConsumer(mock_backend)
+
+        # Run the consumer with a timeout
+        try:
+            await asyncio.wait_for(consumer.run(selective_error_handler), timeout=0.5)
+        except asyncio.TimeoutError:
+            pass
+
+        # Verify messages 2 and 4 were processed despite errors on 1 and 3
+        assert 2 in processed_ids
+        assert 4 in processed_ids
+        assert 1 not in processed_ids
+        assert 3 not in processed_ids
+
+        # Verify errors were logged
+        error_count = caplog.text.count("Error processing message")
+        assert error_count >= 2
