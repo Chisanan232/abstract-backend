@@ -9,7 +9,6 @@ import os
 import tempfile
 from pathlib import Path
 
-
 from abe.logging import (
     LoggingConfig,
     get_logger,
