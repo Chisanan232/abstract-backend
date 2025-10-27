@@ -56,7 +56,7 @@ jobs:
       test_type: unit-test
 
   integration-test_codecov:
-#    name: For unit test, organize and generate the testing report and upload it to Codecov
+#    name: For integration test, organize and generate the testing report and upload it to Codecov
     if: ${{
         contains(fromJSON('["pull_request","workflow_dispatch","schedule"]'), github.event_name) ||
         (github.event_name == 'push' && github.ref_name == 'master')
