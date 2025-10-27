@@ -14,8 +14,6 @@ from abe.logging.settings import (
     get_default_logging_config,
 )
 
-# type: ignore[misc]
-
 
 class TestLoggingConfig:
     """Tests for LoggingConfig dataclass."""

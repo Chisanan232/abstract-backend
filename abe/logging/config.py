@@ -4,6 +4,7 @@ This module provides a centralized way to configure logging for the application.
 It supports both programmatic configuration and command-line integration.
 """
 
+import argparse
 import logging
 import logging.config
 import os
@@ -170,7 +171,7 @@ def setup_logging(
     root_logger.setLevel(level)
 
 
-def add_logging_arguments(parser):
+def add_logging_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     """Add logging-related command line arguments to an argument parser.
 
     Args:
@@ -211,7 +212,7 @@ def add_logging_arguments(parser):
     return parser
 
 
-def setup_logging_from_args(args):
+def setup_logging_from_args(args: argparse.Namespace) -> None:
     """Set up logging from command-line arguments.
 
     Args:

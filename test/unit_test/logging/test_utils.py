@@ -21,8 +21,6 @@ from abe.logging.utils import (
     setup_logging_from_config,
 )
 
-# type: ignore[misc]
-
 
 class TestGetLogger:
     """Tests for get_logger() function."""

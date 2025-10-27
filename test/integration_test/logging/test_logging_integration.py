@@ -17,8 +17,6 @@ from abe.logging import (
     setup_logging_from_config,
 )
 
-# type: ignore[misc]
-
 
 class TestLoggingIntegration:
     """Integration tests for the logging system."""
