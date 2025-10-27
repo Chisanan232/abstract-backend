@@ -9,7 +9,7 @@ import asyncio
 import logging
 from typing import Optional, Callable, Dict, Any, Awaitable
 
-from abe.backends.queue.base import EventConsumer, QueueBackend
+from .base import EventConsumer, QueueBackend
 
 # Set up logger for this module
 logger = logging.getLogger(__name__)
