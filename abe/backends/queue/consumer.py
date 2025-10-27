@@ -7,7 +7,7 @@ including AsyncLoopConsumer for simple, single-instance deployments.
 
 import asyncio
 import logging
-from typing import Optional, Callable, Dict, Any, Awaitable
+from typing import Any, Awaitable, Callable, Dict, Optional
 
 from .base import EventConsumer, QueueBackend
 
