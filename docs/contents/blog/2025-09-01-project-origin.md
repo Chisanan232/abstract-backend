@@ -5,7 +5,7 @@ authors: [chisanan232]
 tags: [python, uv, ci-cd, template, automation, developer-experience]
 ---
 
-# Why I Created This Python UV Project Template
+# Why I Created This Abstract Backend
 
 As a Python developer, I've experienced the same frustration countless times: starting a new project and spending hours, sometimes days, setting up the same boilerplate code, CI/CD pipelines, testing frameworks, and deployment configurations. Each time, I found myself copy-pasting from previous projects, manually adjusting workflows, and inevitably missing some crucial setup step that would bite me later.
 
@@ -72,7 +72,7 @@ mkdir my-project && cd my-project
 ### **After This Template**
 ```bash
 # Instant productivity
-git clone https://github.com/Chisanan232/Template-Python-UV-Project.git my-project
+git clone https://github.com/Chisanan232/abstract-backend.git my-project
 cd my-project
 # Edit intent.yaml with your project details
 # Start coding your idea immediately!
