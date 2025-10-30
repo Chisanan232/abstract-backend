@@ -427,22 +427,6 @@ graph TD
 - Maintains proper review processes for code changes
 - Accelerates documentation improvement cycle
 
-### Legacy Continuous Deployment
-
-:::info Legacy System
-The following describes the legacy CD system (`cd.yaml`) which is maintained for backward compatibility but superseded by the release system above.
-:::
-
-[![CD](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/cd.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/cd.yaml)
-
-**Purpose**: Legacy CD workflow for backward compatibility
-
-**Features**:
-- Triggered by changes to `__pkg_info__.py` files
-- Basic version checking and Git tagging  
-- PyPI publication and Docker Hub publishing
-- Simplified workflow for basic deployment needs
-
 ## CI/CD Configuration Files
 
 All CI/CD workflows are defined in the `.github/workflows/` directory:
@@ -454,19 +438,10 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 - `release-staging.yml` - Staging environment deployment
 - `documentation.yaml` - Documentation building and deployment
 
-### Reusable Workflows
-- `rw_docker_operations.yaml` - Docker build, test, and security operations
-- `rw_docs_operations.yaml` - Documentation build, version, and deploy operations
-- `rw_python_package.yaml` - Python package build, test, and publish operations
-- `rw_build_git-tag_and_create_github-release.yaml` - Git tagging and GitHub releases
-
 ### Specialized Workflows  
 - `docker-ci.yml` - Standalone Docker testing
 - `dockerhub-readme-ci.yml` - DockerHub README synchronization
 - `docs-automerge.yml` - Documentation PR automation
-
-### Legacy Workflows
-- `cd.yaml` - Legacy continuous deployment (backward compatibility)
 
 **Browse All Workflows**: [Workflow Definitions](https://github.com/Chisanan232/Template-Python-UV-Project/tree/master/.github/workflows)
 

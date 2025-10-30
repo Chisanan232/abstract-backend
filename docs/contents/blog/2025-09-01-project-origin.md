@@ -11,6 +11,8 @@ As a Python developer, I've experienced the same frustration countless times: st
 
 This repetitive cycle was not just inefficient—it was preventing me and other developers from focusing on what truly matters: **building great software and bringing ideas to life quickly**.
 
+<!-- truncate -->
+
 ## The Problem: Fragmented Development Setup
 
 The Python ecosystem, while rich and powerful, often requires developers to:

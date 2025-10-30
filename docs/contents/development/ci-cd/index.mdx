@@ -11,53 +11,53 @@ This section describes the Continuous Integration and Continuous Deployment (CI/
 
 Our CI/CD system is organized into focused, developer-friendly sections:
 
-### **📋 [Continuous Integration](./continuous-integration)**
+### **📋 [Continuous Integration](./continuous-integration.mdx)**
 
 [![CI](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci.yaml)
 [![CI + E2E](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci_includes_e2e_test.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci_includes_e2e_test.yaml)
 
-- **CI workflow triggers and structure**  
-- **Multi-Python version testing**
-- **Code quality checks and coverage reporting**
-- **Test automation and validation**
+- **Matrix-based test coverage** across Python 3.12–3.14 and multiple OS targets  
+- **Quality gates** for linting, formatting, type checking, coverage  
+- **Reusable workflow design** so child projects can opt-in to shared automation  
+- **Samples for extending CI** with integration or E2E jobs
 
-### **🔄 [Release System](./release-system)**
+### **🔄 [Release System](./release-system.mdx)**
 
 [![Release Validation](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml)
 [![Release](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml)
 [![Release Staging](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-staging.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-staging.yml)
 
-- **Production, validation, and staging releases**
-- **Multi-artifact deployment (Python, Docker, Docs)**
-- **Release intent configuration and supply chain security**
-- **Git synchronization fixes and version management**
+- **Intent-driven configuration** via `.github/tag_and_release/intent.yaml`  
+- **Triple-target publishing**: Python package, container image, Docusaurus docs  
+- **Validation + staging** workflows to test releases before production  
+- **Supply-chain safeguards** (version bump enforcement, lockfile sync, summaries)
 
-### **📖 [Documentation Deployment](./documentation-deployment)**  
+### **📖 [Documentation Deployment](./documentation-deployment.mdx)**  
 
 [![Documentation](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/documentation.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/documentation.yaml)
 
-- **Advanced workflow_run trigger pattern**
-- **Intelligent documentation triggering with DOCS_UPDATED flags**
-- **Dual-trigger architecture solving GitHub Actions limitations**
-- **Guard job logic and troubleshooting**
+- **workflow_run-based trigger** that reacts to release outputs and docs-only PRs  
+- **Safeguards** to prevent duplicate deployments and to validate build artifacts  
+- **DOCS_UPDATED flagging** for selective publishing  
+- **Guidance** for customizing deployment targets (gh-pages, GitHub Pages, custom domains)
 
-### **🔧 [Reusable Workflows](./reusable-workflows)**
-- **Docker, Python, and documentation operations**
-- **Workflow integration patterns and architecture**
-- **Standardized operations and DRY principles**
+### **🔧 [Reusable Workflows](./reusable-workflows.mdx)**
+- **Step-by-step usage** of the reusable workflow catalog  
+- **Inputs/outputs tables** to help integrate from downstream projects  
+- **Patterns** for combining Python, Docker, and docs jobs without duplication
 
-### **⚙️ [Additional CI Workflows](./additional-ci-workflows)**
+### **⚙️ [Additional CI Workflows](./additional-ci-workflows.mdx)**
 
-[![Docker CI](https://github.com/Chisanan232/slack-mcp-server/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/slack-mcp-server/actions/workflows/docker-ci.yml)
-[![DockerHub README CI](https://github.com/Chisanan232/slack-mcp-server/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/slack-mcp-server/actions/workflows/dockerhub-readme-ci.yml)
-[![Documentation Build Check](https://github.com/Chisanan232/slack-mcp-server/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/slack-mcp-server/actions/workflows/docs-build-check.yaml)
+[![Docker CI](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml)  
+[![DockerHub README CI](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml)  
+[![Docs Build Check](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-build-check.yaml)
 
-- **Docker CI** - Container building and testing workflows  
-- **DockerHub README CI** - Repository description synchronization
-- **Documentation Build Check** - Validates documentation builds on PRs and branch changes
-- **Documentation Auto-Approve & Auto-Merge** - Streamlined docs updates
+- **Docker CI** – Standalone container validation without triggering full releases  
+- **DockerHub README** – Synchronizes `README_DOCKERHUB.md` with Docker Hub automatically  
+- **Docs build check** – Validates Docusaurus builds on PRs and non-main pushes  
+- **Docs auto-merge** – Streamlines docs-only PRs under guarded conditions
 
-### **🛠️ [Developer Guide](./developer-guide)**
+### **🛠️ [Developer Guide](./developer-guide.mdx)**
 - **Configuration and troubleshooting**
 - **Best practices for contributors**
 - **Common workflows and monitoring**
@@ -85,12 +85,12 @@ We use **GitHub Actions** to automate testing, code quality checks, and deployme
 
 **New to our CI/CD system?** Start with:
 
-1. **📋 [Continuous Integration](./continuous-integration)** - Understand our testing and quality workflows
-2. **🔄 [Release System](./release-system)** - Learn about our release process and configuration
-3. **🛠️ [Developer Guide](./developer-guide)** - Find practical examples and troubleshooting tips
+1. **📋 [Continuous Integration](./continuous-integration.mdx)** - Understand our testing and quality workflows
+2. **🔄 [Release System](./release-system.mdx)** - Learn about our release process and configuration
+3. **🛠️ [Developer Guide](./developer-guide.mdx)** - Find practical examples and troubleshooting tips
 
 **Need specific information?**
-- **Configuring releases:** → [Release System](./release-system)
-- **Documentation not deploying:** → [Documentation Deployment](./documentation-deployment)  
-- **Understanding workflow patterns:** → [Reusable Workflows](./reusable-workflows)
-- **Troubleshooting issues:** → [Developer Guide](./developer-guide)
+- **Configuring releases:** → [Release System](./release-system.mdx)
+- **Documentation not deploying:** → [Documentation Deployment](./documentation-deployment.mdx)  
+- **Understanding workflow patterns:** → [Reusable Workflows](./reusable-workflows.mdx)
+- **Troubleshooting issues:** → [Developer Guide](./developer-guide.mdx)
