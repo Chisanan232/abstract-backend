@@ -6,92 +6,61 @@ sidebar_position: 2
 
 # Project Structure & Organization
 
-This page explains the default layout provided by the Abstract Backend so you can quickly understand where to place code, configuration, and automation for your own project.
+Abstract Backend ships as an installable library plus a fully-documented reference implementation. This page reflects the current repository layout so you can navigate production code, tests, and docs with confidence.
 
 ## High-Level Layout
 
 ```
-project/
-├── src/                       # Application/library source code
-│   └── your_package/          # Rename this to your real package name
-│       ├── __init__.py
-│       ├── types.py           # Example for PEP 561 type distribution
-│       └── py.typed           # Marker enabling downstream type checking
-├── test/                      # Pytest-based test suites
-│   ├── unit_test/
-│   └── integration_test/
-├── docs_with_docusarus/       # Primary documentation (Docusaurus)
-├── docs_with_mkdocs/          # Optional MkDocs documentation
-├── scripts/                   # Helper scripts used by workflows
-├── .github/workflows/         # GitHub Actions automation
-├── pyproject.toml             # Project + tooling configuration
-└── uv.lock                    # Locked dependency graph managed by uv
+abstract-backend/
+├── abe/                               # Published Python package
+│   ├── backends/
+│   │   └── message_queue/             # Message queue protocols + helpers
+│   ├── logging/                       # LoggingConfig + runtime utilities
+│   ├── types.py                       # Shared type aliases and Protocols
+│   └── py.typed                       # PEP 561 marker
+├── docs/                              # Docusaurus content + site assets
+├── examples/                          # Runnable usage samples
+├── scripts/                           # CI and operational tooling
+├── test/                              # Pytest suites (unit, integration, contract, e2e)
+├── .github/                           # GitHub Actions workflows & templates
+├── uv.lock                            # Locked dependency graph (uv)
+├── pyproject.toml                     # Project metadata + tool configuration
+└── ...                                # Config files (.pre-commit-config.yaml, mypy.ini, etc.)
 ```
 
-> **Tip:** Everything under `src/` is packaged and exported when you publish to PyPI. Everything else supports local development, automation, and documentation.
+## `abe/` package
 
-## Source Code (`src/`)
+- **`abe/backends/message_queue/`** features the production message-queue abstraction. It includes the `MessageQueueBackend` protocol in `abe/backends/message_queue/base/protocol.py`, the runtime consumer in `abe/backends/message_queue/consumer.py`, the dynamic loader in `abe/backends/message_queue/loader.py`, and the development-only `MemoryBackend` under `abe/backends/message_queue/service/memory.py`.
+- **`abe/logging/`** exposes structured logging support through `abe/logging/settings.py` (the `LoggingConfig` dataclass) and `abe/logging/utils.py` (setup helpers, logger controls, and path utilities).
+- **`abe/types.py`** exports JSON aliases, handler protocols, and the `MessageQueueBackendProtocol`. The file is included in `py.typed` so downstream projects receive type information.
+- **`abe/__init__.py`** wires the public API, re-exporting critical types and helpers for package consumers.
 
-- Designed for the **src-layout** recommended by modern Python packaging.
-- Ships with a minimal `types.py` + `py.typed` combo showing how to distribute type information.
-- Rename the default package directory to match your project name and add modules as needed.
-- Configure exports via `__init__.py` (or expose a public API) based on your needs.
+## Documentation (`docs/`)
 
-### Type Distribution Example
+- **`docs/contents/`** holds authored Markdown/MDX for architecture guides, quick starts, API references, and contributor docs.
+- **`docs/src/`** contains Docusaurus React components, CSS, and layout customisations (for example `docs/src/components/HomepageFeatures/index.tsx`).
+- **`docs/static/`** stores images and static assets referenced by the site.
+- Docusaurus configuration, sidebars, and versioning live alongside the content; `package.json` scripts run the docs locally or in CI.
 
-The template demonstrates PEP 561 support out of the box:
+## Examples (`examples/`)
 
-```python title="src/your_package/types.py"
-type UserId = str
-type Payload = dict[str, str | int | float | bool | None]
+- **`examples/type_checking/`** illustrates the Protocols from `abe/types.py`, showing how to implement handlers and message-queue backends that satisfy the exported contracts.
 
-__all__ = ["UserId", "Payload"]
-```
+## Tests (`test/`)
 
-Add additional aliases or Protocols here and keep `py.typed` in the same package so type checkers pick them up automatically.
+- **`test/unit_test/`** covers granular behaviour, including message-queue consumers (`test/unit_test/backends/queue/test_consumer.py`) and logging utilities.
+- **`test/integration_test/`** exercises end-to-end flows within a single process, such as logging configuration scenarios.
+- **`test/contract_test/`** codifies provider expectations—for example, `test/contract_test/backends/queue/base/test_queue_backend_contract.py` validates compliance with `MessageQueueBackendProtocol`.
+- **`test/e2e_test/`** is reserved for whole-system validations that replicate production flows when applicable.
 
-## Testing (`test/`)
+## Automation & Tooling
 
-- Pytest folders split into `unit_test/` and `integration_test/` for clarity.
-- Extend with more directories (e.g., `contract_test/`) if your project requires broader coverage.
-- Use the provided pytest plugins (coverage, asyncio, reruns) via `pyproject.toml` dependencies.
-- Tests are picked up automatically by `ci.yaml`.
+- **`.github/workflows/`** defines CI pipelines (type checking, docs previews, release orchestration) and reusable workflow definitions consumed across repositories.
+- **`scripts/ci/verify_type_checking.sh`** enforces that `abe/types.py` exports the expected aliases and protocols; other scripts under `scripts/docker/` and `scripts/ci/` support repeatable local and CI tasks.
+- **Root configuration** files include `pyproject.toml`, `mypy.ini`, `.pylintrc`, `.coveragerc`, `pytest.ini`, `.pre-commit-config.yaml`, and `codecov.yml`, ensuring consistent tooling across contributors.
 
-## Automation (`.github/workflows/`)
+## Auxiliary Artifacts
 
-Key workflows shipped with the template:
+- Additional metadata such as `LICENSE`, `README.md`, and `sonar-project.properties` live at the repository root for discoverability.
 
-- **`ci.yaml`** – Standard matrix CI (Python versions, OS variants, linting, tests).
-- **`release.yml`** – Intent-driven release process (Python package + docs).
-- **`release-validate.yml`** / **`release-staging.yml`** – Validation/staging runs before production release.
-- **`documentation.yaml`** – Builds and publishes Docusaurus site.
-- **`type-check.yml`** – PEP 561 type distribution verification using the template’s `src/` package.
-- **Supporting workflows** – docs auto-merge, docs build check, etc.
-
-Use these as blueprints; remove what you do not need or extend them for your environment.
-
-## Documentation (`docs_with_docusarus/` and `docs_with_mkdocs/`)
-
-- Docusaurus site is the primary documentation experience with versioning, search, and blog examples.
-- MkDocs project is included for teams that prefer a Markdown-first experience without React components.
-- Both stacks share the same content philosophy—update whichever matches your needs and disable the other if unnecessary.
-
-## Scripts (`scripts/`)
-
-- Holds helper tooling used by CI (e.g., release utilities, documentation helpers).
-- Keep reusable automation snippets here so they can be invoked locally and by workflows.
-
-## Tooling Configuration
-
-- **`pyproject.toml`** centralizes dependency groups (development, pre-commit) and configures pytest, coverage, pylint, mypy, etc.
-- **`uv.lock`** records exact dependency versions resolved by uv; check it in for reproducible builds.
-- Pre-commit hooks are declared in `.pre-commit-config.yaml` and reference the same virtual environment produced by uv.
-
-## Extending the Template
-
-- **Add packages** – Create new modules under `src/your_package/` and expose them in `__init__.py`.
-- **Add CLI entry points** – Configure `[project.scripts]` or `tool.hatch` sections in `pyproject.toml`.
-- **Add services** – Introduce FastAPI, Click, or other frameworks and wire tests/workflows accordingly.
-- **Add pipelines** – Duplicate existing GitHub workflows or call out to reusable workflows in other repos.
-
-Keeping this structure consistent makes it easier to upgrade the template, onboard contributors, and reuse automation across multiple projects.
+Maintaining this organisation keeps production modules (`abe/`), developer documentation (`docs/`), and quality gates (`test/`, `scripts/`, `.github/`) in sync. When you introduce new backends, utilities, or docs, mirror the existing patterns so they remain easy to discover and integrate into automation.
