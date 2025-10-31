@@ -76,47 +76,6 @@ const sidebars: SidebarsConfig = {
           id: 'api-references/logging',
           label: '🪵 Logging Utilities',
         },
-        //   type: 'doc',
-        //   id: 'server-references/environment-configuration',
-        //   label: '🌍 Environment Configuration',
-        // },
-        // {
-        //   type: 'doc',
-        //   id: 'server-references/logging-configuration',
-        //   label: '📋 Logging Configuration',
-        // },
-        // {
-        //   type: 'doc',
-        //   id: 'server-references/cli-execution-methods',
-        //   label: '⌨️ CLI Execution Methods',
-        // },
-        // {
-        //   type: 'doc',
-        //   id: 'server-references/deployment-guide',
-        //   label: '🚀 Deployment Guide',
-        // },
-        // {
-        //   type: 'category',
-        //   label: '🌐 Web Server',
-        //   items: [
-        //     {
-        //       type: 'doc',
-        //       id: 'server-references/web-server/web-apis',
-        //       label: '🌐 Web APIs',
-        //     },
-        //     {
-        //       type: 'category',
-        //       label: '🔌 End-points',
-        //       items: [
-        //         {
-        //           type: 'doc',
-        //           id: 'server-references/web-server/end-points/web-api-health-check',
-        //           label: '💓 Health Check',
-        //         },
-        //       ],
-        //     },
-        //   ],
-        // },
       ],
     },
     {
