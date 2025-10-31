@@ -1,57 +1,71 @@
 import type {ReactNode} from 'react';
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  image: string;
-  description: ReactNode;
+  icon: string;
+  description: string;
+  cta: string;
+  href: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    image: require('@site/static/img/easy_to_use.png').default,
-    description: (
-      <>
-        UV-Template is very easy to use. Just import and everything is ready to go.
-      </>
-    ),
+    title: 'Modular Queue Providers',
+    icon: '🛰️',
+    description:
+      'Swap providers at light-speed. Structural typing, contract tests, and runtime discovery keep every backend aligned with the same orbit.',
+    cta: 'Explore provider lifecycle',
+    href: '/dev/next/architecture/provider-lifecycle',
   },
   {
-    title: 'Base on Python',
-    image: require('@site/static/img/python_base.png').default,
-    description: (
-      <>
-        Built with Python for excellent readability and maintainability.
-        Leverage Python's extensive ecosystem and simplicity for your project automation needs.
-      </>
-    ),
+    title: 'Observability-First Tooling',
+    icon: '🌌',
+    description:
+      'From logging presets to coverage dashboards, the toolkit surfaces every signal so you can navigate the abstract backend cosmos with clarity.',
+    cta: 'See the logging guide',
+    href: '/dev/next/logging',
+  },
+  {
+    title: 'Production-Ready Automation',
+    icon: '🚀',
+    description:
+      'Reusable workflows publish packages, docs, and release notes. Intent-driven automation keeps CI/CD synchronized across galaxies.',
+    cta: 'Review CI/CD playbook',
+    href: '/dev/next/ci-cd/continuous-integration',
   },
 ];
 
-function Feature({title, image, description}: FeatureItem) {
+function Feature({title, icon, description, cta, href}: FeatureItem) {
   return (
-    <div className={clsx('col col--6')}>
-      <div className="text--center">
-        <img className={styles.featureSvg} src={image} alt={title} />
+    <article className={clsx('col col--4', styles.card)}>
+      <div className={styles.cardBackdrop} />
+      <div className={styles.cardContent}>
+        <span className={styles.cardIcon} aria-hidden="true">
+          {icon}
+        </span>
+        <Heading as="h3" className={styles.cardTitle}>
+          {title}
+        </Heading>
+        <p className={styles.cardCopy}>{description}</p>
+        <Link className={styles.cardLink} to={href}>
+          {cta}
+        </Link>
       </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
-      </div>
-    </div>
+    </article>
   );
 }
 
 export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
-      <div className="container">
+      <div className={styles.featuresInner}>
         <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
+          {FeatureList.map((feature) => (
+            <Feature key={feature.title} {...feature} />
           ))}
         </div>
       </div>

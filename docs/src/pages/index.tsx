@@ -34,7 +34,12 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to={stableDocsPath}>
-            Abstract-BackEnd Documentation
+            Explore the Docs
+          </Link>
+          <Link
+            className="button button--outline button--lg"
+            to="/showcase">
+            View Showcase
           </Link>
         </div>
       </div>
