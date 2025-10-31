@@ -29,8 +29,8 @@ const PROJECTS: ShowcaseProject[] = [
         alt: 'GitHub release status',
       },
       {
-        href: 'https://pypi.org/project/mcp-backend-message-queue-redis/',
-        image: 'https://img.shields.io/pypi/v/mcp-backend-message-queue-redis?logo=pypi',
+        href: 'https://pypi.org/project/abe-redis/',
+        image: 'https://img.shields.io/pypi/v/abe-redis?logo=pypi',
         alt: 'PyPI version',
       },
     ],
