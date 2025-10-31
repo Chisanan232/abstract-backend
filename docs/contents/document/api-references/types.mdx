@@ -1,0 +1,65 @@
+---
+id: types
+title: Shared Types
+sidebar_position: 4
+---
+
+# Shared Types
+
+`abe/types.py` centralises all type aliases and protocols that define the Abstract Backend surface. Installing the package from PyPI automatically exposes these types to downstream projects thanks to the bundled `py.typed` marker.
+
+## JSON aliases
+
+| Alias | Definition | Notes |
+|-------|------------|-------|
+| `JSONPrimitive` | `str \\| int \\| float \\| bool \\| None` | Basic scalar values |
+| `JSONValue` | `JSONPrimitive \\| JSONDict \\| JSONList` | Any JSON-compatible value |
+| `JSONDict` | `dict[str, JSONValue]` | Canonical representation of JSON objects |
+| `JSONList` | `list[JSONValue]` | Canonical representation of JSON arrays |
+
+Use these when authoring payload structures so static analysers understand the nested JSON semantics.
+
+## Event payloads and handlers
+
+- `WebhookEventPayload = dict[str, Any]`
+- `SyncEventHandlerFunc = Callable[[WebhookEventPayload], None]`
+- `AsyncEventHandlerFunc = Callable[[WebhookEventPayload], Awaitable[None]]`
+- `EventHandlerFunc = SyncEventHandlerFunc | AsyncEventHandlerFunc`
+
+These aliases demonstrate how to declare handlers that satisfy `EventHandlerProtocol`.
+
+## Queue-related aliases
+
+| Alias | Description |
+|-------|-------------|
+| `QueueKey` | Routing key/topic identifier (string). |
+| `QueuePayload` | JSON-compatible dictionary representing the message. |
+| `QueueMessage` | Provider-defined structure for consumed messages (payload plus metadata). |
+| `QueueBackendConfig` | `dict[str, str \\| int \\| bool]` used during initialisation. |
+| `ConsumerGroup` | `str \\| None` naming group-based consumers. |
+
+## Protocols
+
+### `EventHandlerProtocol`
+
+```python
+@runtime_checkable
+class EventHandlerProtocol(Protocol):
+    async def handle_event(self, event: WebhookEventPayload) -> None: ...
+```
+
+Any class with an async `handle_event` method can be treated as an event handler. This is useful when you want to inject class-based processors into higher-level orchestration code.
+
+### `QueueBackendProtocol`
+
+The structural protocol re-exported as `QueueBackend`. Providers must implement:
+
+- `async publish(key: QueueKey, payload: QueuePayload) -> None`
+- `async consume(*, group: ConsumerGroup = None) -> AsyncIterator[QueueMessage]`
+- `@classmethod from_env(cls) -> QueueBackendProtocol`
+
+## Best practices
+
+- When creating new modules, import aliases from `abe.types` instead of re-declaring them.
+- Export any additional public types from your provider package’s `__all__` to keep MyPy happy.
+- The verification script `scripts/ci/verify_type_checking.sh` ensures newly added types remain part of the public surface—update it if you add more names.

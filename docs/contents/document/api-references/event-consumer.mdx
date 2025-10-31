@@ -1,0 +1,66 @@
+---
+id: event-consumer
+title: EventConsumer & AsyncLoopConsumer
+sidebar_position: 2
+---
+
+# `EventConsumer` & `AsyncLoopConsumer`
+
+Abstract Backend separates the consumer contract from the default runtime implementation so you can plug in alternative event loops when needed.
+
+- `EventConsumer` lives in `abe/backends/queue/base/consumer.py` and is defined as a [PEP 544](https://peps.python.org/pep-0544/) protocol.
+- `AsyncLoopConsumer` in `abe/backends/queue/consumer.py` is the default implementation that wraps a `QueueBackend` and repeatedly invokes your handler coroutine.
+
+## `EventConsumer` protocol
+
+```python title="abe/backends/queue/base/consumer.py"
+class EventConsumer(Protocol):
+    async def run(self, handler: Callable[[Dict[str, Any]], Awaitable[None]]) -> None: ...
+    async def shutdown(self) -> None: ...
+```
+
+### `run(handler)`
+
+- Accepts an async handler that receives the message payload returned by the backend.
+- Implementations are expected to respect cancellation, propagate `asyncio.CancelledError`, and log other exceptions.
+
+### `shutdown()`
+
+- Stops the consumer gracefully, ensuring in-flight messages complete where possible.
+- Should be idempotent: repeated calls after the consumer stops must be safe.
+
+## `AsyncLoopConsumer`
+
+```python title="abe/backends/queue/consumer.py"
+class AsyncLoopConsumer(EventConsumer):
+    def __init__(self, backend: QueueBackend, group: Optional[str] = None): ...
+    async def run(self, handler: Callable[[Dict[str, Any]], Awaitable[None]]) -> None: ...
+    async def shutdown(self) -> None: ...
+```
+
+### Construction
+
+- **`backend`**: The `QueueBackend` instance returned by `load_backend()` or injected directly.
+- **`group`** *(optional)*: Consumer group identifier forwarded to `backend.consume()` when supported.
+
+### Runtime behaviour
+
+1. Creates an asyncio task that iterates over `backend.consume(group=group)`.
+2. Awaits the provided handler for every payload. Exceptions are logged and do not terminate the loop unless configured otherwise.
+3. Tracks internal `_running` state and stores the current task for cancellation during shutdown.
+
+### Shutdown flow
+
+- Cancels the running task if it is still active.
+- Handles `asyncio.CancelledError` and `asyncio.TimeoutError` explicitly, logging other exceptions at warning level.
+- Resets internal state (`_task = None`, `_running = False`).
+
+## Extending the consumer
+
+- Subclass `AsyncLoopConsumer` to add retry/backoff logic or metrics.
+- Implement the `EventConsumer` protocol from scratch to integrate with orchestrators such as Celery or to bridge non-async backends.
+
+## Testing helpers
+
+- Pass a fake backend that yields predetermined payloads from `consume()` to exercise handler logic.
+- Use `pytest`'s `asyncio` support to run the consumer inside event loops and assert that `shutdown()` cancels tasks cleanly.

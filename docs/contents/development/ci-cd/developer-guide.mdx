@@ -11,7 +11,7 @@ import TOCInline from '@theme/TOCInline';
 ![Best Practices](https://img.shields.io/badge/Guide-Best%20Practices-green?style=for-the-badge)
 ![Specialized Workflows](https://img.shields.io/badge/Workflows-Specialized-orange?style=for-the-badge)
 
-This guide provides comprehensive information for developers working with the Python uv template project CI/CD system, including troubleshooting, configuration management, specialized workflows, and best practices.
+This guide provides comprehensive information for developers working with the Abstract Backend CI/CD system, including troubleshooting, configuration management, specialized workflows, and best practices.
 
 <TOCInline toc={toc} />
 
@@ -88,8 +88,8 @@ gh run list --workflow=release-staging.yml --limit=3
 ```
 
 #### Staging Artifacts
-- **TestPyPI**: `pip install -i https://test.pypi.org/simple/ test-python-uv-project-template`
-- **GHCR Staging**: `docker pull ghcr.io/Chisanan232/Template-Python-UV-Project:1.0.0-rc.0`
+- **TestPyPI**: `pip install -i https://test.pypi.org/simple/ abstract-backend`
+- **GHCR Staging**: `docker pull ghcr.io/Chisanan232/abstract-backend:1.0.0-rc.0`
 - **Preview Docs**: Available on docs-preview branch
 
 ## Common Workflows
@@ -280,8 +280,8 @@ gh run view <run-id> --log | grep -E "(image-tag|docker tag)"
 ### Release Status Monitoring
 
 **Primary Workflows**:
-- [Release Workflow](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml)
-- [Validation Results](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml)
+- [Release Workflow](https://github.com/Chisanan232/abstract-backend/actions/workflows/release.yml)
+- [Validation Results](https://github.com/Chisanan232/abstract-backend/actions/workflows/release-validate.yml)
 
 **CLI Monitoring**:
 ```bash
@@ -316,28 +316,28 @@ cat sbom.spdx.json | jq '.packages[] | select(.name | contains("critical"))'
 #### Python Package (PyPI)
 ```bash
 # Check package availability and correct version
-pip install test-python-uv-project-template==<VERSION>
-python -c "import test-python-uv-project-template; print(test-python-uv-project-template.__version__)"
+pip install abstract-backend==<VERSION>
+python -c "import abstract-backend; print(abstract-backend.__version__)"
 ```
 
 #### Docker Hub
 ```bash
 # Verify Docker image availability and correct version tags
-docker pull chisanan232/test-python-uv-project-template:<VERSION>
-docker run --rm chisanan232/test-python-uv-project-template:<VERSION> --version
+docker pull chisanan232/abstract-backend:<VERSION>
+docker run --rm chisanan232/abstract-backend:<VERSION> --version
 ```
 
 #### GitHub Container Registry (GHCR)
 ```bash
 # Verify Docker image availability and correct version tags
-docker pull ghcr.io/chisanan232/test-python-uv-project-template:<VERSION>
-docker run --rm ghcr.io/chisanan232/test-python-uv-project-template:<VERSION> --version
+docker pull ghcr.io/chisanan232/abstract-backend:<VERSION>
+docker run --rm ghcr.io/chisanan232/abstract-backend:<VERSION> --version
 ```
 
 #### Documentation
 ```bash
 # Check versioned documentation is available
-curl -s https://chisanan232.github.io/test-python-uv-project-template/docs/<VERSION>/
+curl -s https://chisanan232.github.io/abstract-backend/docs/<VERSION>/
 ```
 
 #### Version Consistency Verification
@@ -349,7 +349,7 @@ All artifacts should reflect the same bumped version:
 
 ### Docker CI
 
-[![docker-ci](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml)
+[![docker-ci](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml)
 
 **Purpose**: Standalone Docker image building and functionality testing
 
@@ -366,7 +366,7 @@ All artifacts should reflect the same bumped version:
 
 ### DockerHub README CI
 
-[![dockerhub-readme-ci](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml)
+[![dockerhub-readme-ci](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml)
 
 **Purpose**: Updates the Docker Hub repository description automatically
 
@@ -382,7 +382,7 @@ All artifacts should reflect the same bumped version:
 
 ### Documentation Auto-Approve & Auto-Merge
 
-[![docs-automerge](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-automerge.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-automerge.yml)
+[![docs-automerge](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-automerge.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-automerge.yml)
 
 **Purpose**: Streamlines documentation-only pull request processing
 
@@ -443,7 +443,7 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 - `dockerhub-readme-ci.yml` - DockerHub README synchronization
 - `docs-automerge.yml` - Documentation PR automation
 
-**Browse All Workflows**: [Workflow Definitions](https://github.com/Chisanan232/Template-Python-UV-Project/tree/master/.github/workflows)
+**Browse All Workflows**: [Workflow Definitions](https://github.com/Chisanan232/abstract-backend/tree/master/.github/workflows)
 
 ## Best Practices for Contributors
 

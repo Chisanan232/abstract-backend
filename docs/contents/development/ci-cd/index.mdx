@@ -5,7 +5,7 @@ sidebar_position: 6
 
 # CI/CD Workflows
 
-This section describes the Continuous Integration and Continuous Deployment (CI/CD) workflows used in the Python uv template project.
+This section describes the Continuous Integration and Continuous Deployment (CI/CD) workflows used in the Abstract Backend.
 
 ## 🚀 **Quick Navigation**
 
@@ -13,8 +13,8 @@ Our CI/CD system is organized into focused, developer-friendly sections:
 
 ### **📋 [Continuous Integration](./continuous-integration.mdx)**
 
-[![CI](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci.yaml)
-[![CI + E2E](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci_includes_e2e_test.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/ci_includes_e2e_test.yaml)
+[![CI](https://github.com/Chisanan232/abstract-backend/actions/workflows/ci.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/ci.yaml)
+[![CI + E2E](https://github.com/Chisanan232/abstract-backend/actions/workflows/ci_includes_e2e_test.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/ci_includes_e2e_test.yaml)
 
 - **Matrix-based test coverage** across Python 3.12–3.14 and multiple OS targets  
 - **Quality gates** for linting, formatting, type checking, coverage  
@@ -23,9 +23,9 @@ Our CI/CD system is organized into focused, developer-friendly sections:
 
 ### **🔄 [Release System](./release-system.mdx)**
 
-[![Release Validation](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-validate.yml)
-[![Release](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release.yml)
-[![Release Staging](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-staging.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/release-staging.yml)
+[![Release Validation](https://github.com/Chisanan232/abstract-backend/actions/workflows/release-validate.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/release-validate.yml)
+[![Release](https://github.com/Chisanan232/abstract-backend/actions/workflows/release.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/release.yml)
+[![Release Staging](https://github.com/Chisanan232/abstract-backend/actions/workflows/release-staging.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/release-staging.yml)
 
 - **Intent-driven configuration** via `.github/tag_and_release/intent.yaml`  
 - **Triple-target publishing**: Python package, container image, Docusaurus docs  
@@ -34,7 +34,7 @@ Our CI/CD system is organized into focused, developer-friendly sections:
 
 ### **📖 [Documentation Deployment](./documentation-deployment.mdx)**  
 
-[![Documentation](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/documentation.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/documentation.yaml)
+[![Documentation](https://github.com/Chisanan232/abstract-backend/actions/workflows/documentation.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/documentation.yaml)
 
 - **workflow_run-based trigger** that reacts to release outputs and docs-only PRs  
 - **Safeguards** to prevent duplicate deployments and to validate build artifacts  
@@ -48,9 +48,9 @@ Our CI/CD system is organized into focused, developer-friendly sections:
 
 ### **⚙️ [Additional CI Workflows](./additional-ci-workflows.mdx)**
 
-[![Docker CI](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docker-ci.yml)  
-[![DockerHub README CI](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/dockerhub-readme-ci.yml)  
-[![Docs Build Check](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/Template-Python-UV-Project/actions/workflows/docs-build-check.yaml)
+[![Docker CI](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml)  
+[![DockerHub README CI](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml)  
+[![Docs Build Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml)
 
 - **Docker CI** – Standalone container validation without triggering full releases  
 - **DockerHub README** – Synchronizes `README_DOCKERHUB.md` with Docker Hub automatically  
@@ -69,7 +69,7 @@ Our CI/CD system is organized into focused, developer-friendly sections:
 
 We use **GitHub Actions** to automate testing, code quality checks, and deployment processes. Our CI/CD pipelines help maintain code quality, ensure tests pass, and streamline the release process.
 
-**Monitor all workflows at:** [GitHub Actions Dashboard](https://github.com/Chisanan232/Template-Python-UV-Project/actions)
+**Monitor all workflows at:** [GitHub Actions Dashboard](https://github.com/Chisanan232/abstract-backend/actions)
 
 ### **System Highlights**
 

@@ -37,8 +37,28 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'doc',
-          id: 'architecture',
+          id: 'architecture/index',
           label: '🏛️ Architecture Overview',
+        },
+        {
+          type: 'doc',
+          id: 'architecture/runtime-flow',
+          label: '🔁 Runtime Flow',
+        },
+        {
+          type: 'doc',
+          id: 'architecture/provider-lifecycle',
+          label: '🔌 Provider Lifecycle',
+        },
+        {
+          type: 'doc',
+          id: 'architecture/project-structure',
+          label: '🗂️ Project Structure',
+        },
+        {
+          type: 'doc',
+          id: 'architecture/layer-integration',
+          label: '🔗 Layer Integration',
         },
       ],
     },

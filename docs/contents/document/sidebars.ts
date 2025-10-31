@@ -46,7 +46,36 @@ const sidebars: SidebarsConfig = {
           id: 'api-references/api-references',
           label: '📚 API References',
         },
-        // {
+        {
+          type: 'doc',
+          id: 'api-references/queue-backend',
+          label: '🧱 QueueBackend Protocol',
+        },
+        {
+          type: 'doc',
+          id: 'api-references/event-consumer',
+          label: '🔁 EventConsumer & AsyncLoopConsumer',
+        },
+        {
+          type: 'doc',
+          id: 'api-references/loader',
+          label: '🔍 Loader & Discovery',
+        },
+        {
+          type: 'doc',
+          id: 'api-references/types',
+          label: '🧾 Shared Types',
+        },
+        {
+          type: 'doc',
+          id: 'api-references/memory-backend',
+          label: '🧠 Memory Backend',
+        },
+        {
+          type: 'doc',
+          id: 'api-references/logging',
+          label: '🪵 Logging Utilities',
+        },
         //   type: 'doc',
         //   id: 'server-references/environment-configuration',
         //   label: '🌍 Environment Configuration',

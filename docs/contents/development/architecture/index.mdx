@@ -1,73 +1,112 @@
 ---
-id: architecture-overview
 title: Architecture Overview
 sidebar_position: 1
-slug: architecture/overview
 ---
 
-# Template Architecture Overview
+# Abstract Backend Architecture Overview
 
-This page explains how the Python UV Project Template is organized and how the main building blocks (source code, automation, and documentation) work together. Use it as a map when adapting the template to your own project.
+Abstract Backend offers a pluggable backend layer that lets applications target stable Python protocols while discovering concrete implementations at runtime. This page explains the major components, how they collaborate, and which supporting systems keep the abstraction reliable.
 
-## Architecture Pillars
+## Section map
 
-- **Application Layer (`src/`)** – Houses your Python package using the modern src-layout.
-- **Quality & Testing (`test/`, `pre-commit`)** – Provides pytest-based suites, coverage reporting, linting, and type-checking tooling configured through uv.
-- **Automation (`.github/workflows/`)** – Collection of GitHub Actions for CI, releases, docs, Docker, and supporting tasks.
-- **Documentation (`docs_with_docusarus/`, `docs_with_mkdocs/`)** – Docusaurus (primary) and MkDocs (optional) documentation systems ready for customization.
+- **Architecture Overview** (this page) – High-level map of the abstraction core, provider plugins, and supporting infrastructure.
+- **Runtime Flow** – Sequence diagrams describing discovery, publish/consume loops, and deployment considerations.
+- **Provider Lifecycle** – Checklist for creating, testing, and distributing new backends.
+- **Project Structure** – Reference for repository layout and supporting assets.
 
-## Repository Topology
+## Layered design
 
 ```mermaid
-flowchart LR
-    subgraph Source
-        A[src/]
-        B[test/]
-    end
-    subgraph Automation
-        C[.github/workflows/]
-        D[scripts/]
-    end
-    subgraph Documentation
-        E[docs_with_docusarus/]
-        F[docs_with_mkdocs/]
-    end
-    subgraph Packaging
-        G[pyproject.toml]
-        H[uv.lock]
+flowchart TB
+    subgraph Application Integration
+        A["Your Application"]
+        B["Domain Services"]
     end
 
-    A --> C
-    B --> C
-    C --> G
-    C --> H
-    A --> E
-    A --> F
-    E --> C
+    subgraph Abstraction Core
+        C["abe.types"]
+        D["abe.backends.queue.base"]
+        E["abe.backends.queue.loader"]
+        F["abe.backends.queue.consumer"]
+    end
+
+    subgraph Provider Plugins
+        G["Entry Point: abe.backends.queue"]
+        H["Concrete Backend (e.g. Redis)"]
+        I["MemoryBackend"]
+    end
+
+    subgraph Supporting Systems
+        J["abe.logging"]
+        K["test/*"]
+        L[".github/workflows/"]
+    end
+
+    A -->|"Publishes/Consumes"| D
+    B -->|"Uses types"| C
+    D -->|"Protocols"| G
+    E -->|"load_backend()"| G
+    G -->|"from_env()"| H
+    G -->|"Fallback"| I
+    F -->|"AsyncLoopConsumer"| H
+    J -->|"Shared logging config"| A
+    K -->|"Contract tests"| G
+    L -->|"CI/CD"| A
 ```
 
-## What Lives Where?
+- **Application Integration**: Your services import `QueueBackend`, `AsyncLoopConsumer`, and shared type aliases, remaining agnostic to concrete providers.
+- **Abstraction Core**: Modules under `abe/backends/queue/` define the protocols and discovery code that mediate between applications and providers.
+- **Provider Plugins**: External packages register entry points that implement the contracts and can be swapped at runtime.
+- **Supporting Systems**: Logging utilities, contract tests, and CI workflows reinforce the guarantees promised by the abstraction.
 
-- **`src/`** – Your distributable package, including the default `types.py` example and `py.typed` marker for PEP 561 compliance.
-- **`test/`** – Unit and integration test scaffolding with pytest plugins preconfigured in `pyproject.toml`.
-- **`.github/workflows/`** – Automation entry points (CI, release, documentation, Docker, type distribution, etc.).
-- **`docs_with_docusarus/`** – Primary documentation site (this guide). Includes reusable content, versioning, and search configuration.
-- **`docs_with_mkdocs/`** – Alternate documentation stack if your team prefers MkDocs.
-- **`scripts/`** – Helper scripts invoked by workflows for packaging, docs, and build orchestration.
-- **`pyproject.toml` / `uv.lock`** – Single source of truth for dependencies, tool configuration, and packaging metadata.
+## Core modules
 
-## How the Pieces Work Together
+- **`abe/types.py`** defines the structural contracts (`QueueBackendProtocol`, `EventHandlerProtocol`, JSON aliases) distributed via `py.typed`.
+- **`abe/backends/queue/base/`** exports `QueueBackend` and `EventConsumer` protocols, capturing publish/consume semantics and consumer lifecycle.
+- **`abe/backends/queue/loader.py`** discovers provider entry points via `importlib.metadata`, applies environment-based selection rules, and falls back to `MemoryBackend` when nothing is installed.
+- **`abe/backends/queue/consumer.py`** bundles runtime helpers (`AsyncLoopConsumer`) to execute handlers against any compliant backend.
+- **`abe/backends/queue/service/memory.py`** provides the built-in development backend.
 
-1. **Develop locally with uv** – Use `uv sync` to install dependencies defined in `pyproject.toml` and locked in `uv.lock`.
-2. **Validate with pre-commit** – Preconfigured hooks (formatting, linting, type checking) keep commits consistent.
-3. **Run CI** – `ci.yaml` (regular) and `ci_includes_e2e_test.yaml` (extended) execute the same matrix of tests GitHub-side.
-4. **Ship releases** – Intent-driven workflows publish Python packages, container images, and docs from a single configuration file.
-5. **Publish docs** – Docusaurus builds run automatically after releases or documentation-only pull requests.
+See the [API Reference](/docs/next/api-references) for method-level detail.
 
-## Related Guides
+## Runtime flow
+
+The typical request lifecycle:
+
+1. **Provider selection** – `load_backend()` inspects the `abe.backends.queue` entry-point group, honours `QUEUE_BACKEND`, and instantiates the chosen class through `from_env()`.
+2. **Publishing events** – Application code calls `backend.publish(key, payload)` using `QueueKey`/`QueuePayload` aliases to ensure consistent typing.
+3. **Consuming events** – `AsyncLoopConsumer` wraps `backend.consume(group=...)`, executing the application’s handler coroutine. Cancellation and error handling are standardised here.
+4. **Observability** – `abe.logging.utils` can standardise log formatting and levels across providers and consumers.
+
+Detailed sequence diagrams live in [Runtime Flow](./runtime-flow.mdx).
+
+## Provider lifecycle
+
+Abstract Backend promotes a clean separation between the core abstraction and provider implementations:
+
+1. **Implement protocols** – Providers subclass nothing; they simply satisfy `QueueBackendProtocol` and expose `from_env()`.
+2. **Register entry points** – `pyproject.toml` declares the provider under `abe.backends.queue` so `load_backend()` can find it.
+3. **Package distribution** – Providers are published as normal Python packages, allowing teams to install or uninstall them with `pip`.
+4. **Validation** – Tests under `test/contract_test/backends/queue/` assert new providers honour the contract.
+
+See [Provider Lifecycle](./provider-lifecycle.mdx) for an end-to-end checklist.
+
+## Supporting infrastructure
+
+- **Testing**: Contract, unit, integration, and e2e suites located under `test/` validate both the abstraction and reference implementations. Scripts in `scripts/ci/` orchestrate type-check and verification runs.
+- **CI/CD**: Workflows in `.github/workflows/` run tests across multiple Python versions, ensure type distribution (PEP 561), and publish releases.
+- **Documentation**: This Docusaurus site (`docs/contents/`) and `docs/LOGGING.md` document runtime features for both consumers and provider authors.
+
+## Design principles
+
+- **Protocol-first** – All core contracts are structural type protocols exported from `abe/types.py`, ensuring consumers compile against the same surface.
+- **Runtime pluggability** – Providers are discovered via Python entry points; swapping implementations does not require code changes.
+- **Typed ergonomics** – The project distributes `py.typed` so editors and CI keep abstractions honest.
+- **Operational clarity** – Logging helpers (`abe/logging/utils.py`) and contract tests ensure behaviour stays observable and portable.
+
+## Related guides
 
 - **Structure & Files** → [Project Structure](./project-structure.mdx)
-- **CI/CD System** → [CI/CD Overview](../ci-cd/index.mdx)
-- **Type Checking** → [Type Checking with MyPy](../type-checking.mdx)
-
-Use these pages to drill into specific subsystems once you customize the template for your own project.
+- **Runtime flow** → [Runtime Flow](./runtime-flow.mdx)
+- **Provider lifecycle** → [Provider Lifecycle](./provider-lifecycle.mdx)
+- **Type system** → [Type Checking with MyPy](../type-checking.mdx)

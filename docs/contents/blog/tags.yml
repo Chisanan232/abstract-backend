@@ -1,4 +1,19 @@
-python:
-  label: Python
-  permalink: /python
-  description: Python programming and development
+abstract-backend:
+  label: Abstract Backend
+  permalink: /abstract-backend
+  description: Stories and updates about the Abstract Backend project
+
+architecture:
+  label: Architecture
+  permalink: /architecture
+  description: Design decisions behind modular backend components
+
+reusable-backend:
+  label: Reusable Backend
+  permalink: /reusable-backend
+  description: Building shared backend components for multiple projects
+
+message-queue:
+  label: Message Queue
+  permalink: /message-queue
+  description: Patterns and tooling for queue-based integrations

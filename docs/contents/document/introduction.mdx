@@ -4,144 +4,92 @@ title: Introduction
 sidebar_position: 1
 ---
 
-# Python UV Project Template
+# Abstract Backend
 
-Welcome to the **Python UV Project Template** - a modern, production-ready template for Python projects that leverages the power of [uv](https://docs.astral.sh/uv/) package management and industry best practices.
+**Abstract Backend** is a pluggable abstraction layer for backend components. It defines shared contracts, runtime helpers, and discovery utilities so that individual backends can be added or removed with nothing more than `pip install` or `pip uninstall`.
 
-## What is This Template?
+Instead of hard-wiring a specific queue, cache, or service implementation into your application, Abstract Backend lets you:
 
-This template provides a comprehensive foundation for Python projects, designed to eliminate the repetitive setup work that developers face when starting new projects. Instead of spending hours configuring tools, setting up CI/CD pipelines, and establishing project structure, you can focus immediately on building your application.
+- Keep a stable Python API for your code (`QueueBackend`, `EventConsumer`, etc.).
+- Discover concrete implementations from Python entry points.
+- Swap implementations at deploy time without changing application code.
 
-## The Problem It Solves
+## Why a backend abstraction layer?
 
-Starting a new Python project often involves:
+Building multi-environment systems usually forces developers to pick one message broker or service vendor early, even when the project would benefit from a pluggable architecture. Abstract Backend removes that friction:
 
-- 🔧 **Setting up package management** (pip, poetry, or uv)
-- 📁 **Creating proper project structure** with src layout
-- 🧪 **Configuring testing frameworks** (pytest, coverage)
-- ✅ **Setting up code quality tools** (black, pylint, mypy)
-- 🔄 **Establishing CI/CD workflows** for automation
-- 📚 **Creating documentation structure**
-- 🐳 **Adding containerization support**
-- ⚡ **Configuring pre-commit hooks**
+- **Hot-swappable backends** – Install a backend provider package (for example `abe-backend-redis`) and Abstract Backend will discover it automatically via the `abe.backends.queue` entry point group.
+- **Simple deprecation story** – Removing a backend is as easy as `pip uninstall` or replacing the package with another provider.
+- **Strong typing & protocols** – The interfaces in `abe/backends/queue/base/` are Protocol-based so your IDE and static analysis tools know what to expect.
+- **Out-of-the-box fallback** – An in-memory `MemoryBackend` lives in `abe/backends/queue/service/memory.py` so you can get started instantly while evaluating production options.
 
-This template eliminates all of these setup tasks, providing you with a battle-tested foundation that follows Python community best practices.
+## Core building blocks
 
-## Why Choose This Template?
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `QueueBackend` protocol | `abe/backends/queue/base/protocol.py` | Defines the async publish/consume contract that every backend must implement. |
+| `EventConsumer` protocol & `AsyncLoopConsumer` | `abe/backends/queue/base/consumer.py`, `abe/backends/queue/consumer.py` | Provides a standard message-consumption loop that works with any backend. |
+| Plugin loader | `abe/backends/queue/loader.py` | Discovers implementations via Python entry points and selects the right backend at runtime. |
+| Memory backend | `abe/backends/queue/service/memory.py` | Development-friendly backend used when no external provider is installed. |
 
-### ⚡ Lightning-Fast Package Management with uv
+The combination of protocols, loader, and runtime helpers gives you a consistent interface for publishing and consuming messages across environments.
 
-Built around [uv](https://docs.astral.sh/uv/), the fastest Python package manager:
+## How discovery works
 
-- **10-100x faster** than pip and poetry for dependency resolution
-- **Deterministic builds** with reliable lock files
-- **Cross-platform compatibility** (Windows, macOS, Linux)
-- **Drop-in replacement** for existing pip workflows
+```mermaid
+sequenceDiagram
+    participant App as Your application
+    participant Loader as load_backend()
+    participant EntryPoints as Python entry points
+    participant Backend as Concrete backend
 
-### 🛠️ Complete Development Toolkit
-
-Pre-configured with essential development tools:
-
-```bash
-# Testing & Coverage
-pytest, pytest-cov, pytest-asyncio, pytest-rerunfailures
-
-# Code Quality
-black (formatting), pylint (linting), mypy (type checking)
-
-# Development Workflow
-pre-commit hooks, GitHub Actions CI/CD
+    App->>Loader: call load_backend()
+    Loader->>EntryPoints: look up "abe.backends.queue"
+    EntryPoints-->>Loader: registered backend metadata
+    Loader->>Backend: import & instantiate via .from_env()
+    Loader-->>App: return QueueBackend instance
 ```
 
-### 📦 Modern Project Structure
+1. You install one or more backend provider packages. Each provider registers an entry point under `abe.backends.queue`.
+2. Your application calls `load_backend()`.
+3. The loader selects the requested provider (via `QUEUE_BACKEND` environment variable) or the first non-memory option.
+4. The provider’s `from_env()` factory initializes the backend using deployment-specific settings.
 
-Follows Python packaging best practices:
+## Developer experience highlights
 
+- **One API, many providers** – Application code targets the `QueueBackend` interface and does not need to know which provider is installed.
+- **Pip-based lifecycle** – Install a backend you need, remove the ones you do not. CI/CD pipelines can manage providers with standard Python packaging tooling.
+- **Observability hooks** – Logging configuration under `abe/logging/` exposes `LoggingConfig` and helper utilities to standardize log output across backends.
+- **Typed surface area** – `abe/types.py` exports shared type aliases, ensuring downstream projects receive full typing metadata thanks to the bundled `py.typed` marker.
+
+## Typical flow for consumers
+
+```python
+from abe.backends.queue.loader import load_backend
+from abe.backends.queue.consumer import AsyncLoopConsumer
+
+async def handle_message(payload: dict[str, object]) -> None:
+    ...  # implement domain logic
+
+backend = load_backend()  # resolves to the installed provider
+consumer = AsyncLoopConsumer(backend)
+
+await consumer.run(handle_message)
 ```
-project/
-├── src/                    # Source code (src layout)
-├── test/                   # Test suites
-│   ├── unit_test/         # Unit tests
-│   └── integration_test/  # Integration tests
-├── docs_with_docusarus/   # Documentation (Docusaurus)
-├── docs_with_mkdocs/      # Alternative docs (MkDocs)
-├── .github/workflows/     # CI/CD automation
-├── pyproject.toml         # Project configuration
-└── uv.lock               # Dependency lock file
-```
 
-### 🚀 Production-Ready Features
+Change the behavior simply by installing a different backend provider package or exporting `QUEUE_BACKEND=my-provider` before the process starts.
 
-- **Automated Testing**: Multi-Python version testing (3.12-3.14)
-- **Code Quality Gates**: Automatic formatting, linting, and type checking
-- **Security Scanning**: Built-in security checks and dependency updates
-- **Release Automation**: Automated versioning and PyPI publishing
-- **Documentation**: Both Docusaurus and MkDocs options
-- **Containerization**: Docker support for deployment
+## When is Abstract Backend a good fit?
 
-## Who Should Use This Template?
+- You support multiple deployment environments that depend on different queue technologies.
+- You ship a library that needs to integrate with user-selected infrastructure without baking in a dependency.
+- You want to experiment with new providers without rewriting glue code.
+- You care about typed interfaces and predictable runtime lifecycle management.
 
-### Perfect For:
+## Next steps
 
-- **Python developers** starting new projects
-- **Teams** wanting consistent project structure
-- **Open source maintainers** needing professional project setup
-- **Data scientists** building reproducible analysis projects
-- **DevOps engineers** requiring containerized Python applications
-- **Students** learning modern Python development practices
+- **Set up your environment** → [Quick Start](./quick-start/index.mdx)
+- **Learn about entry-point validation** → [Type Checking with MyPy](/dev/next/type-checking)
+- **Dive into architecture details** → [Architecture Overview](/dev/next/architecture)
 
-### Project Types:
-
-- 📦 **Python libraries and packages**
-- 🌐 **Web applications and APIs**
-- 🤖 **CLI tools and utilities**
-- 📊 **Data science and analysis projects**
-- 🧠 **Machine learning projects**
-- 🔧 **Internal tools and scripts**
-
-## Key Features at a Glance
-
-| Feature | Description | Benefit |
-|---------|-------------|---------|
-| **uv Package Management** | Fast, reliable dependency management | 10-100x faster installs |
-| **Src Layout** | Modern Python project structure | Better import organization |
-| **Multi-Python Support** | Python 3.12, 3.13, 3.14 | Future-proof compatibility |
-| **Comprehensive Testing** | pytest with coverage and async support | Reliable, well-tested code |
-| **Code Quality Tools** | black, pylint, mypy pre-configured | Consistent, high-quality code |
-| **CI/CD Workflows** | GitHub Actions for automation | Automated testing and deployment |
-| **Documentation** | Docusaurus and MkDocs options | Professional documentation |
-| **Docker Support** | Ready-to-use containerization | Easy deployment and distribution |
-| **Pre-commit Hooks** | Automated quality checks | Catch issues before commit |
-
-## Philosophy
-
-This template embodies several key principles:
-
-1. **Developer Experience First**: Minimize setup friction, maximize productivity
-2. **Industry Standards**: Follow Python community best practices and PEPs
-3. **Modern Tooling**: Leverage the latest, fastest tools (uv, GitHub Actions)
-4. **Flexibility**: Provide options without being opinionated about your specific use case
-5. **Maintainability**: Structure code for long-term success
-6. **Quality by Default**: Built-in quality gates and automation
-
-## Getting Started
-
-Ready to create your first project? Head over to our [Quick Start Guide](./quick-start/index.mdx) for step-by-step instructions on:
-
-1. **Creating a new project** from this template
-2. **Installing dependencies** with uv
-3. **Customizing the template** for your needs
-4. **Setting up your development workflow**
-
-## Community and Support
-
-This template is actively maintained and continuously improved based on:
-
-- **Community feedback** and contributions
-- **Industry best practices** evolution
-- **Python ecosystem** developments
-- **Security updates** and dependency management
-
----
-
-*Ready to build something amazing? Let's get started with modern Python development! 🐍✨*
+Bring your own backend package or build one that implements the protocols. Abstract Backend makes it pleasant to wire everything together.
