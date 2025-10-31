@@ -19,7 +19,7 @@ const FeatureList: FeatureItem[] = [
     description:
       'Activate or retire providers in seconds using Python entry points—`pip install` turns them on, `pip uninstall` turns them off—without touching application code.',
     cta: 'Switch providers instantly',
-    href: '/docs/next/quick-start/requirements',
+    href: '/docs/next/introduction',
   },
   {
     title: 'Crystal-Clear Abstractions',
