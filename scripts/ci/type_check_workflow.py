@@ -31,9 +31,7 @@ def import_core_types() -> None:
     _ = (WebhookEventPayload, EventHandlerProtocol, MessageQueueBackendProtocol)
 
     print("✅ Successfully imported core types")
-    print(
-        "✅ WebhookEventPayload, EventHandlerProtocol, MessageQueueBackendProtocol available"
-    )
+    print("✅ WebhookEventPayload, EventHandlerProtocol, MessageQueueBackendProtocol available")
 
 
 def verify_type_attributes() -> None:

@@ -9,6 +9,7 @@ reporting via .coveragerc configuration.
 
 from abe.backends.message_queue.base import MessageQueueBackend
 
+
 class TestMessageQueueBackendInterface:
     """Tests focused on the MessageQueueBackend protocol interface structure."""
 

@@ -49,7 +49,9 @@ def test_memory_backend_fallback_e2e(reset_env: Any) -> None:
         # or "no external backend found")
         assert len(w) >= 1
         warning_texts = [str(warning.message) for warning in w]
-        assert any(("No message-queue backends" in text) or ("No external backend found" in text) for text in warning_texts)
+        assert any(
+            ("No message-queue backends" in text) or ("No external backend found" in text) for text in warning_texts
+        )
 
 
 def test_nonexistent_backend_error_message_e2e(reset_env: Any) -> None:
