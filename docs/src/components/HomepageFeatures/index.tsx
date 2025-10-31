@@ -1,57 +1,71 @@
 import type {ReactNode} from 'react';
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  image: string;
-  description: ReactNode;
+  icon: string;
+  description: string;
+  cta: string;
+  href: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    image: require('@site/static/img/easy_to_use.png').default,
-    description: (
-      <>
-        UV-Template is very easy to use. Just import and everything is ready to go.
-      </>
-    ),
+    title: 'Entry-Point Powered Providers',
+    icon: '🚀',
+    description:
+      'Activate or retire providers in seconds using Python entry points—`pip install` turns them on, `pip uninstall` turns them off—without touching application code.',
+    cta: 'Switch providers instantly',
+    href: '/docs/next/introduction',
   },
   {
-    title: 'Base on Python',
-    image: require('@site/static/img/python_base.png').default,
-    description: (
-      <>
-        Built with Python for excellent readability and maintainability.
-        Leverage Python's extensive ecosystem and simplicity for your project automation needs.
-      </>
-    ),
+    title: 'Crystal-Clear Abstractions',
+    icon: '🧭',
+    description:
+      'A lightweight contract models every backend component. Follow the protocol to add implementations, or deprecate them cleanly, while the rest of your stack stays unchanged.',
+    cta: 'Understand the architecture',
+    href: '/dev/next/architecture/layer-integration',
+  },
+  {
+    title: 'Modular Queue Providers',
+    icon: '🛰️',
+    description:
+      'First-class message queue definitions ship with contract tests, payload typing, and lifecycle docs so you can lean on queues—the backbone of modern backend systems.',
+    cta: 'Explore provider lifecycle',
+    href: '/docs/next/api-references/queue-backend',
   },
 ];
 
-function Feature({title, image, description}: FeatureItem) {
+function Feature({title, icon, description, cta, href}: FeatureItem) {
   return (
-    <div className={clsx('col col--6')}>
-      <div className="text--center">
-        <img className={styles.featureSvg} src={image} alt={title} />
+    <article className={clsx('col col--4', styles.card)}>
+      <div className={styles.cardBackdrop} />
+      <div className={styles.cardContent}>
+        <span className={styles.cardIcon} aria-hidden="true">
+          {icon}
+        </span>
+        <Heading as="h3" className={styles.cardTitle}>
+          {title}
+        </Heading>
+        <p className={styles.cardCopy}>{description}</p>
+        <Link className={styles.cardLink} to={href}>
+          {cta}
+        </Link>
       </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
-      </div>
-    </div>
+    </article>
   );
 }
 
 export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
-      <div className="container">
+      <div className={styles.featuresInner}>
         <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
+          {FeatureList.map((feature) => (
+            <Feature key={feature.title} {...feature} />
           ))}
         </div>
       </div>
