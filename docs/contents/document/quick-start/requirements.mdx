@@ -6,94 +6,40 @@ sidebar_position: 1
 
 # Requirements
 
-Before using this Python project template, ensure your development environment meets the following requirements:
+Whether you want to consume a backend that already exists or publish a new backend implementation, have the following prerequisites ready before you start.
 
-## System Requirements
+## Runtime prerequisites
 
-- **Operating System**: Linux, macOS, or Windows
-- **Memory**: Minimum 512MB RAM (1GB+ recommended for development)
-- **Disk Space**: Minimum 500MB for full template with dependencies
-- **Internet Connection**: Required for downloading dependencies and packages
+- **Python**: 3.12, 3.13, or 3.14. The library ships with type information that targets these versions.
+- **pip** (or another PEP 517 installer): Needed to install `abstract-backend` and any backend provider distributions.
+- **Operating systems**: Linux, macOS, and Windows are all supported. The reference memory backend uses `asyncio` only and has no native extensions.
 
-## Core Prerequisites
+## Recommended tooling for development
 
-### Python Version
+- **uv** or **pipx**: Useful for managing isolated environments. The project itself is authored with uv, but any virtual environment tool works for consumers.
+- **Git** ≥ 2.20: Required if you plan to work with the repository or contribute new providers.
+- **An async-friendly IDE**: VS Code, PyCharm, or another editor with asyncio and type-checking support makes protocol development easier.
 
-- **Python**: Version 3.12 or higher (up to 3.14 supported)
-- **Recommended**: Python 3.13 for optimal compatibility
+## Provider-specific considerations
 
-:::tip Python Installation
-If you don't have Python installed:
-- **macOS**: Use `brew install python` or download from [python.org](https://www.python.org/)
-- **Linux**: Use your package manager (e.g., `apt install python3.13`)
-- **Windows**: Download from [python.org](https://www.python.org/) or use `winget install Python.Python.3.13`
-:::
+Each backend provider may require extra system packages (for example, Redis client libraries). Consult the provider’s documentation after installation.
 
-### Package Manager: uv (Required)
+Abstract Backend expects providers to expose a `from_env()` factory method. Prepare any environment variables or configuration files that your chosen provider documents (for example `REDIS_URL` or `AWS_ACCESS_KEY_ID`).
 
-This template is specifically designed for **[uv]** - a fast, modern Python package manager written in Rust.
+## Optional extras
 
-**Why uv?**
-- ⚡ **10-100x faster** than pip/poetry for dependency resolution
-- 🔒 **Deterministic builds** with lockfile support  
-- 🛠️ **All-in-one tool** for project management, virtual environments, and Python installation
-- 📦 **Drop-in replacement** for pip with better dependency resolution
+- **Node.js 18+**: Only needed if you plan to build this documentation site locally.
+- **Docker**: Helpful for running provider dependencies (e.g., spinning up a local RabbitMQ instance).
 
-[uv]: https://docs.astral.sh/uv/
-
-### Version Control
-
-- **Git**: Version 2.20 or higher
-- **GitHub Account**: For template creation and repository management (recommended)
-
-## Development Tools (Included in Template)
-
-These tools are automatically configured when you use this template:
-
-- **Testing**: pytest, pytest-cov, pytest-asyncio, pytest-rerunfailures
-- **Code Quality**: pylint, mypy, black formatting
-- **Pre-commit Hooks**: Automated code quality checks
-- **CI/CD**: GitHub Actions workflows
-
-## Optional Requirements
-
-### For Documentation Development
-
-- **Node.js**: Version 16+ (for Docusaurus documentation)
-- **npm/yarn**: For managing documentation dependencies
-
-### For Containerized Deployment
-
-- **Docker**: Version 20.10.0 or later
-- **Docker Compose**: Version 2.0+ (for multi-service applications)
-
-### For Advanced Development
-
-- **IDE Extensions**: Python, pylint, mypy support (VS Code, PyCharm recommended)
-- **Terminal**: Modern terminal with color support for better uv output
-
-## Compatibility Matrix
-
-| Component | Minimum Version | Recommended | Notes |
-|-----------|----------------|-------------|-------|
-| Python | 3.12 | 3.13 | Template supports 3.12-3.14 |
-| uv | 0.1.0 | Latest | Critical for dependency management |
-| Git | 2.20 | 2.40+ | Required for version control |
-| Docker | 20.10 | Latest | Optional, for containerization |
-
-## Verification Commands
-
-After installing prerequisites, verify your setup:
+## Verify your setup
 
 ```bash
-# Check Python version
 python --version
+pip --version
 
-# Check uv installation
+# optional but recommended
 uv --version
-
-# Check Git
 git --version
 ```
 
-All commands should return version numbers without errors to proceed with template setup.
+If these commands run without errors, you are ready to install `abstract-backend` and proceed to the [Installation](./installation.mdx) guide.
