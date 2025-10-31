@@ -10,7 +10,7 @@ Abstract Backend provides a **pluggable backend layer** for Python services. App
 [![Documentation Build Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml)
 
 ### Code Coverage & Quality
-[![codecov](https://codecov.io/gh/Chisanan232/abstract-backend/branch/main/graph/badge.svg)](https://codecov.io/gh/Chisanan232/abstract-backend)
+[![codecov](https://codecov.io/gh/Chisanan232/abstract-backend/graph/badge.svg?token=FXfgxZ1xQU)](https://codecov.io/gh/Chisanan232/abstract-backend)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Chisanan232_abstract-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Chisanan232_abstract-backend)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Chisanan232_abstract-backend&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Chisanan232_abstract-backend)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Chisanan232_abstract-backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Chisanan232_abstract-backend)
