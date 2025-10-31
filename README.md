@@ -38,10 +38,10 @@ pip install abstract-backend
 Then install one or more providers, for example the Redis backend:
 
 ```bash
-pip install mcp-backend-message-queue-redis
+pip install abe-redis
 ```
 
-Set `QUEUE_BACKEND=redis` (or the entry-point name) and `load_backend()` will resolve the correct provider at runtime.
+Set `QUEUE_BACKEND=redis` (the entry-point exposed by `abe-redis`) and `load_backend()` will resolve the correct provider at runtime.
 
 ## Quick start ⚡️
 
@@ -70,7 +70,7 @@ See `docs/contents/development/architecture/` for diagrams explaining the flow a
 4. Run the contract tests in `test/contract_test/backends/queue/` against your provider.
 5. Publish your package to PyPI; users activate it with `pip install` and `QUEUE_BACKEND`.
 
-The showcase at `/docs/src/pages/showcase.tsx` highlights template and reference implementations.
+The showcase at `/docs/src/pages/showcase.tsx` highlights template and reference implementations such as `abe-redis`.
 
 ## Development 🛠️
 
