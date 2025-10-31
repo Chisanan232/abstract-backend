@@ -44,16 +44,12 @@ Our CI/CD system is organized into focused, developer-friendly sections:
 ### **🔧 [Reusable Workflows](./reusable-workflows.mdx)**
 - **Step-by-step usage** of the reusable workflow catalog  
 - **Inputs/outputs tables** to help integrate from downstream projects  
-- **Patterns** for combining Python, Docker, and docs jobs without duplication
+- **Patterns** for combining Python and docs jobs without duplication
 
 ### **⚙️ [Additional CI Workflows](./additional-ci-workflows.mdx)**
 
-[![Docker CI](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml)  
-[![DockerHub README CI](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml)  
 [![Docs Build Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml)
 
-- **Docker CI** – Standalone container validation without triggering full releases  
-- **DockerHub README** – Synchronizes `README_DOCKERHUB.md` with Docker Hub automatically  
 - **Docs build check** – Validates Docusaurus builds on PRs and non-main pushes  
 - **Docs auto-merge** – Streamlines docs-only PRs under guarded conditions
 

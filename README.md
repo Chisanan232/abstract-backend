@@ -7,7 +7,6 @@ Abstract Backend provides a **pluggable backend layer** for Python services. App
 [![Docs Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml)
 [![Type Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/type-check.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/type-check.yml)
 [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
-[![Docker](https://github.com/Chisanan232/abstract-backend/actions/workflows/rw_docker_operations.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/rw_docker_operations.yaml)
 [![Coverage](https://img.shields.io/codecov/c/github/Chisanan232/abstract-backend?logo=codecov)](https://codecov.io/gh/Chisanan232/abstract-backend)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
