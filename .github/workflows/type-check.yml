@@ -137,78 +137,19 @@ jobs:
 
       - name: Test importing types module
         run: |
-          uv run python -c "
-          from abe import types
-          print('✅ Successfully imported types module')
-          print(f'✅ Available types: {len(types.__all__)} exports')
-          "
+          uv run python scripts/ci/type_check_workflow.py module
 
       - name: Test importing types from abe
         run: |
-          uv run python -c "
-          from abe.types import (
-              WebhookEventPayload,
-              EventHandlerProtocol,
-              MessageQueueBackendProtocol,
-          )
-          print('✅ Successfully imported core types')
-          print('✅ WebhookEventPayload, EventHandlerProtocol, MessageQueueBackendProtocol available')
-          "
+          uv run python scripts/ci/type_check_workflow.py core
 
       - name: Test type definitions are accessible
         run: |
-          uv run python -c "
-          from abe import types
-          
-          # Test JSON types
-          assert hasattr(types, 'JSONValue')
-          assert hasattr(types, 'JSONDict')
-          assert hasattr(types, 'JSONList')
-          assert hasattr(types, 'JSONPrimitive')
-          print('✅ JSON types accessible')
-          
-          # Test Event types
-          assert hasattr(types, 'WebhookEventPayload')
-          print('✅ Event types accessible')
-          
-          # Test Handler types
-          assert hasattr(types, 'EventHandlerFunc')
-          assert hasattr(types, 'AsyncEventHandlerFunc')
-          assert hasattr(types, 'SyncEventHandlerFunc')
-          print('✅ Handler types accessible')
-          
-          # Test Message queue types
-          assert hasattr(types, 'MessageQueueKey')
-          assert hasattr(types, 'MessageQueuePayload')
-          assert hasattr(types, 'MessageQueueMessage')
-          assert hasattr(types, 'MessageQueueBackendConfig')
-          assert hasattr(types, 'ConsumerGroup')
-          print('✅ Message queue types accessible')
-          
-          # Test Protocol types
-          assert hasattr(types, 'EventHandlerProtocol')
-          assert hasattr(types, 'MessageQueueBackendProtocol')
-          print('✅ Protocol types accessible')
-          "
+          uv run python scripts/ci/type_check_workflow.py attributes
 
       - name: Test protocol implementations
         run: |
-          uv run python -c "
-          from abe.types import EventHandlerProtocol, MessageQueueBackendProtocol
-          from typing import get_type_hints
-          
-          # Test EventHandlerProtocol has handle_event method
-          assert hasattr(EventHandlerProtocol, 'handle_event')
-          print('✅ EventHandlerProtocol has handle_event method')
-          
-          # Test MessageQueueBackendProtocol has required methods
-          assert hasattr(MessageQueueBackendProtocol, 'publish')
-          assert hasattr(MessageQueueBackendProtocol, 'consume')
-          assert hasattr(MessageQueueBackendProtocol, 'from_env')
-          print('✅ MessageQueueBackendProtocol has all required methods')
-          
-          print('✅ Protocol implementations verified')
-          "
+          uv run python scripts/ci/type_check_workflow.py protocols
 
   summary:
     name: PEP 561 Summary
