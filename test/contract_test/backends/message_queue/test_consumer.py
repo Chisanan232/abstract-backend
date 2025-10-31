@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 
-from abe.backends.message_queue.base import QueueBackend
+from abe.backends.message_queue.base import MessageQueueBackend
 from abe.backends.message_queue.consumer import AsyncLoopConsumer
 
 from .base.test_consumer_contract import EventConsumerContractTest
@@ -13,7 +13,7 @@ from .base.test_consumer_contract import EventConsumerContractTest
 class TestAsyncLoopConsumerContract(EventConsumerContractTest):
     """Contract tests for the AsyncLoopConsumer implementation."""
 
-    def create_consumer(self, backend: QueueBackend, group: Optional[str] = None) -> AsyncLoopConsumer:
+    def create_consumer(self, backend: MessageQueueBackend, group: Optional[str] = None) -> AsyncLoopConsumer:
         """Create a new AsyncLoopConsumer instance for testing."""
         return AsyncLoopConsumer(backend, group=group)
 

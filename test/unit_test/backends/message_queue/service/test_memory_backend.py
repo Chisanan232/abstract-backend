@@ -1,7 +1,7 @@
 """
 Unit tests for the MemoryBackend implementation.
 
-These tests verify that the MemoryBackend properly implements the QueueBackend
+These tests verify that the MemoryBackend properly implements the MessageQueueBackend
 protocol and handles various edge cases correctly.
 """
 
@@ -12,7 +12,7 @@ from typing import Any, Dict, List
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from abe.backends.message_queue.base import QueueBackend
+from abe.backends.message_queue.base import MessageQueueBackend
 from abe.backends.message_queue.service.memory import MemoryBackend
 
 
@@ -25,12 +25,12 @@ def memory_backend() -> MemoryBackend:
 
 
 # Protocol Tests
-def test_implements_queue_backend_protocol() -> None:
-    """Test that MemoryBackend correctly implements the QueueBackend protocol."""
+def test_implements_message_queue_backend_protocol() -> None:
+    """Test that MemoryBackend correctly implements the MessageQueueBackend protocol."""
     backend = MemoryBackend()
-    # This should not raise a TypeError if MemoryBackend properly implements QueueBackend
-    queue_backend: QueueBackend = backend
-    assert isinstance(queue_backend, QueueBackend)
+    # This should not raise a TypeError if MemoryBackend properly implements MessageQueueBackend
+    message_queue_backend: MessageQueueBackend = backend
+    assert isinstance(message_queue_backend, MessageQueueBackend)
 
 
 # Instance creation tests

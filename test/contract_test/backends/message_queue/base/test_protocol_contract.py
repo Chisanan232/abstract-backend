@@ -1,5 +1,5 @@
 """
-Contract tests for the QueueBackend protocol itself.
+Contract tests for the MessageQueueBackend protocol itself.
 
 These tests verify the behavior of the protocol definition and provide
 mock implementations to test protocol compliance without relying on
@@ -13,11 +13,11 @@ from typing import Any, AsyncIterator, Dict, List, Optional, cast
 
 import pytest
 
-from abe.backends.message_queue.base import QueueBackend
+from abe.backends.message_queue.base import MessageQueueBackend
 
 
-class MockQueueBackend(QueueBackend):
-    """A mock implementation of the QueueBackend protocol for testing."""
+class MockMessageQueueBackend(MessageQueueBackend):
+    """A mock implementation of the MessageQueueBackend protocol for testing."""
 
     def __init__(self) -> None:
         self.messages: List[Dict[str, Any]] = []
@@ -36,12 +36,12 @@ class MockQueueBackend(QueueBackend):
             yield message
 
     @classmethod
-    def from_env(cls) -> "MockQueueBackend":
+    def from_env(cls) -> "MockMessageQueueBackend":
         """Create a backend instance from environment variables."""
         return cls()
 
 
-class FailingQueueBackend(QueueBackend):
+class FailingMessageQueueBackend(MessageQueueBackend):
     """A mock implementation that intentionally fails for testing error cases."""
 
     async def publish(self, key: str, payload: Dict[str, Any]) -> None:
@@ -54,12 +54,12 @@ class FailingQueueBackend(QueueBackend):
         yield {}  # This will never be reached
 
     @classmethod
-    def from_env(cls) -> "FailingQueueBackend":
+    def from_env(cls) -> "FailingMessageQueueBackend":
         """Fails when creating from environment."""
         raise ValueError("Simulated from_env failure")
 
 
-class AsyncGenQueueBackend(QueueBackend):
+class AsyncGenMessageQueueBackend(MessageQueueBackend):
     """A mock implementation that specifically tests async generator behavior."""
 
     def __init__(self) -> None:
@@ -77,20 +77,20 @@ class AsyncGenQueueBackend(QueueBackend):
             await asyncio.sleep(0.01)
 
     @classmethod
-    def from_env(cls) -> "AsyncGenQueueBackend":
+    def from_env(cls) -> "AsyncGenMessageQueueBackend":
         """Create a backend instance from environment variables."""
         return cls()
 
 
-class TestQueueBackendProtocol:
-    """Tests specifically for the QueueBackend protocol itself."""
+class TestMessageQueueBackendProtocol:
+    """Tests specifically for the MessageQueueBackend protocol itself."""
 
     def test_protocol_methods(self) -> None:
         """Test that the protocol requires the expected methods."""
-        # Get the instance methods defined on the QueueBackend protocol
+        # Get the instance methods defined on the MessageQueueBackend protocol
         protocol_methods = {
             name
-            for name, _ in inspect.getmembers(QueueBackend, predicate=inspect.isfunction)
+            for name, _ in inspect.getmembers(MessageQueueBackend, predicate=inspect.isfunction)
             if not name.startswith("_")
         }
 
@@ -98,7 +98,7 @@ class TestQueueBackendProtocol:
         expected_instance_methods = {"publish", "consume"}
 
         assert protocol_methods == expected_instance_methods, (
-            f"QueueBackend protocol should define these instance methods: {expected_instance_methods}, "
+            f"MessageQueueBackend protocol should define these instance methods: {expected_instance_methods}, "
             f"but it defines: {protocol_methods}"
         )
 
@@ -109,7 +109,7 @@ class TestQueueBackendProtocol:
     def test_method_signatures(self) -> None:
         """Test that the protocol methods have the correct signatures."""
         # Check publish method
-        publish_sig = inspect.signature(QueueBackend.publish)
+        publish_sig = inspect.signature(MessageQueueBackend.publish)
         assert len(publish_sig.parameters) == 3  # self, key, payload
         assert "key" in publish_sig.parameters
         assert "payload" in publish_sig.parameters
@@ -117,7 +117,7 @@ class TestQueueBackendProtocol:
         assert publish_sig.return_annotation in (None, "None", type(None))
 
         # Check consume method
-        consume_sig = inspect.signature(QueueBackend.consume)
+        consume_sig = inspect.signature(MessageQueueBackend.consume)
         assert len(consume_sig.parameters) == 2  # self, group
         assert "group" in consume_sig.parameters
         assert consume_sig.parameters["group"].default is None
@@ -128,8 +128,8 @@ class TestQueueBackendProtocol:
 
     def test_mock_implementation_type_check(self) -> None:
         """Test that our mock implementation satisfies the protocol's type checking."""
-        # This would raise TypeError if MockQueueBackend doesn't implement the protocol
-        backend: QueueBackend = cast(QueueBackend, MockQueueBackend())
+        # This would raise TypeError if MockMessageQueueBackend doesn't implement the protocol
+        backend: MessageQueueBackend = cast(MessageQueueBackend, MockMessageQueueBackend())
 
         # Verify we can call the methods without type errors
         assert hasattr(backend, "publish")
@@ -140,7 +140,7 @@ class TestQueueBackendProtocol:
     async def test_protocol_usage(self) -> None:
         """Test using a backend through protocol annotations."""
 
-        async def use_backend(backend: QueueBackend) -> Dict[str, Any]:
+        async def use_backend(backend: MessageQueueBackend) -> Dict[str, Any]:
             """Function that uses a queue backend through the protocol."""
             await backend.publish("test", {"value": 42})
 
@@ -153,7 +153,7 @@ class TestQueueBackendProtocol:
             raise ValueError("No message received")
 
         # Use our mock implementation with the function
-        mock_backend = MockQueueBackend()
+        mock_backend = MockMessageQueueBackend()
         result = await use_backend(mock_backend)
 
         assert result == {"value": 42}
@@ -162,8 +162,8 @@ class TestQueueBackendProtocol:
     @pytest.mark.asyncio  # type: ignore[misc]
     async def test_async_generator_protocol(self) -> None:
         """Test that consume() correctly follows async generator protocol."""
-        # Create an AsyncGenQueueBackend that properly implements async generator
-        backend = AsyncGenQueueBackend()
+        # Create an AsyncGenMessageQueueBackend that properly implements async generator
+        backend = AsyncGenMessageQueueBackend()
 
         # Add some test messages
         await backend.publish("key1", {"id": 1})
@@ -187,7 +187,7 @@ class TestQueueBackendProtocol:
     @pytest.mark.asyncio  # type: ignore[misc]
     async def test_error_handling(self) -> None:
         """Test error handling behavior when using protocol implementations."""
-        failing_backend = FailingQueueBackend()
+        failing_backend = FailingMessageQueueBackend()
 
         # Test publish error handling
         with pytest.raises(ValueError, match="Simulated publish failure"):
@@ -201,20 +201,20 @@ class TestQueueBackendProtocol:
 
         # Test from_env error handling
         with pytest.raises(ValueError, match="Simulated from_env failure"):
-            FailingQueueBackend.from_env()
+            FailingMessageQueueBackend.from_env()
 
     def test_from_env_class_method(self) -> None:
         """Test that from_env is properly implemented as a classmethod."""
         # This test verifies that implementations should have from_env as a classmethod
 
         # Check our mock implementations
-        assert isinstance(MockQueueBackend.from_env, types.MethodType) or isinstance(
-            MockQueueBackend.from_env, classmethod
+        assert isinstance(MockMessageQueueBackend.from_env, types.MethodType) or isinstance(
+            MockMessageQueueBackend.from_env, classmethod
         )
 
         # Test behavior through an implementation
-        instance = MockQueueBackend.from_env()
-        assert isinstance(instance, MockQueueBackend)
+        instance = MockMessageQueueBackend.from_env()
+        assert isinstance(instance, MockMessageQueueBackend)
 
 
 # Additional mock implementations for extended testing
@@ -252,9 +252,9 @@ class TestExtendedBackendCompliance:
 
     @pytest.mark.asyncio  # type: ignore[misc]
     async def test_dict_backend_compliance(self) -> None:
-        """Test that DictBackend complies with the QueueBackend protocol."""
+        """Test that DictBackend complies with the MessageQueueBackend protocol."""
         # Create a backend
-        backend: QueueBackend = cast(QueueBackend, DictBackend())
+        backend: MessageQueueBackend = cast(MessageQueueBackend, DictBackend())
 
         # Test basic functionality
         await backend.publish("topic1", {"value": "test1"})

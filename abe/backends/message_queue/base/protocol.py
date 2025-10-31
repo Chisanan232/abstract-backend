@@ -11,7 +11,4 @@ from abe.types import MessageQueueBackendProtocol
 # Preferred export name for message-queue backends
 MessageQueueBackend = MessageQueueBackendProtocol
 
-# Backward compatibility alias (deprecated; to be removed in a future release)
-QueueBackend = MessageQueueBackend
-
-__all__ = ["MessageQueueBackend", "MessageQueueBackendProtocol", "QueueBackend"]
+__all__ = ["MessageQueueBackend", "MessageQueueBackendProtocol"]
