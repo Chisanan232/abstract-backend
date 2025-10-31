@@ -1,20 +1,20 @@
 ---
-id: queue-backend
-title: QueueBackend Protocol
+id: message-queue-backend
+title: MessageQueueBackend Protocol
 sidebar_position: 1
 ---
 
-# `QueueBackend` Protocol
+# `MessageQueueBackend` Protocol
 
-`QueueBackend` is the core contract that every message-queue provider must implement. It is defined in `abe/backends/queue/base/protocol.py` and re-exports the `QueueBackendProtocol` type from `abe/types.py`.
+`MessageQueueBackend` is the core contract that every message-queue provider must implement. It is defined in `abe/backends/message_queue/base/protocol.py` and re-exports the `MessageQueueBackendProtocol` type from `abe/types.py`.
 
-```python title="abe/backends/queue/base/protocol.py"
-from abe.types import QueueBackendProtocol
+```python title="abe/backends/message_queue/base/protocol.py"
+from abe.types import MessageQueueBackendProtocol
 
-QueueBackend = QueueBackendProtocol
+MessageQueueBackend = MessageQueueBackendProtocol
 ```
 
-Any implementation registered under the `abe.backends.queue` entry-point group must satisfy this protocol so that application code can treat all providers the same way.
+Any implementation registered under the `abe.backends.message_queue` entry-point group must satisfy this protocol so that application code can treat all providers the same way.
 
 ## Responsibilities
 
@@ -24,19 +24,19 @@ Any implementation registered under the `abe.backends.queue` entry-point group m
 
 ## Method reference
 
-### `async publish(key: QueueKey, payload: QueuePayload) -> None`
+### `async publish(key: MessageQueueKey, payload: MessageQueuePayload) -> None`
 
-- **Input**: `key` is a string routing key; `payload` is a JSON-compatible dictionary (`QueuePayload`).
+- **Input**: `key` is a string routing key; `payload` is a JSON-compatible dictionary (`MessageQueuePayload`).
 - **Behaviour**: Send the payload to the backend, applying routing semantics appropriate to the provider (topic, stream, queue, etc.).
 - **Errors**: Raise provider-specific exceptions for connectivity or serialisation failures. Surface meaningful messages; the loader does not wrap exceptions.
 
-### `async consume(*, group: ConsumerGroup | None = None) -> AsyncIterator[QueueMessage]`
+### `async consume(*, group: ConsumerGroup | None = None) -> AsyncIterator[MessageQueueMessage]`
 
 - **Input**: Optional `group` identifier. Providers that have native consumer-group semantics should honour it; others may ignore it.
-- **Output**: Async iterator yielding `QueueMessage` structures. Minimum requirement is the payload, but providers may attach metadata like IDs or timestamps.
+- **Output**: Async iterator yielding `MessageQueueMessage` structures. Minimum requirement is the payload, but providers may attach metadata like IDs or timestamps.
 - **Lifecycle**: The iterator should run until cancelled. Handle `asyncio.CancelledError` gracefully and release connections.
 
-### `@classmethod from_env(cls) -> QueueBackendProtocol`
+### `@classmethod from_env(cls) -> MessageQueueBackendProtocol`
 
 - **Purpose**: Create a ready-to-use backend instance based on environment configuration (URLs, credentials, queue names, etc.).
 - **Guidelines**:
@@ -48,10 +48,16 @@ Any implementation registered under the `abe.backends.queue` entry-point group m
 ```python
 from typing import AsyncIterator
 
-from abe.types import QueueBackendProtocol, QueueKey, QueuePayload, QueueMessage, ConsumerGroup
+from abe.types import (
+    MessageQueueBackendProtocol,
+    MessageQueueKey,
+    MessageQueuePayload,
+    MessageQueueMessage,
+    ConsumerGroup,
+)
 
 
-class RedisBackend(QueueBackendProtocol):
+class RedisBackend(MessageQueueBackendProtocol):
     def __init__(self, client) -> None:
         self._client = client
 
@@ -61,20 +67,20 @@ class RedisBackend(QueueBackendProtocol):
         client = redis.AsyncRedis.from_url(url)
         return cls(client)
 
-    async def publish(self, key: QueueKey, payload: QueuePayload) -> None:
+    async def publish(self, key: MessageQueueKey, payload: MessageQueuePayload) -> None:
         await self._client.xadd(key, {"data": json.dumps(payload)})
 
-    async def consume(self, *, group: ConsumerGroup = None) -> AsyncIterator[QueueMessage]:
+    async def consume(self, *, group: ConsumerGroup = None) -> AsyncIterator[MessageQueueMessage]:
         async for entry in self._client.xreadgroup(group or "default", ...):
             yield json.loads(entry["data"])
 ```
 
 ## Entry-point registration
 
-Expose your backend through `pyproject.toml` using the `abe.backends.queue` group:
+Expose your backend through `pyproject.toml` using the `abe.backends.message_queue` group:
 
 ```toml
-[project.entry-points."abe.backends.queue"]
+[project.entry-points."abe.backends.message_queue"]
 redis = "my_package.redis_backend:RedisBackend"
 ```
 
@@ -82,6 +88,6 @@ Once the package is installed, `load_backend()` can discover it without any extr
 
 ## Testing tips for providers
 
-- Use `QueueBackendProtocol` as a structural type in unit tests to ensure compliance.
+- Use `MessageQueueBackendProtocol` as a structural type in unit tests to ensure compliance.
 - Run asynchronous integration tests against the actual service (Redis, SQS, etc.) inside containers or test accounts.
 - Provide fixtures that patch `load_backend()` or register a test entry point so consumers can exercise code paths without external dependencies.

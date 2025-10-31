@@ -28,15 +28,15 @@ Use these when authoring payload structures so static analysers understand the n
 
 These aliases demonstrate how to declare handlers that satisfy `EventHandlerProtocol`.
 
-## Queue-related aliases
+## Message-queue aliases
 
 | Alias | Description |
 |-------|-------------|
-| `QueueKey` | Routing key/topic identifier (string). |
-| `QueuePayload` | JSON-compatible dictionary representing the message. |
-| `QueueMessage` | Provider-defined structure for consumed messages (payload plus metadata). |
-| `QueueBackendConfig` | `dict[str, str \\| int \\| bool]` used during initialisation. |
-| `ConsumerGroup` | `str \\| None` naming group-based consumers. |
+| `MessageQueueKey` | Routing key/topic identifier (string). |
+| `MessageQueuePayload` | JSON-compatible dictionary representing the message. |
+| `MessageQueueMessage` | Provider-defined structure for consumed messages (payload plus metadata). |
+| `MessageQueueBackendConfig` | `dict[str, str \| int \| bool]` used during initialisation. |
+| `ConsumerGroup` | `str \| None` naming group-based consumers. |
 
 ## Protocols
 
@@ -50,13 +50,13 @@ class EventHandlerProtocol(Protocol):
 
 Any class with an async `handle_event` method can be treated as an event handler. This is useful when you want to inject class-based processors into higher-level orchestration code.
 
-### `QueueBackendProtocol`
+### `MessageQueueBackendProtocol`
 
-The structural protocol re-exported as `QueueBackend`. Providers must implement:
+The structural protocol re-exported as `MessageQueueBackend`. Providers must implement:
 
-- `async publish(key: QueueKey, payload: QueuePayload) -> None`
-- `async consume(*, group: ConsumerGroup = None) -> AsyncIterator[QueueMessage]`
-- `@classmethod from_env(cls) -> QueueBackendProtocol`
+- `async publish(key: MessageQueueKey, payload: MessageQueuePayload) -> None`
+- `async consume(*, group: ConsumerGroup = None) -> AsyncIterator[MessageQueueMessage]`
+- `@classmethod from_env(cls) -> MessageQueueBackendProtocol`
 
 ## Best practices
 

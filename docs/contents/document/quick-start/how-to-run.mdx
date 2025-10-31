@@ -27,7 +27,7 @@ Use whichever matches your deployment tooling. For example, a container may inje
 
 ```python title="publisher.py"
 import asyncio
-from abe.backends.queue.loader import load_backend
+from abe.backends.message_queue.loader import load_backend
 
 
 async def main() -> None:
@@ -40,14 +40,14 @@ if __name__ == "__main__":
 ```
 
 - `load_backend()` returns the provider resolved at runtime.
-- `publish()` accepts a routing key plus a JSON-serialisable payload (`QueuePayload`).
+- `publish()` accepts a routing key plus a JSON-serialisable payload (`MessageQueuePayload`).
 
 ## Step 3 · Consume messages with the shared event loop helper
 
 ```python title="consumer.py"
 import asyncio
-from abe.backends.queue.consumer import AsyncLoopConsumer
-from abe.backends.queue.loader import load_backend
+from abe.backends.message_queue.consumer import AsyncLoopConsumer
+from abe.backends.message_queue.loader import load_backend
 
 
 async def handle(payload: dict[str, object]) -> None:
@@ -67,7 +67,7 @@ if __name__ == "__main__":
         pass
 ```
 
-- `AsyncLoopConsumer` lives in `abe/backends/queue/consumer.py` and works with any provider that implements `QueueBackend.consume()`.
+- `AsyncLoopConsumer` lives in `abe/backends/message_queue/consumer.py` and works with any provider that implements `MessageQueueBackend.consume()`.
 - Supply a `group` string if the provider supports consumer groups (optional—ignored by providers that do not implement the concept).
 
 ## Step 4 · Manage lifecycle and graceful shutdown

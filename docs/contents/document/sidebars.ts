@@ -48,8 +48,8 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'doc',
-          id: 'api-references/queue-backend',
-          label: '🧱 QueueBackend Protocol',
+          id: 'api-references/message-queue-backend',
+          label: '🧱 Message Queue Backend Protocol',
         },
         {
           type: 'doc',

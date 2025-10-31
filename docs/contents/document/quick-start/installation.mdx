@@ -49,7 +49,7 @@ At this point you have access to the shared abstractions: `QueueBackend`, `Event
 
 ## Step 2 · Install one or more providers
 
-Providers are distributed as normal Python packages that register the `abe.backends.queue` entry point group. Install as many as you need:
+Providers are distributed as normal Python packages that register the `abe.backends.message_queue` entry point group. Install as many as you need:
 
 ```bash
 pip install abe-backend-memory              # ships with the repo (development only)
@@ -76,7 +76,7 @@ Skip this step to accept the auto-selection behavior (or fall back to the memory
 Run this snippet after installation to make sure your provider can be resolved:
 
 ```python
-from abe.backends.queue.loader import load_backend
+from abe.backends.message_queue.loader import load_backend
 
 backend = load_backend()
 print(type(backend).__name__)

@@ -25,13 +25,13 @@ flowchart TB
 
     subgraph Abstraction Core
         C["abe.types"]
-        D["abe.backends.queue.base"]
-        E["abe.backends.queue.loader"]
-        F["abe.backends.queue.consumer"]
+        D["abe.backends.message_queue.base"]
+        E["abe.backends.message_queue.loader"]
+        F["abe.backends.message_queue.consumer"]
     end
 
     subgraph Provider Plugins
-        G["Entry Point: abe.backends.queue"]
+        G["Entry Point: abe.backends.message_queue"]
         H["Concrete Backend (e.g. Redis)"]
         I["MemoryBackend"]
     end
@@ -54,18 +54,18 @@ flowchart TB
     L -->|"CI/CD"| A
 ```
 
-- **Application Integration**: Your services import `QueueBackend`, `AsyncLoopConsumer`, and shared type aliases, remaining agnostic to concrete providers.
-- **Abstraction Core**: Modules under `abe/backends/queue/` define the protocols and discovery code that mediate between applications and providers.
+- **Application Integration**: Your services import `MessageQueueBackend`, `AsyncLoopConsumer`, and shared type aliases, remaining agnostic to concrete providers.
+- **Abstraction Core**: Modules under `abe/backends/message_queue/` define the protocols and discovery code that mediate between applications and providers.
 - **Provider Plugins**: External packages register entry points that implement the contracts and can be swapped at runtime.
 - **Supporting Systems**: Logging utilities, contract tests, and CI workflows reinforce the guarantees promised by the abstraction.
 
 ## Core modules
 
-- **`abe/types.py`** defines the structural contracts (`QueueBackendProtocol`, `EventHandlerProtocol`, JSON aliases) distributed via `py.typed`.
-- **`abe/backends/queue/base/`** exports `QueueBackend` and `EventConsumer` protocols, capturing publish/consume semantics and consumer lifecycle.
-- **`abe/backends/queue/loader.py`** discovers provider entry points via `importlib.metadata`, applies environment-based selection rules, and falls back to `MemoryBackend` when nothing is installed.
-- **`abe/backends/queue/consumer.py`** bundles runtime helpers (`AsyncLoopConsumer`) to execute handlers against any compliant backend.
-- **`abe/backends/queue/service/memory.py`** provides the built-in development backend.
+- **`abe/types.py`** defines the structural contracts (`MessageQueueBackendProtocol`, `EventHandlerProtocol`, JSON aliases) distributed via `py.typed`.
+- **`abe/backends/message_queue/base/`** exports `MessageQueueBackend` and `EventConsumer` protocols, capturing publish/consume semantics and consumer lifecycle.
+- **`abe/backends/message_queue/loader.py`** discovers provider entry points via `importlib.metadata`, applies environment-based selection rules, and falls back to `MemoryBackend` when nothing is installed.
+- **`abe/backends/message_queue/consumer.py`** bundles runtime helpers (`AsyncLoopConsumer`) to execute handlers against any compliant backend.
+- **`abe/backends/message_queue/service/memory.py`** provides the built-in development backend.
 
 See the [API Reference](/docs/next/api-references) for method-level detail.
 
@@ -73,7 +73,7 @@ See the [API Reference](/docs/next/api-references) for method-level detail.
 
 The typical request lifecycle:
 
-1. **Provider selection** – `load_backend()` inspects the `abe.backends.queue` entry-point group, honours `QUEUE_BACKEND`, and instantiates the chosen class through `from_env()`.
+1. **Provider selection** – `load_backend()` inspects the `abe.backends.message_queue` entry-point group, honours `QUEUE_BACKEND`, and instantiates the chosen class through `from_env()`.
 2. **Publishing events** – Application code calls `backend.publish(key, payload)` using `QueueKey`/`QueuePayload` aliases to ensure consistent typing.
 3. **Consuming events** – `AsyncLoopConsumer` wraps `backend.consume(group=...)`, executing the application’s handler coroutine. Cancellation and error handling are standardised here.
 4. **Observability** – `abe.logging.utils` can standardise log formatting and levels across providers and consumers.
@@ -84,10 +84,10 @@ Detailed sequence diagrams live in [Runtime Flow](./runtime-flow.mdx).
 
 Abstract Backend promotes a clean separation between the core abstraction and provider implementations:
 
-1. **Implement protocols** – Providers subclass nothing; they simply satisfy `QueueBackendProtocol` and expose `from_env()`.
-2. **Register entry points** – `pyproject.toml` declares the provider under `abe.backends.queue` so `load_backend()` can find it.
+1. **Implement protocols** – Providers subclass nothing; they simply satisfy `MessageQueueBackendProtocol` and expose `from_env()`.
+2. **Register entry points** – `pyproject.toml` declares the provider under `abe.backends.message_queue` so `load_backend()` can find it.
 3. **Package distribution** – Providers are published as normal Python packages, allowing teams to install or uninstall them with `pip`.
-4. **Validation** – Tests under `test/contract_test/backends/queue/` assert new providers honour the contract.
+4. **Validation** – Tests under `test/contract_test/backends/message_queue/` assert new providers honour the contract.
 
 See [Provider Lifecycle](./provider-lifecycle.mdx) for an end-to-end checklist.
 
