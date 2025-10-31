@@ -1,19 +1,17 @@
 """
-Protocol definitions for queue backends in the MCP server.
+Protocol definitions for message-queue backends in the MCP server.
 
-This module re-exports the QueueBackendProtocol from abe.types as QueueBackend
-for backward compatibility and internal use. All new code should use the types
-from abe.types directly.
-
-The centralized type definitions in abe.types ensure consistency across
-the entire codebase and plugin ecosystem.
+This module re-exports the `MessageQueueBackendProtocol` from `abe.types` as
+`MessageQueueBackend`. The legacy alias `QueueBackend` is kept temporarily for
+backward compatibility and will be removed in a future major release.
 """
 
-from abe.types import QueueBackendProtocol
+from abe.types import MessageQueueBackendProtocol
 
-# Re-export QueueBackendProtocol as QueueBackend for backward compatibility
-# This allows existing internal code to continue using "QueueBackend" while
-# the public API uses "QueueBackendProtocol"
-QueueBackend = QueueBackendProtocol
+# Preferred export name for message-queue backends
+MessageQueueBackend = MessageQueueBackendProtocol
 
-__all__ = ["QueueBackend", "QueueBackendProtocol"]
+# Backward compatibility alias (deprecated; to be removed in a future release)
+QueueBackend = MessageQueueBackend
+
+__all__ = ["MessageQueueBackend", "MessageQueueBackendProtocol", "QueueBackend"]

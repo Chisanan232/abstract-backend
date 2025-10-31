@@ -15,9 +15,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.loader import BACKEND_ENTRY_POINT_GROUP, load_backend
-from abe.backends.queue.service.memory import MemoryBackend
+from abe.backends.message_queue.base import MessageQueueBackend
+from abe.backends.message_queue.loader import BACKEND_ENTRY_POINT_GROUP, load_backend
+from abe.backends.message_queue.service.memory import MemoryBackend
 
 
 class MockEntryPoint:
@@ -25,7 +25,7 @@ class MockEntryPoint:
 
     def __init__(self, name: str, backend_class: Optional[Any] = None):
         self.name = name
-        self._backend_class = backend_class or MagicMock(spec=QueueBackend)
+        self._backend_class = backend_class or MagicMock(spec=MessageQueueBackend)
         # Ensure the backend class has a from_env method
         if not hasattr(self._backend_class, "from_env"):
             self._backend_class.from_env = MagicMock(return_value=self._backend_class())
@@ -60,16 +60,19 @@ def reset_env() -> Any:
 def test_no_backends_available(reset_env: Any) -> None:
     """Test behavior when no backends are registered."""
     with (
-        patch("abe.backends.queue.loader.entry_points", return_value=[]),
-        patch("abe.backends.queue.loader.warnings.warn") as mock_warn,
-        patch("abe.backends.queue.service.memory.MemoryBackend.from_env", return_value=MemoryBackend()),
+        patch("abe.backends.message_queue.loader.entry_points", return_value=[]),
+        patch("abe.backends.message_queue.loader.warnings.warn") as mock_warn,
+        patch(
+            "abe.backends.message_queue.service.memory.MemoryBackend.from_env",
+            return_value=MemoryBackend(),
+        ),
     ):
 
         backend = load_backend()
 
         # Check that a warning was issued
         mock_warn.assert_called_once()
-        assert "No queue backends registered" in mock_warn.call_args[0][0]
+        assert "No message-queue backends registered" in mock_warn.call_args[0][0]
         # Check that a MemoryBackend was returned
         assert isinstance(backend, MemoryBackend)
 
@@ -77,7 +80,7 @@ def test_no_backends_available(reset_env: Any) -> None:
 def test_requested_backend_found(reset_env: Any) -> None:
     """Test behavior when requested backend is available."""
     # Create mock backend
-    mock_redis_backend = MagicMock(spec=QueueBackend)
+    mock_redis_backend = MagicMock(spec=MessageQueueBackend)
     mock_redis_backend.from_env.return_value = mock_redis_backend
 
     # Create mock entry point
@@ -86,7 +89,7 @@ def test_requested_backend_found(reset_env: Any) -> None:
     # Set environment variable
     os.environ["QUEUE_BACKEND"] = "redis"
 
-    with patch("abe.backends.queue.loader.entry_points", return_value=[mock_entry_point]):
+    with patch("abe.backends.message_queue.loader.entry_points", return_value=[mock_entry_point]):
         backend = load_backend()
 
         # Check that the correct backend was returned
@@ -102,7 +105,7 @@ def test_requested_backend_not_found(reset_env: Any) -> None:
     # Set environment variable to a non-existent backend
     os.environ["QUEUE_BACKEND"] = "nonexistent"
 
-    with patch("abe.backends.queue.loader.entry_points", return_value=mock_entry_points):
+    with patch("abe.backends.message_queue.loader.entry_points", return_value=mock_entry_points):
         # Check that RuntimeError is raised with proper message
         with pytest.raises(RuntimeError) as exc_info:
             load_backend()
@@ -122,18 +125,18 @@ def test_requested_backend_not_found(reset_env: Any) -> None:
 def test_auto_select_non_memory_backend(reset_env: Any) -> None:
     """Test auto-selection of first non-memory backend."""
     # Create mock entry points
-    memory_backend = MagicMock(spec=QueueBackend)
-    kafka_backend = MagicMock(spec=QueueBackend)
+    memory_backend = MagicMock(spec=MessageQueueBackend)
+    kafka_backend = MagicMock(spec=MessageQueueBackend)
 
     # Set up return value for from_env
-    memory_backend_instance = MagicMock(spec=QueueBackend)
-    kafka_backend_instance = MagicMock(spec=QueueBackend)
+    memory_backend_instance = MagicMock(spec=MessageQueueBackend)
+    kafka_backend_instance = MagicMock(spec=MessageQueueBackend)
     memory_backend.from_env.return_value = memory_backend_instance
     kafka_backend.from_env.return_value = kafka_backend_instance
 
     mock_entry_points = [MockEntryPoint("memory", memory_backend), MockEntryPoint("kafka", kafka_backend)]
 
-    with patch("abe.backends.queue.loader.entry_points", return_value=mock_entry_points):
+    with patch("abe.backends.message_queue.loader.entry_points", return_value=mock_entry_points):
         backend = load_backend()
 
         # Check that kafka backend was auto-selected
@@ -145,14 +148,17 @@ def test_auto_select_non_memory_backend(reset_env: Any) -> None:
 def test_fallback_to_memory_backend(reset_env: Any) -> None:
     """Test fallback to memory backend when only memory backend is available."""
     # Create mock memory backend
-    mock_memory_instance = MagicMock(spec=QueueBackend)
+    mock_memory_instance = MagicMock(spec=MessageQueueBackend)
 
     # When only memory backend is available, load_backend() directly uses MemoryBackend.from_env()
     # rather than loading it via the entry point
     with (
-        patch("abe.backends.queue.loader.entry_points") as mock_entry_points,
-        patch("abe.backends.queue.loader.warnings") as mock_warnings,
-        patch("abe.backends.queue.loader.MemoryBackend.from_env", return_value=mock_memory_instance),
+        patch("abe.backends.message_queue.loader.entry_points") as mock_entry_points,
+        patch("abe.backends.message_queue.loader.warnings") as mock_warnings,
+        patch(
+            "abe.backends.message_queue.loader.MemoryBackend.from_env",
+            return_value=mock_memory_instance,
+        ),
     ):
 
         # Setup entry point that only has memory backend
@@ -178,7 +184,7 @@ def test_fallback_to_memory_backend(reset_env: Any) -> None:
 
 def test_entry_point_group_name() -> None:
     """Ensure the entry point group name is correctly defined."""
-    assert BACKEND_ENTRY_POINT_GROUP == "abe.backends.queue"
+    assert BACKEND_ENTRY_POINT_GROUP == "abe.backends.message_queue"
 
 
 # Integration of TestBackendLoader tests (converted to pytest style)
@@ -190,9 +196,9 @@ def test_legacy_no_backends_available(reset_env: Any) -> None:
     mock_memory_instance = MagicMock(spec=MemoryBackend)
 
     with (
-        patch("abe.backends.queue.loader.entry_points", return_value=[]),
-        patch("abe.backends.queue.loader.warnings") as mock_warnings,
-        patch("abe.backends.queue.loader.MemoryBackend") as mock_memory_class,
+        patch("abe.backends.message_queue.loader.entry_points", return_value=[]),
+        patch("abe.backends.message_queue.loader.warnings") as mock_warnings,
+        patch("abe.backends.message_queue.loader.MemoryBackend") as mock_memory_class,
     ):
 
         # Configure the mock to return our instance
@@ -203,7 +209,8 @@ def test_legacy_no_backends_available(reset_env: Any) -> None:
 
         # Verify warnings
         mock_warnings.warn.assert_any_call(
-            "No queue backends registered. Using MemoryBackend (development only).", UserWarning
+            "No message-queue backends registered. Using MemoryBackend (development only).",
+            UserWarning,
         )
 
         # Verify the memory backend was created
@@ -219,8 +226,8 @@ def test_legacy_explicit_backend_not_found(reset_env: Any) -> None:
     os.environ["QUEUE_BACKEND"] = "nonexistent"
 
     # Create a mock memory backend to use
-    mock_memory_backend = MagicMock(spec=QueueBackend)
-    mock_memory_backend_instance = MagicMock(spec=QueueBackend)
+    mock_memory_backend = MagicMock(spec=MessageQueueBackend)
+    mock_memory_backend_instance = MagicMock(spec=MessageQueueBackend)
     mock_memory_backend.from_env.return_value = mock_memory_backend_instance
 
     # Create a mock entry point for the memory backend only
@@ -230,7 +237,7 @@ def test_legacy_explicit_backend_not_found(reset_env: Any) -> None:
 
     # We need to patch entry_points to return only memory backend
     # Since the requested backend is "nonexistent", this will trigger the error path
-    with patch("abe.backends.queue.loader.entry_points", return_value=[mock_memory_ep]):
+    with patch("abe.backends.message_queue.loader.entry_points", return_value=[mock_memory_ep]):
         # This should raise a RuntimeError
         with pytest.raises(RuntimeError) as exc_info:
             load_backend()
@@ -245,8 +252,8 @@ def test_legacy_load_explicit_backend(reset_env: Any) -> None:
     os.environ["QUEUE_BACKEND"] = "redis"
 
     # Create a mock redis backend
-    mock_redis_instance = MagicMock(spec=QueueBackend)
-    mock_redis_backend = MagicMock(spec=QueueBackend)
+    mock_redis_instance = MagicMock(spec=MessageQueueBackend)
+    mock_redis_backend = MagicMock(spec=MessageQueueBackend)
     mock_redis_backend.from_env.return_value = mock_redis_instance
 
     # Create a mock entry point
@@ -254,7 +261,7 @@ def test_legacy_load_explicit_backend(reset_env: Any) -> None:
     mock_redis_ep.name = "redis"
     mock_redis_ep.load.return_value = mock_redis_backend
 
-    with patch("abe.backends.queue.loader.entry_points", return_value=[mock_redis_ep]):
+    with patch("abe.backends.message_queue.loader.entry_points", return_value=[mock_redis_ep]):
         # Call load_backend
         result = load_backend()
 
@@ -267,12 +274,12 @@ def test_legacy_load_explicit_backend(reset_env: Any) -> None:
 def test_legacy_auto_select_non_memory(reset_env: Any) -> None:
     """Test auto-selection of first non-memory backend (legacy test)."""
     # Create mock backends
-    mock_memory_instance = MagicMock(spec=QueueBackend)
-    mock_memory_backend = MagicMock(spec=QueueBackend)
+    mock_memory_instance = MagicMock(spec=MessageQueueBackend)
+    mock_memory_backend = MagicMock(spec=MessageQueueBackend)
     mock_memory_backend.from_env.return_value = mock_memory_instance
 
-    mock_kafka_instance = MagicMock(spec=QueueBackend)
-    mock_kafka_backend = MagicMock(spec=QueueBackend)
+    mock_kafka_instance = MagicMock(spec=MessageQueueBackend)
+    mock_kafka_backend = MagicMock(spec=MessageQueueBackend)
     mock_kafka_backend.from_env.return_value = mock_kafka_instance
 
     # Create mock entry points
@@ -284,7 +291,10 @@ def test_legacy_auto_select_non_memory(reset_env: Any) -> None:
     kafka_ep.name = "kafka"
     kafka_ep.load.return_value = mock_kafka_backend
 
-    with patch("abe.backends.queue.loader.entry_points", return_value=[memory_ep, kafka_ep]):
+    with patch(
+        "abe.backends.message_queue.loader.entry_points",
+        return_value=[memory_ep, kafka_ep],
+    ):
         # Call load_backend
         result = load_backend()
 
@@ -297,13 +307,13 @@ def test_legacy_auto_select_non_memory(reset_env: Any) -> None:
 def test_legacy_fallback_to_memory(reset_env: Any) -> None:
     """Test fallback to memory backend when only memory is available (legacy test)."""
     # Create a mock instance for the MemoryBackend.from_env() to return
-    mock_memory_instance = MagicMock(spec=QueueBackend)
+    mock_memory_instance = MagicMock(spec=MessageQueueBackend)
 
     # Setup our mocks with the correct expectations
     with (
-        patch("abe.backends.queue.loader.entry_points") as mock_entry_points,
-        patch("abe.backends.queue.loader.warnings") as mock_warnings,
-        patch("abe.backends.queue.loader.MemoryBackend.from_env", return_value=mock_memory_instance),
+        patch("abe.backends.message_queue.loader.entry_points") as mock_entry_points,
+        patch("abe.backends.message_queue.loader.warnings") as mock_warnings,
+        patch("abe.backends.message_queue.loader.MemoryBackend.from_env", return_value=mock_memory_instance),
     ):
 
         # Setup mock entry point that only has memory backend

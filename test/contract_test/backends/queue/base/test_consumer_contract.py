@@ -12,9 +12,9 @@ from unittest import mock
 
 import pytest
 
-from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.base.consumer import EventConsumer
-from abe.backends.queue.service.memory import MemoryBackend
+from abe.backends.message_queue.base import QueueBackend
+from abe.backends.message_queue.base.consumer import EventConsumer
+from abe.backends.message_queue.service.memory import MemoryBackend
 
 
 class EventConsumerContractTest(abc.ABC):

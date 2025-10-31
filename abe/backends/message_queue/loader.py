@@ -9,15 +9,15 @@ import warnings
 from importlib.metadata import entry_points
 from typing import cast
 
-from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.service.memory import MemoryBackend
+from abe.backends.message_queue.base import MessageQueueBackend
+from abe.backends.message_queue.service.memory import MemoryBackend
 
-# Entry point group name for queue backends
-BACKEND_ENTRY_POINT_GROUP = "abe.backends.queue"
+# Entry point group name for message-queue backends
+BACKEND_ENTRY_POINT_GROUP = "abe.backends.message_queue"
 
 
-def load_backend() -> QueueBackend:
-    """Load a queue backend based on configuration or available plugins.
+def load_backend() -> MessageQueueBackend:
+    """Load a message-queue backend based on configuration or available plugins.
 
     The selection process follows these steps:
     1. Use the backend specified by QUEUE_BACKEND environment variable if set
@@ -25,7 +25,7 @@ def load_backend() -> QueueBackend:
     3. If no plugins are found, fall back to MemoryBackend with a warning
 
     Returns:
-        An instance of a QueueBackend implementation
+        An instance of a MessageQueueBackend implementation
 
     Raises:
         RuntimeError: If the requested backend isn't found and can't be installed
@@ -37,7 +37,7 @@ def load_backend() -> QueueBackend:
     backends = entry_points(group=BACKEND_ENTRY_POINT_GROUP)
 
     if not backends:
-        warnings.warn("No queue backends registered. Using MemoryBackend (development only).", UserWarning)
+        warnings.warn("No message-queue backends registered. Using MemoryBackend (development only).", UserWarning)
         return MemoryBackend.from_env()
 
     # Convert entry points to a dict for easier lookup
@@ -48,7 +48,7 @@ def load_backend() -> QueueBackend:
         if requested_backend in backend_dict:
             # Load the requested backend
             backend_class = backend_dict[requested_backend].load()
-            return cast(QueueBackend, backend_class.from_env())
+            return cast(MessageQueueBackend, backend_class.from_env())
         else:
             # Backend not found, suggest installation
             raise RuntimeError(
@@ -63,7 +63,7 @@ def load_backend() -> QueueBackend:
     for name, ep in backend_dict.items():
         if name != "memory":
             backend_class = ep.load()
-            return cast(QueueBackend, backend_class.from_env())
+            return cast(MessageQueueBackend, backend_class.from_env())
 
     # Fall back to memory backend
     warnings.warn("No external backend found — using MemoryBackend (dev only).", UserWarning)

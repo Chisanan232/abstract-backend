@@ -33,21 +33,20 @@ __all__ = [
     "JSONDict",
     "JSONList",
     "JSONPrimitive",
-    # Event types
     "WebhookEventPayload",
     # Handler types
     "EventHandlerFunc",
     "AsyncEventHandlerFunc",
     "SyncEventHandlerFunc",
-    # Queue types
-    "QueueKey",
-    "QueuePayload",
-    "QueueMessage",
-    "QueueBackendConfig",
+    # Message queue types
+    "MessageQueueKey",
+    "MessageQueuePayload",
+    "MessageQueueMessage",
+    "MessageQueueBackendConfig",
     "ConsumerGroup",
     # Protocol types
     "EventHandlerProtocol",
-    "QueueBackendProtocol",
+    "MessageQueueBackendProtocol",
 ]
 
 # ============================================================================
@@ -87,14 +86,14 @@ type EventHandlerFunc = Union[SyncEventHandlerFunc, AsyncEventHandlerFunc]
 """Event handler function that can be sync or async."""
 
 # ============================================================================
-# Queue Type Definitions
+# Message Queue Type Definitions
 # ============================================================================
 
-type QueueKey = str
-"""Queue routing key or topic name.
+type MessageQueueKey = str
+"""Message-queue routing key or topic name.
 
-This type represents the routing key or topic used to publish and route messages
-in queue backends. Different backends may use this differently:
+This type represents the routing key or topic used to publish and route
+messages in message-queue backends. Different backends may use this differently:
 - Kafka: Topic name
 - Redis Streams: Stream key
 - RabbitMQ: Routing key
@@ -102,26 +101,26 @@ in queue backends. Different backends may use this differently:
 
 Examples:
     >>> # Slack events topic
-    >>> key: QueueKey = "slack_events"
+    >>> key: MessageQueueKey = "slack_events"
     >>>
     >>> # Channel-specific routing
     >>> channel_id = "C1234567890"
-    >>> key: QueueKey = f"slack.channel.{channel_id}"
+    >>> key: MessageQueueKey = f"slack.channel.{channel_id}"
     >>>
     >>> # Event type routing
-    >>> key: QueueKey = "slack.events.message"
+    >>> key: MessageQueueKey = "slack.events.message"
 """
 
-type QueuePayload = Dict[str, Any]
-"""Queue message payload containing the actual data.
+type MessageQueuePayload = Dict[str, Any]
+"""Message-queue payload containing the actual data.
 
-This represents the core data being transmitted through the queue, typically
+This represents the core data transmitted through the message queue, typically
 a Slack event payload or other structured data. The payload should be
-JSON-serializable for compatibility across different queue backends.
+JSON-serializable for compatibility across different message-queue backends.
 
 Examples:
     >>> # Slack event payload
-    >>> payload: QueuePayload = {
+    >>> payload: MessageQueuePayload = {
     ...     "type": "message",
     ...     "channel": "C1234567890",
     ...     "user": "U1234567890",
@@ -130,33 +129,33 @@ Examples:
     ... }
     >>>
     >>> # Custom application payload
-    >>> payload: QueuePayload = {
+    >>> payload: MessageQueuePayload = {
     ...     "event_type": "user_action",
     ...     "data": {"action": "click", "target": "button"}
     ... }
 """
 
-type QueueMessage = Dict[str, Any]
-"""Complete queue message including payload and optional metadata.
+type MessageQueueMessage = Dict[str, Any]
+"""Complete message-queue message including payload and optional metadata.
 
-This represents the full message structure as consumed from the queue, which
-may include the payload along with queue-specific metadata such as timestamps,
-message IDs, retry counts, or headers.
+This represents the full message structure as consumed from the message queue,
+which may include the payload along with backend-specific metadata such as
+timestamps, message IDs, retry counts, or headers.
 
-The exact structure depends on the queue backend implementation, but typically
-includes at minimum the payload. Backends may add additional fields for
-message tracking and processing.
+The exact structure depends on the backend implementation, but typically
+includes at minimum the payload. Backends may add additional fields for message
+tracking and processing.
 
 Examples:
     >>> # Simple message (memory backend)
-    >>> message: QueueMessage = {
+    >>> message: MessageQueueMessage = {
     ...     "type": "message",
     ...     "channel": "C1234567890",
     ...     "text": "Hello"
     ... }
     >>>
     >>> # Message with metadata (Redis/Kafka backend)
-    >>> message: QueueMessage = {
+    >>> message: MessageQueueMessage = {
     ...     "payload": {
     ...         "type": "message",
     ...         "channel": "C1234567890",
@@ -170,27 +169,27 @@ Examples:
     ... }
 
 Note:
-    Plugin implementations should document their specific message structure
-    to help consumers understand what fields are available.
+    Plugin implementations should document their specific message structure to
+    help consumers understand what fields are available.
 """
 
-type QueueBackendConfig = Dict[str, str | int | bool]
-"""Configuration dictionary for queue backend initialization.
+type MessageQueueBackendConfig = Dict[str, str | int | bool]
+"""Configuration dictionary for message-queue backend initialization.
 
-This type represents configuration options passed to queue backends, typically
-loaded from environment variables. The exact keys and values depend on the
-specific backend implementation.
+This type represents configuration options passed to message-queue backends,
+typically loaded from environment variables. The exact keys and values depend
+on the specific backend implementation.
 
 Examples:
     >>> # Redis backend configuration
-    >>> config: QueueBackendConfig = {
+    >>> config: MessageQueueBackendConfig = {
     ...     "url": "redis://localhost:6379",
     ...     "max_connections": 10,
     ...     "decode_responses": True
     ... }
     >>>
     >>> # Kafka backend configuration
-    >>> config: QueueBackendConfig = {
+    >>> config: MessageQueueBackendConfig = {
     ...     "bootstrap_servers": "localhost:9092",
     ...     "group_id": "slack-consumers",
     ...     "auto_offset_reset": "earliest"
@@ -254,20 +253,20 @@ class EventHandlerProtocol(Protocol):
 
 
 @runtime_checkable
-class QueueBackendProtocol(Protocol):
-    """Protocol for queue backend implementations.
+class MessageQueueBackendProtocol(Protocol):
+    """Protocol for message-queue backend implementations.
 
-    This protocol defines the interface that all queue backends must implement
-    for publishing and consuming messages. It follows PEP 544 for structural
-    subtyping, enabling plugin-based queue backend implementations.
+    This protocol defines the interface that all message-queue backends must
+    implement for publishing and consuming messages. It follows PEP 544 for
+    structural subtyping, enabling plugin-based backend implementations.
 
-    All queue backend plugins should implement this protocol to ensure
+    All message-queue backend plugins should implement this protocol to ensure
     compatibility with the abstract backend. The protocol uses type aliases
     defined in this module for consistency across all implementations.
 
     Plugin Architecture:
-        Queue backends are discovered via Python entry points in the
-        'slack_mcp.backends.queue' group. Plugins should:
+        Message-queue backends are discovered via Python entry points in the
+        'slack_mcp.backends.message_queue' group. Plugins should:
 
         1. Implement this protocol
         2. Use the type aliases from slack_mcp.types
@@ -276,26 +275,30 @@ class QueueBackendProtocol(Protocol):
 
     Example Implementation:
         >>> from abe.types import (
-        ...     QueueBackendProtocol,
-        ...     QueueKey,
-        ...     QueuePayload,
-        ...     QueueMessage,
+        ...     MessageQueueBackendProtocol,
+        ...     MessageQueueKey,
+        ...     MessageQueuePayload,
+        ...     MessageQueueMessage,
         ...     ConsumerGroup,
         ... )
         >>> from typing import AsyncIterator
         >>>
         >>> class RedisBackend:
-        ...     '''Redis implementation of queue backend.'''
+        ...     '''Redis implementation of a message-queue backend.'''
         ...
-        ...     async def publish(self, key: QueueKey, payload: QueuePayload) -> None:
+        ...     async def publish(
+        ...         self,
+        ...         key: MessageQueueKey,
+        ...         payload: MessageQueuePayload,
+        ...     ) -> None:
         ...         # Publish to Redis stream
         ...         pass
         ...
         ...     async def consume(
         ...         self,
         ...         *,
-        ...         group: ConsumerGroup = None
-        ...     ) -> AsyncIterator[QueueMessage]:
+        ...         group: ConsumerGroup = None,
+        ...     ) -> AsyncIterator[MessageQueueMessage]:
         ...         # Consume from Redis stream
         ...         yield {}
         ...
@@ -305,27 +308,27 @@ class QueueBackendProtocol(Protocol):
         ...         return cls()
         >>>
         >>> # Type checker validates protocol compliance
-        >>> backend: QueueBackendProtocol = RedisBackend()
+        >>> backend: MessageQueueBackendProtocol = RedisBackend()
 
     Entry Point Registration:
         In your plugin's pyproject.toml:
 
-        [project.entry-points."slack_mcp.backends.queue"]
+        [project.entry-points."slack_mcp.backends.message_queue"]
         redis = "slack_mcp_mq_redis:RedisBackend"
 
     See Also:
-        - QueueKey: Type alias for routing keys
-        - QueuePayload: Type alias for message payloads
-        - QueueMessage: Type alias for consumed messages
+        - MessageQueueKey: Type alias for routing keys
+        - MessageQueuePayload: Type alias for message payloads
+        - MessageQueueMessage: Type alias for consumed messages
         - ConsumerGroup: Type alias for consumer group identifiers
     """
 
-    async def publish(self, key: QueueKey, payload: QueuePayload) -> None:
-        """Publish a message to the queue.
+    async def publish(self, key: MessageQueueKey, payload: MessageQueuePayload) -> None:
+        """Publish a message to the message queue.
 
-        This method publishes a message to the queue backend using the specified
+        This method publishes a message to the backend using the specified
         routing key. The payload must be JSON-serializable for compatibility
-        across different queue backends.
+        across different message-queue backends.
 
         Args:
             key: The routing key or topic for the message. Used to route messages
@@ -346,16 +349,21 @@ class QueueBackendProtocol(Protocol):
         """
         ...
 
-    async def consume(self, *, group: ConsumerGroup = None) -> AsyncIterator[QueueMessage]:
-        """Consume messages from the queue.
+    async def consume(
+        self,
+        *,
+        group: ConsumerGroup = None,
+    ) -> AsyncIterator[MessageQueueMessage]:
+        """Consume messages from the message queue.
 
-        This method returns an async iterator that yields messages from the queue.
-        It should run indefinitely, yielding messages as they become available.
+        This method returns an async iterator that yields messages from the
+        queue. It should run indefinitely, yielding messages as they become
+        available.
 
-        Consumer groups enable multiple consumers to work together to process
-        messages, with each message delivered to only one consumer in the group.
-        Not all backends support consumer groups - implementations should document
-        their behavior when groups are not supported.
+        Consumer groups enable multiple consumers to process messages together,
+        with each message delivered to only one consumer in the group. Not all
+        backends support consumer groups—implementations should document their
+        behavior when groups are not supported.
 
         Args:
             group: Optional consumer group identifier for coordinated consumption.
@@ -364,8 +372,9 @@ class QueueBackendProtocol(Protocol):
                 Backends that don't support groups should ignore this parameter.
 
         Yields:
-            QueueMessage: Messages from the queue. The structure may vary by
-                backend but should at minimum contain the payload data.
+            MessageQueueMessage: Messages from the message queue. The structure
+                may vary by backend but should at minimum contain the payload
+                data.
 
         Raises:
             Exception: Implementation-specific exceptions for connection errors,
@@ -384,12 +393,12 @@ class QueueBackendProtocol(Protocol):
         yield {}
 
     @classmethod
-    def from_env(cls) -> QueueBackendProtocol:
+    def from_env(cls) -> "MessageQueueBackendProtocol":
         """Create a backend instance from environment variables.
 
-        This factory method creates and configures a queue backend instance
-        using configuration from environment variables. Each backend implementation
-        defines its own required environment variables.
+        This factory method creates and configures a message-queue backend
+        instance using configuration from environment variables. Each backend
+        implementation defines its own required environment variables.
 
         The method should:
         1. Read configuration from environment variables
@@ -398,8 +407,8 @@ class QueueBackendProtocol(Protocol):
         4. Raise clear errors if configuration is invalid
 
         Returns:
-            QueueBackendProtocol: A configured instance of the backend ready
-                for use.
+            MessageQueueBackendProtocol: A configured instance of the backend
+                ready for use.
 
         Raises:
             ValueError: If required environment variables are missing or invalid.

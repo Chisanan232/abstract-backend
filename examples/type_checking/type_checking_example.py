@@ -17,10 +17,10 @@ from abe.types import (
     ConsumerGroup,
     EventHandlerFunc,
     EventHandlerProtocol,
-    QueueBackendProtocol,
-    QueueKey,
-    QueueMessage,
-    QueuePayload,
+    MessageQueueBackendProtocol,
+    MessageQueueKey,
+    MessageQueueMessage,
+    MessageQueuePayload,
     SyncEventHandlerFunc,
     WebhookEventPayload,
 )
@@ -59,11 +59,11 @@ async def async_handler(event: WebhookEventPayload) -> None:
 
 
 # Example 3: Queue backend implementation
-class SimpleQueueBackend(QueueBackendProtocol):
-    """Example queue backend implementing QueueBackendProtocol."""
+class SimpleMessageQueueBackend(MessageQueueBackendProtocol):
+    """Example message-queue backend implementing MessageQueueBackendProtocol."""
 
-    async def publish(self, key: QueueKey, payload: QueuePayload) -> None:
-        """Publish a message to the queue.
+    async def publish(self, key: MessageQueueKey, payload: MessageQueuePayload) -> None:
+        """Publish a message to the message queue.
 
         Args:
             key: The routing key
@@ -72,19 +72,19 @@ class SimpleQueueBackend(QueueBackendProtocol):
         print(f"Publishing to {key}: {payload}")
 
     async def consume(self, *, group: ConsumerGroup = None) -> Any:
-        """Consume messages from the queue.
+        """Consume messages from the message queue.
 
         Args:
             group: Optional consumer group
 
         Yields:
-            Messages from the queue
+            Messages from the message queue
         """
         yield {"type": "message", "data": "example"}
 
     @classmethod
-    def from_env(cls) -> SimpleQueueBackend:
-        """Create backend from environment.
+    def from_env(cls) -> "SimpleMessageQueueBackend":
+        """Create message-queue backend from environment.
 
         Returns:
             Configured backend instance
@@ -107,15 +107,15 @@ def main() -> None:
     combined_func: EventHandlerFunc = sync_handler
     print("✓ Event handler functions type-checked")
 
-    # Example 3: Queue backend with protocol compliance
-    backend: QueueBackendProtocol = SimpleQueueBackend()
-    print("✓ Queue backend implements QueueBackendProtocol")
+    # Example 3: Message queue backend with protocol compliance
+    backend: MessageQueueBackendProtocol = SimpleMessageQueueBackend()
+    print("✓ Message queue backend implements MessageQueueBackendProtocol")
 
     # Example 4: Type aliases in use
-    key: QueueKey = "events"
-    payload: QueuePayload = {"type": "message", "text": "Hello"}
+    key: MessageQueueKey = "events"
+    payload: MessageQueuePayload = {"type": "message", "text": "Hello"}
     group: ConsumerGroup = "processors"
-    message: QueueMessage = {"id": "msg-1", "data": "example"}
+    message: MessageQueueMessage = {"id": "msg-1", "data": "example"}
     print(f"✓ Using type aliases: key={key}, group={group}")
 
     print("\n✓ All type checking examples completed successfully!")

@@ -4,8 +4,8 @@ from unittest import mock
 
 import pytest
 
-from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.consumer import AsyncLoopConsumer
+from abe.backends.message_queue.base import QueueBackend
+from abe.backends.message_queue.consumer import AsyncLoopConsumer
 
 from .base.test_consumer_contract import EventConsumerContractTest
 

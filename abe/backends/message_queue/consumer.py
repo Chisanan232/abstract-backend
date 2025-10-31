@@ -9,7 +9,7 @@ import asyncio
 import logging
 from typing import Any, Awaitable, Callable, Dict, Optional
 
-from .base import EventConsumer, QueueBackend
+from .base import EventConsumer, MessageQueueBackend
 
 # Set up logger for this module
 logger = logging.getLogger(__name__)
@@ -23,11 +23,11 @@ class AsyncLoopConsumer(EventConsumer):
     calls the handler with each message.
     """
 
-    def __init__(self, backend: QueueBackend, group: Optional[str] = None):
-        """Initialize the consumer with a queue backend.
+    def __init__(self, backend: MessageQueueBackend, group: Optional[str] = None):
+        """Initialize the consumer with a message-queue backend.
 
         Args:
-            backend: The queue backend to consume messages from
+            backend: The message-queue backend to consume messages from
             group: Optional consumer group name
         """
         self.backend = backend

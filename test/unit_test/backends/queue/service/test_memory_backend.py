@@ -12,8 +12,8 @@ from typing import Any, Dict, List
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.service.memory import MemoryBackend
+from abe.backends.message_queue.base import QueueBackend
+from abe.backends.message_queue.service.memory import MemoryBackend
 
 
 @pytest.fixture  # type: ignore[misc]

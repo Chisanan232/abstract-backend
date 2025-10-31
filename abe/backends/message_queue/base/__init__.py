@@ -1,8 +1,6 @@
-"""
-Package for the queue backend abstract.
-"""
+"""Message-queue backend abstractions."""
 
 from .consumer import EventConsumer
-from .protocol import QueueBackend
+from .protocol import MessageQueueBackend, QueueBackend
 
-__all__ = ["QueueBackend", "EventConsumer"]
+__all__ = ["MessageQueueBackend", "EventConsumer", "QueueBackend"]
