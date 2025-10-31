@@ -2,14 +2,37 @@
 
 Abstract Backend provides a **pluggable backend layer** for Python services. Applications code against shared protocols while concrete providers—Redis, Kafka, AWS SQS, or your own implementation—are discovered at runtime. Install a provider with `pip`, remove it with `pip uninstall`, and keep your business logic unchanged.
 
+## Status & Quality
+
+### CI/CD & Testing
 [![CI](https://github.com/Chisanan232/abstract-backend/actions/workflows/ci.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/ci.yaml)
-[![Docs Build](https://github.com/Chisanan232/abstract-backend/actions/workflows/documentation.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/documentation.yaml)
-[![Docs Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml)
-[![Type Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/type-check.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/type-check.yml)
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
-[![Coverage](https://img.shields.io/codecov/c/github/Chisanan232/abstract-backend?logo=codecov)](https://codecov.io/gh/Chisanan232/abstract-backend)
+[![Documentation](https://github.com/Chisanan232/abstract-backend/actions/workflows/documentation.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/documentation.yaml)
+[![Documentation Build Check](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-build-check.yaml)
+
+### Code Coverage & Quality
+[![codecov](https://codecov.io/gh/Chisanan232/abstract-backend/branch/main/graph/badge.svg)](https://codecov.io/gh/Chisanan232/abstract-backend)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Chisanan232_abstract-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Chisanan232_abstract-backend)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Chisanan232_abstract-backend&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Chisanan232_abstract-backend)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Chisanan232_abstract-backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Chisanan232_abstract-backend)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Chisanan232_abstract-backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Chisanan232_abstract-backend)
+
+### Code Style & Standards
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+[![Type Checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](http://mypy-lang.org/)
+
+### Package Info
+[![PyPI version](https://badge.fury.io/py/abstract-backend.svg)](https://badge.fury.io/py/abstract-backend)
+[![Supported Versions](https://img.shields.io/pypi/pyversions/abstract-backend.svg?logo=python&logoColor=FBE072)](https://pypi.org/project/abstract-backend)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+### Downloads
+[![Downloads](https://pepy.tech/badge/abstract-backend)](https://pepy.tech/project/abstract-backend)
+[![Downloads/Month](https://pepy.tech/badge/abstract-backend/month)](https://pepy.tech/project/abstract-backend)
+[![Downloads/Week](https://pepy.tech/badge/abstract-backend/week)](https://pepy.tech/project/abstract-backend)
+
+---
 
 ## Why it exists
 
