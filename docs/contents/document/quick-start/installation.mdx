@@ -9,124 +9,91 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 ```
 
-# Creating a New Project from Template
+# Installing Abstract Backend and Providers
 
-This guide provides step-by-step instructions for creating a new Python project using this template.
+Use this guide to install the core library, layer in provider packages, and verify that entry-point discovery works end-to-end.
 
-## Method 1: Using GitHub Template (Recommended)
+## Step 1 · Install the core package
 
-### Step 1: Create Repository from Template
-
-1. Navigate to the [template repository](https://github.com/Chisanan232/abstract-backend)
-2. Click the **"Use this template"** button (green button)
-3. Select **"Create a new repository"**
-4. Configure your new repository:
-   - **Repository name**: Enter your project name
-   - **Description**: Brief description of your project
-   - **Visibility**: Choose Public or Private
-   - **Include all branches**: Leave unchecked (recommended)
-
-### Step 2: Clone Your New Repository
-
-```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-PROJECT-NAME.git
-cd YOUR-PROJECT-NAME
-```
-
-## Method 2: Manual Setup
-
-### Step 1: Download or Clone Template
+Pick the workflow that matches your dependency manager.
 
 <Tabs>
-<TabItem value="git-clone" label="Git Clone">
+<TabItem value="pip" label="pip" default>
 
 ```bash
-git clone https://github.com/Chisanan232/abstract-backend.git my-new-project
-cd my-new-project
-rm -rf .git  # Remove template's git history
-git init     # Initialize new git repository
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install abstract-backend
 ```
 
 </TabItem>
-<TabItem value="download" label="Download ZIP">
-
-1. Go to the [template repository](https://github.com/Chisanan232/abstract-backend)
-2. Click **"Code"** → **"Download ZIP"**
-3. Extract the ZIP file to your desired location
-4. Rename the folder to your project name
-
-</TabItem>
-</Tabs>
-
-### Step 2: Install uv Package Manager
-
-<Tabs>
-<TabItem value="macos" label="macOS">
+<TabItem value="uv" label="uv">
 
 ```bash
-# Using Homebrew
-brew install uv
-
-# Or using curl
-curl -LsSf https://astral.sh/uv/install.sh | sh
+uv venv
+source .venv/bin/activate
+uv pip install abstract-backend
 ```
 
 </TabItem>
-<TabItem value="linux" label="Linux">
+<TabItem value="poetry" label="Poetry">
 
 ```bash
-# Using curl
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Or using pip
-pip install uv
-```
-
-</TabItem>
-<TabItem value="windows" label="Windows">
-
-```powershell
-# Using PowerShell
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# Or using pip
-pip install uv
+poetry add abstract-backend
 ```
 
 </TabItem>
 </Tabs>
 
-### Step 3: Initialize Project Dependencies
+At this point you have access to the shared abstractions: `QueueBackend`, `EventConsumer`, the plugin loader, and the in-memory `MemoryBackend` fallback.
+
+## Step 2 · Install one or more providers
+
+Providers are distributed as normal Python packages that register the `abe.backends.queue` entry point group. Install as many as you need:
 
 ```bash
-# Install all dependencies including dev tools
-uv sync
-
-# Or install only production dependencies
-uv sync --no-dev
+pip install abe-backend-memory              # ships with the repo (development only)
+pip install abe-backend-redis              # example third-party provider
+pip install abe-backend-sqs                # another provider
 ```
 
-## Next Steps
+Replace the package names with the providers published by your organization. Providers must expose a `from_env()` class method that creates the backend instance.
 
-After completing the installation:
+## Step 3 · Select a provider at runtime
 
-1. **Customize the project** - See [How to Run](./how-to-run.mdx) for customization steps
-2. **Update project metadata** - Modify `pyproject.toml` with your project details
-3. **Set up development environment** - Configure pre-commit hooks and IDE settings
-
-## Verification
-
-Verify your installation by running:
+Abstract Backend chooses the first non-memory provider it finds unless you override it. Set the `QUEUE_BACKEND` environment variable to pick a specific implementation:
 
 ```bash
-# Check uv installation
-uv --version
-
-# Check Python environment
-uv run python --version
-
-# Run tests to ensure everything works
-uv run pytest
+export QUEUE_BACKEND=redis   # macOS/Linux
+set QUEUE_BACKEND=redis      # Windows (cmd)
+$env:QUEUE_BACKEND="redis"   # Windows (PowerShell)
 ```
 
-If all commands execute successfully, your project template is ready for development! 🎉
+Skip this step to accept the auto-selection behavior (or fall back to the memory backend when no providers are installed).
+
+## Step 4 · Verify discovery
+
+Run this snippet after installation to make sure your provider can be resolved:
+
+```python
+from abe.backends.queue.loader import load_backend
+
+backend = load_backend()
+print(type(backend).__name__)
+```
+
+You should see the class name of the provider you installed (for example `RedisBackend`). If the memory fallback loads instead, double-check the environment variable and that the provider package exposes the entry point.
+
+## Optional · Installing straight from source
+
+If you are contributing to the library itself, clone the repository and install it in editable mode:
+
+```bash
+git clone https://github.com/Chisanan232/abstract-backend.git
+cd abstract-backend
+pip install -e .[dev]
+```
+
+Editable installs keep your working tree and installed package in sync while you experiment.
+
+Move on to [How to Run](./how-to-run.mdx) to wire the loader and consumer into your application.
