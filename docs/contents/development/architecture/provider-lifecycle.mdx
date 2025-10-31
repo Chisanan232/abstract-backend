@@ -78,7 +78,7 @@ If you publish multiple backends in one distribution, register each under a uniq
 ## 5. Test coverage
 
 - **Unit tests**: Validate `publish()`/`consume()` behavior in isolation.
-- **Integration tests**: Spin up the target service (e.g. Redis, SQS) and exercise end-to-end flows; leverage Docker Compose when possible.
+- **Integration tests**: Spin up the target service (e.g. Redis, SQS) and exercise end-to-end flows using your preferred infrastructure tooling.
 - **Contract tests**: Reuse the project’s suites under `test/contract_test/backends/queue/` to confirm protocol compliance.
 
 ## 6. Documentation & examples

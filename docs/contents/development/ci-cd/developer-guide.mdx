@@ -27,7 +27,6 @@ release: true
 level: "patch"
 artifacts:
   python: "auto"
-  docker: "auto"
   docs:
     mode: "auto"
     sections: ["docs", "dev"]  # Only version docs and dev sections
@@ -89,7 +88,6 @@ gh run list --workflow=release-staging.yml --limit=3
 
 #### Staging Artifacts
 - **TestPyPI**: `pip install -i https://test.pypi.org/simple/ abstract-backend`
-- **GHCR Staging**: `docker pull ghcr.io/Chisanan232/abstract-backend:1.0.0-rc.0`
 - **Preview Docs**: Available on docs-preview branch
 
 ## Common Workflows
@@ -118,7 +116,6 @@ release: true
 level: patch
 artifacts:
   python: force
-  docker: force
   docs: skip
 notes: "Hotfix: Critical security vulnerability"
 EOF
@@ -147,7 +144,6 @@ release: true
 level: minor
 artifacts:
   python: auto
-  docker: auto
   docs:
     mode: auto
     sections: ["docs", "dev"]
@@ -177,12 +173,11 @@ gh pr merge --merge
 
 **Fixed Workflows**:
 - `rw_python_package.yaml` - Python package operations
-- `rw_docker_operations.yaml` - Docker image operations  
 - `rw_docs_operations.yaml` - Documentation operations
 - `rw_build_git-tag_and_create_github-release.yaml` - Git tagging
 - `release-staging.yml` - Staging releases
 
-**Impact**: Python packages, Docker images, and docs now use correct bumped version
+**Impact**: Python packages and docs now use correct bumped version
 
 ### UV Lock File Synchronization
 
@@ -256,14 +251,8 @@ docs:
 ### Tag Mismatch Issues
 
 **Diagnosis**:
-- Check that Docker build and security scan jobs use consistent tags
-- Validation workflow includes defensive checks to catch this early
-
-**Solutions**:
-```bash
-# Verify tag consistency across jobs
-gh run view <run-id> --log | grep -E "(image-tag|docker tag)"
-```
+- Ensure validation workflow jobs consume the latest `intent.yaml`
+- Confirm artifact upload paths remain consistent across jobs
 
 ### SBOM Generation Failures
 
@@ -271,7 +260,7 @@ gh run view <run-id> --log | grep -E "(image-tag|docker tag)"
 **Debugging**: Check security scan artifacts for detailed logs
 
 **Common Issues**:
-- Docker image not accessible for scanning
+- Target artifact not accessible for scanning
 - Syft version compatibility
 - Workspace permission issues
 
@@ -320,20 +309,6 @@ pip install abstract-backend==<VERSION>
 python -c "import abstract-backend; print(abstract-backend.__version__)"
 ```
 
-#### Docker Hub
-```bash
-# Verify Docker image availability and correct version tags
-docker pull chisanan232/abstract-backend:<VERSION>
-docker run --rm chisanan232/abstract-backend:<VERSION> --version
-```
-
-#### GitHub Container Registry (GHCR)
-```bash
-# Verify Docker image availability and correct version tags
-docker pull ghcr.io/chisanan232/abstract-backend:<VERSION>
-docker run --rm ghcr.io/chisanan232/abstract-backend:<VERSION> --version
-```
-
 #### Documentation
 ```bash
 # Check versioned documentation is available
@@ -342,50 +317,16 @@ curl -s https://chisanan232.github.io/abstract-backend/docs/<VERSION>/
 
 #### Version Consistency Verification
 All artifacts should reflect the same bumped version:
-- Verify Python package, both Docker registries, and docs use identical version tags
+- Verify Python package and docs use identical version tags
 - Cross-check that no artifacts still reference the old version (e.g., 0.0.0 vs 0.0.1)
 
 ## Additional CI Workflows
-
-### Docker CI
-
-[![docker-ci](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docker-ci.yml)
-
-**Purpose**: Standalone Docker image building and functionality testing
-
-**Features**:
-- Independent Docker image testing
-- Multi-architecture build validation
-- Container functionality verification  
-- Performance and resource usage testing
-
-**Use Cases**:
-- Testing Docker changes without full release
-- Validating Dockerfile modifications
-- Performance regression testing
-
-### DockerHub README CI
-
-[![dockerhub-readme-ci](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/dockerhub-readme-ci.yml)
-
-**Purpose**: Updates the Docker Hub repository description automatically
-
-**Features**:
-- Synchronizes README content with Docker Hub
-- Maintains consistent documentation across platforms
-- Automatic updates on documentation changes
-
-**Benefits**:
-- Keeps Docker Hub page current with latest documentation
-- Reduces manual maintenance overhead
-- Ensures users see accurate information
 
 ### Documentation Auto-Approve & Auto-Merge
 
 [![docs-automerge](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-automerge.yml/badge.svg)](https://github.com/Chisanan232/abstract-backend/actions/workflows/docs-automerge.yml)
 
 **Purpose**: Streamlines documentation-only pull request processing
-
 #### Features
 
 **1. Identifying Documentation-Only Changes**:
@@ -439,8 +380,6 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 - `documentation.yaml` - Documentation building and deployment
 
 ### Specialized Workflows  
-- `docker-ci.yml` - Standalone Docker testing
-- `dockerhub-readme-ci.yml` - DockerHub README synchronization
 - `docs-automerge.yml` - Documentation PR automation
 
 **Browse All Workflows**: [Workflow Definitions](https://github.com/Chisanan232/abstract-backend/tree/master/.github/workflows)
@@ -455,10 +394,6 @@ All CI/CD workflows are defined in the `.github/workflows/` directory:
 uv run pytest
 uv run mypy src/
 uv run ruff check src/
-
-# Test Docker build locally
-docker build -t test-image .
-docker run --rm test-image --version
 ```
 
 #### 2. CI/CD Integration
@@ -480,7 +415,6 @@ release: true
 level: auto  # Let commit messages determine bump level
 artifacts:
   python: auto  # Only publish if Python files changed
-  docker: auto  # Only publish if Docker files changed
   docs:
     mode: auto
     strategy: changed  # Only version changed doc sections
