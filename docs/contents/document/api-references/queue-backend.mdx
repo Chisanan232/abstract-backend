@@ -1,0 +1,87 @@
+---
+id: queue-backend
+title: QueueBackend Protocol
+sidebar_position: 1
+---
+
+# `QueueBackend` Protocol
+
+`QueueBackend` is the core contract that every message-queue provider must implement. It is defined in `abe/backends/queue/base/protocol.py` and re-exports the `QueueBackendProtocol` type from `abe/types.py`.
+
+```python title="abe/backends/queue/base/protocol.py"
+from abe.types import QueueBackendProtocol
+
+QueueBackend = QueueBackendProtocol
+```
+
+Any implementation registered under the `abe.backends.queue` entry-point group must satisfy this protocol so that application code can treat all providers the same way.
+
+## Responsibilities
+
+- Publish JSON-serialisable payloads to a routing key using `publish()`.
+- Yield messages asynchronously via `consume()`.
+- Provide a `from_env()` factory that constructs a configured instance from process settings.
+
+## Method reference
+
+### `async publish(key: QueueKey, payload: QueuePayload) -> None`
+
+- **Input**: `key` is a string routing key; `payload` is a JSON-compatible dictionary (`QueuePayload`).
+- **Behaviour**: Send the payload to the backend, applying routing semantics appropriate to the provider (topic, stream, queue, etc.).
+- **Errors**: Raise provider-specific exceptions for connectivity or serialisation failures. Surface meaningful messages; the loader does not wrap exceptions.
+
+### `async consume(*, group: ConsumerGroup | None = None) -> AsyncIterator[QueueMessage]`
+
+- **Input**: Optional `group` identifier. Providers that have native consumer-group semantics should honour it; others may ignore it.
+- **Output**: Async iterator yielding `QueueMessage` structures. Minimum requirement is the payload, but providers may attach metadata like IDs or timestamps.
+- **Lifecycle**: The iterator should run until cancelled. Handle `asyncio.CancelledError` gracefully and release connections.
+
+### `@classmethod from_env(cls) -> QueueBackendProtocol`
+
+- **Purpose**: Create a ready-to-use backend instance based on environment configuration (URLs, credentials, queue names, etc.).
+- **Guidelines**:
+  - Validate required variables and raise clear `RuntimeError`/`ValueError` if they are missing.
+  - Document accepted environment variables in your provider README and on this page if the provider lives in-repo.
+
+## Example provider skeleton
+
+```python
+from typing import AsyncIterator
+
+from abe.types import QueueBackendProtocol, QueueKey, QueuePayload, QueueMessage, ConsumerGroup
+
+
+class RedisBackend(QueueBackendProtocol):
+    def __init__(self, client) -> None:
+        self._client = client
+
+    @classmethod
+    def from_env(cls) -> "RedisBackend":
+        url = os.environ["REDIS_URL"]
+        client = redis.AsyncRedis.from_url(url)
+        return cls(client)
+
+    async def publish(self, key: QueueKey, payload: QueuePayload) -> None:
+        await self._client.xadd(key, {"data": json.dumps(payload)})
+
+    async def consume(self, *, group: ConsumerGroup = None) -> AsyncIterator[QueueMessage]:
+        async for entry in self._client.xreadgroup(group or "default", ...):
+            yield json.loads(entry["data"])
+```
+
+## Entry-point registration
+
+Expose your backend through `pyproject.toml` using the `abe.backends.queue` group:
+
+```toml
+[project.entry-points."abe.backends.queue"]
+redis = "my_package.redis_backend:RedisBackend"
+```
+
+Once the package is installed, `load_backend()` can discover it without any extra wiring.
+
+## Testing tips for providers
+
+- Use `QueueBackendProtocol` as a structural type in unit tests to ensure compliance.
+- Run asynchronous integration tests against the actual service (Redis, SQS, etc.) inside containers or test accounts.
+- Provide fixtures that patch `load_backend()` or register a test entry point so consumers can exercise code paths without external dependencies.
