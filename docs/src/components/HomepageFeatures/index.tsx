@@ -27,7 +27,7 @@ const FeatureList: FeatureItem[] = [
     description:
       'A lightweight contract models every backend component. Follow the protocol to add implementations, or deprecate them cleanly, while the rest of your stack stays unchanged.',
     cta: 'Understand the architecture',
-    href: '/dev/next/architecture/project-structure',
+    href: '/dev/next/architecture/layer-integration',
   },
   {
     title: 'Modular Queue Providers',
@@ -35,7 +35,7 @@ const FeatureList: FeatureItem[] = [
     description:
       'First-class message queue definitions ship with contract tests, payload typing, and lifecycle docs so you can lean on queues—the backbone of modern backend systems.',
     cta: 'Explore provider lifecycle',
-    href: '/dev/next/architecture/provider-lifecycle',
+    href: '/docs/next/api-references/queue-backend',
   },
 ];
 
