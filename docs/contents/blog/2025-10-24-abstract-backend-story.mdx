@@ -1,0 +1,45 @@
+---
+slug: abstract-backend-story
+title: From Embedded Utility to Pluggable Backend Abstraction
+authors: [chisanan232]
+tags: [abstract-backend, architecture, reusable-backend, message-queue]
+---
+
+# Why Abstract Backend Became Its Own Library
+
+When I first added message queue support to the [`Chisanan232/slack-mcp-server`](https://github.com/Chisanan232/slack-mcp-server) project, it lived as a single helper tucked inside that repository. The job was simple: receive Slack webhook events, queue them, and let the rest of the system process them asynchronously. It worked well enough, but I quickly ran into the limits of keeping that logic embedded in one codebase.
+
+<!-- truncate -->
+
+## One Project, One Off
+
+In the early days the queue consumer sat directly inside the Slack MCP server. Each time the service needed to talk to Redis I duplicated config helpers, re-implemented error handling, and kept the queue contracts tightly coupled to Slack-specific abstractions. It _felt_ like a minor compromise—until I began building another MCP service.
+
+## Copy-Paste or Better Architecture?
+
+While building [`Chisanan232/clickup-mcp-server`](https://github.com/Chisanan232/clickup-mcp-server), I faced the exact same webhook-to-queue flow. Copying the Slack implementation would have been fast but painful to maintain. Every bug fix, performance patch, or provider enhancement would require a multi-repo patch dance. That experience pushed me to rethink how backend components should be shared across projects.
+
+## Designing for Pluggability
+
+Instead of cloning code, I teased the queue logic into a reusable abstraction layer:
+
+- **Protocol-first contracts** define the queue behaviours any provider must satisfy.
+- **Dynamic discovery via entry points** means a simple `pip install` activates a new backend.
+- **Symmetric uninstall** lets teams remove a provider with `pip uninstall` when it is no longer needed.
+- **Application-facing helpers** keep consumer code stable even as the concrete backend changes.
+
+With these pieces in place, switching from Redis to Kafka or an AWS-managed queue becomes a packaging decision, not an application rewrite.
+
+## Centralising Backend Components
+
+The extracted library, now this [`abstract-backend`](https://github.com/Chisanan232/abstract-backend) project, turned into a home for reusable backend behaviours:
+
+- Shared logging utilities and types ensure consistent diagnostics.
+- Contract tests validate that every provider honours the same guarantees.
+- Documentation and examples show how to build new providers or adopt existing ones.
+
+Most importantly, **every Python project in this ecosystem now speaks to the same protocols**. Teams can experiment with different providers without touching application workflows.
+
+## Looking Ahead
+
+Abstract Backend started as a humble helper function and grew into a modular architecture because I needed flexibility across multiple MCP services. The journey taught me that decoupling backend components into their own package keeps projects maintainable, encourages experimentation, and makes upgrades safer. I hope this story helps other developers avoid the copy-and-paste trap and embrace pluggable backends from day one.
