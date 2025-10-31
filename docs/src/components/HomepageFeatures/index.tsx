@@ -14,28 +14,28 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
+    title: 'Entry-Point Powered Providers',
+    icon: '🚀',
+    description:
+      'Activate or retire providers in seconds using Python entry points—`pip install` turns them on, `pip uninstall` turns them off—without touching application code.',
+    cta: 'Switch providers instantly',
+    href: '/docs/next/quick-start/requirements',
+  },
+  {
+    title: 'Crystal-Clear Abstractions',
+    icon: '🧭',
+    description:
+      'A lightweight contract models every backend component. Follow the protocol to add implementations, or deprecate them cleanly, while the rest of your stack stays unchanged.',
+    cta: 'Understand the architecture',
+    href: '/dev/next/architecture/project-structure',
+  },
+  {
     title: 'Modular Queue Providers',
     icon: '🛰️',
     description:
-      'Swap providers at light-speed. Structural typing, contract tests, and runtime discovery keep every backend aligned with the same orbit.',
+      'First-class message queue definitions ship with contract tests, payload typing, and lifecycle docs so you can lean on queues—the backbone of modern backend systems.',
     cta: 'Explore provider lifecycle',
     href: '/dev/next/architecture/provider-lifecycle',
-  },
-  {
-    title: 'Observability-First Tooling',
-    icon: '🌌',
-    description:
-      'From logging presets to coverage dashboards, the toolkit surfaces every signal so you can navigate the abstract backend cosmos with clarity.',
-    cta: 'See the logging guide',
-    href: '/dev/next/logging',
-  },
-  {
-    title: 'Production-Ready Automation',
-    icon: '🚀',
-    description:
-      'Reusable workflows publish packages, docs, and release notes. Intent-driven automation keeps CI/CD synchronized across galaxies.',
-    cta: 'Review CI/CD playbook',
-    href: '/dev/next/ci-cd/continuous-integration',
   },
 ];
 
