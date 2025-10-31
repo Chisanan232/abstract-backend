@@ -12,9 +12,9 @@ from unittest import mock
 
 import pytest
 
-from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.base.consumer import EventConsumer
-from abe.backends.queue.service.memory import MemoryBackend
+from abe.backends.message_queue.base import MessageQueueBackend
+from abe.backends.message_queue.base.consumer import EventConsumer
+from abe.backends.message_queue.service.memory import MemoryBackend
 
 
 class EventConsumerContractTest(abc.ABC):
@@ -25,7 +25,7 @@ class EventConsumerContractTest(abc.ABC):
     """
 
     @abc.abstractmethod
-    def create_consumer(self, backend: QueueBackend, group: Optional[str] = None) -> EventConsumer:
+    def create_consumer(self, backend: MessageQueueBackend, group: Optional[str] = None) -> EventConsumer:
         """Create a new instance of the consumer being tested.
 
         Args:
@@ -39,7 +39,7 @@ class EventConsumerContractTest(abc.ABC):
     @pytest.fixture  # type: ignore[misc]
     def mock_backend(self) -> mock.AsyncMock:
         """Fixture providing a mock backend for testing."""
-        backend = mock.AsyncMock(spec=QueueBackend)
+        backend = mock.AsyncMock(spec=MessageQueueBackend)
         return backend
 
     @pytest.fixture  # type: ignore[misc]

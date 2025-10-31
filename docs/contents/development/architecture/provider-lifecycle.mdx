@@ -23,7 +23,7 @@ flowchart LR
 
 - **Choose identifiers**: Decide on the entry-point name (e.g. `redis`, `sqs`).
 - **Map configuration**: List environment variables and connection details that `from_env()` must read.
-- **Confirm message semantics**: Align on what your `QueueMessage` will contain beyond the payload (metadata, IDs, timestamps).
+- **Confirm message semantics**: Align on what your `MessageQueueMessage` will contain beyond the payload (metadata, IDs, timestamps).
 
 ## 2. Implement the protocol
 
@@ -31,27 +31,27 @@ flowchart LR
 from typing import AsyncIterator
 
 from abe.types import (
-    QueueBackendProtocol,
-    QueueKey,
-    QueuePayload,
-    QueueMessage,
+    MessageQueueBackendProtocol,
+    MessageQueueKey,
+    MessageQueuePayload,
+    MessageQueueMessage,
     ConsumerGroup,
 )
 
 
-class RedisBackend(QueueBackendProtocol):
+class RedisBackend(MessageQueueBackendProtocol):
     @classmethod
     def from_env(cls) -> "RedisBackend":
         ...
 
-    async def publish(self, key: QueueKey, payload: QueuePayload) -> None:
+    async def publish(self, key: MessageQueueKey, payload: MessageQueuePayload) -> None:
         ...
 
     async def consume(
         self,
         *,
         group: ConsumerGroup = None,
-    ) -> AsyncIterator[QueueMessage]:
+    ) -> AsyncIterator[MessageQueueMessage]:
         ...
 ```
 
@@ -63,7 +63,7 @@ class RedisBackend(QueueBackendProtocol):
 Add registration to `pyproject.toml` so `load_backend()` can discover the provider:
 
 ```toml
-[project.entry-points."abe.backends.queue"]
+[project.entry-points."abe.backends.message_queue"]
 redis = "abe_backend_redis.backend:RedisBackend"
 ```
 
@@ -79,7 +79,7 @@ If you publish multiple backends in one distribution, register each under a uniq
 
 - **Unit tests**: Validate `publish()`/`consume()` behavior in isolation.
 - **Integration tests**: Spin up the target service (e.g. Redis, SQS) and exercise end-to-end flows using your preferred infrastructure tooling.
-- **Contract tests**: Reuse the project’s suites under `test/contract_test/backends/queue/` to confirm protocol compliance.
+- **Contract tests**: Reuse the project’s suites under `test/contract_test/backends/message_queue/` to confirm protocol compliance.
 
 ## 6. Documentation & examples
 

@@ -30,12 +30,12 @@ const FeatureList: FeatureItem[] = [
     href: '/dev/next/architecture/layer-integration',
   },
   {
-    title: 'Modular Queue Providers',
+    title: 'Modular Message Queue Providers',
     icon: '🛰️',
     description:
       'First-class message queue definitions ship with contract tests, payload typing, and lifecycle docs so you can lean on queues—the backbone of modern backend systems.',
     cta: 'Explore provider lifecycle',
-    href: '/docs/next/api-references/queue-backend',
+    href: '/docs/next/api-references/message-queue-backend',
   },
 ];
 

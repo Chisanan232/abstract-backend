@@ -72,8 +72,17 @@ PACKAGE_NAME="${PACKAGE_NAME:-abe}"
 DOCS_DIR="${DOCS_DIR:-docs}"
 
 # Expected type definitions in types.py (customize for your project)
-# Example: EXPECTED_TYPES=("WebhookEventPayload" "EventHandlerProtocol" "QueueBackendProtocol")
-EXPECTED_TYPES=("WebhookEventPayload" "EventHandlerProtocol" "QueueBackendProtocol" "QueueKey" "QueuePayload" "EventHandlerFunc")
+# Example: EXPECTED_TYPES=("WebhookEventPayload" "EventHandlerProtocol" "MessageQueueBackendProtocol")
+EXPECTED_TYPES=(
+    "WebhookEventPayload"
+    "EventHandlerProtocol"
+    "MessageQueueBackendProtocol"
+    "MessageQueueKey"
+    "MessageQueuePayload"
+    "MessageQueueMessage"
+    "MessageQueueBackendConfig"
+    "EventHandlerFunc"
+)
 
 echo "=========================================="
 echo "Type Checking Implementation Verification"

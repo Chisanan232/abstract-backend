@@ -67,7 +67,7 @@ def init_logging() -> None:
         level="INFO",
         log_dir="logs",
         enable_file=True,
-        logger_levels={"abe.backends.queue": "DEBUG"},
+        logger_levels={"abe.backends.message_queue": "DEBUG"},
     )
     setup_logging_from_config(config)
 

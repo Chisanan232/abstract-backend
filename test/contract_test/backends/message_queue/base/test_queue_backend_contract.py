@@ -1,5 +1,5 @@
 """
-Contract tests for QueueBackend implementations.
+Contract tests for MessageQueueBackend implementations.
 
 These tests verify that all QueueBackend implementations conform to the expected
 behavior defined by the protocol. Any new backend must pass these tests.
@@ -11,28 +11,28 @@ from typing import Any, Dict, List
 
 import pytest
 
-from abe.backends.queue.base import QueueBackend
-from abe.backends.queue.service.memory import MemoryBackend
+from abe.backends.message_queue.base import MessageQueueBackend
+from abe.backends.message_queue.service.memory import MemoryBackend
 
 
-class QueueBackendContractTest(abc.ABC):
-    """Abstract base class for QueueBackend contract tests.
+class MessageQueueBackendContractTest(abc.ABC):
+    """Abstract base class for MessageQueueBackend contract tests.
 
-    This class defines a set of tests that all QueueBackend implementations
+    This class defines a set of tests that all MessageQueueBackend implementations
     must pass to be considered compliant with the protocol.
     """
 
     @abc.abstractmethod
-    def create_backend(self) -> QueueBackend:
+    def create_backend(self) -> MessageQueueBackend:
         """Create a new instance of the backend being tested."""
 
     @pytest.fixture  # type: ignore[misc]
-    def backend(self) -> QueueBackend:
+    def backend(self) -> MessageQueueBackend:
         """Fixture providing a fresh backend instance for each test."""
         return self.create_backend()
 
     @pytest.mark.asyncio  # type: ignore[misc]
-    async def test_publish_and_consume(self, backend: QueueBackend) -> None:
+    async def test_publish_and_consume(self, backend: MessageQueueBackend) -> None:
         """Test that a message can be published and consumed."""
         # Publish a message
         test_key = "test-key"
@@ -57,7 +57,7 @@ class QueueBackendContractTest(abc.ABC):
         assert received_msg == test_payload
 
     @pytest.mark.asyncio  # type: ignore[misc]
-    async def test_multiple_messages(self, backend: QueueBackend) -> None:
+    async def test_multiple_messages(self, backend: MessageQueueBackend) -> None:
         """Test publishing and consuming multiple messages."""
         # Publish multiple messages
         messages = [{"id": 1, "data": "first"}, {"id": 2, "data": "second"}, {"id": 3, "data": "third"}]
@@ -88,7 +88,7 @@ class QueueBackendContractTest(abc.ABC):
             assert msg in received_messages
 
     @pytest.mark.asyncio  # type: ignore[misc]
-    async def test_consumer_group(self, backend: QueueBackend) -> None:
+    async def test_consumer_group(self, backend: MessageQueueBackend) -> None:
         """Test consuming with a consumer group."""
         # Publish a test message
         test_payload = {"test": "consumer group"}
@@ -114,7 +114,7 @@ class QueueBackendContractTest(abc.ABC):
                 raise
 
     @pytest.mark.asyncio  # type: ignore[misc]
-    async def test_message_ordering(self, backend: QueueBackend) -> None:
+    async def test_message_ordering(self, backend: MessageQueueBackend) -> None:
         """Test that message ordering is preserved if the backend guarantees it."""
         # Check if this backend guarantees ordering
         # This is implementation-specific, so we'll skip the test if we can't determine it
@@ -159,7 +159,7 @@ class QueueBackendContractTest(abc.ABC):
             assert msg["order"] == i
 
     @pytest.mark.asyncio  # type: ignore[misc]
-    async def test_backend_handles_complex_data(self, backend: QueueBackend) -> None:
+    async def test_backend_handles_complex_data(self, backend: MessageQueueBackend) -> None:
         """Test that the backend can handle complex nested data structures."""
         # Create a complex nested structure
         complex_data = {
@@ -218,7 +218,7 @@ class QueueBackendContractTest(abc.ABC):
         assert received == test_payload
 
 
-class TestMemoryBackendContract(QueueBackendContractTest):
+class TestMemoryBackendContract(MessageQueueBackendContractTest):
     """Contract tests for the MemoryBackend implementation."""
 
     def create_backend(self) -> MemoryBackend:

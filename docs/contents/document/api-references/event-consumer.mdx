@@ -8,12 +8,12 @@ sidebar_position: 2
 
 Abstract Backend separates the consumer contract from the default runtime implementation so you can plug in alternative event loops when needed.
 
-- `EventConsumer` lives in `abe/backends/queue/base/consumer.py` and is defined as a [PEP 544](https://peps.python.org/pep-0544/) protocol.
-- `AsyncLoopConsumer` in `abe/backends/queue/consumer.py` is the default implementation that wraps a `QueueBackend` and repeatedly invokes your handler coroutine.
+- `EventConsumer` lives in `abe/backends/message_queue/base/consumer.py` and is defined as a [PEP 544](https://peps.python.org/pep-0544/) protocol.
+- `AsyncLoopConsumer` in `abe/backends/message_queue/consumer.py` is the default implementation that wraps a `MessageQueueBackend` and repeatedly invokes your handler coroutine.
 
 ## `EventConsumer` protocol
 
-```python title="abe/backends/queue/base/consumer.py"
+```python title="abe/backends/message_queue/base/consumer.py"
 class EventConsumer(Protocol):
     async def run(self, handler: Callable[[Dict[str, Any]], Awaitable[None]]) -> None: ...
     async def shutdown(self) -> None: ...
@@ -31,16 +31,16 @@ class EventConsumer(Protocol):
 
 ## `AsyncLoopConsumer`
 
-```python title="abe/backends/queue/consumer.py"
+```python title="abe/backends/message_queue/consumer.py"
 class AsyncLoopConsumer(EventConsumer):
-    def __init__(self, backend: QueueBackend, group: Optional[str] = None): ...
+    def __init__(self, backend: MessageQueueBackend, group: Optional[str] = None): ...
     async def run(self, handler: Callable[[Dict[str, Any]], Awaitable[None]]) -> None: ...
     async def shutdown(self) -> None: ...
 ```
 
 ### Construction
 
-- **`backend`**: The `QueueBackend` instance returned by `load_backend()` or injected directly.
+- **`backend`**: The `MessageQueueBackend` instance returned by `load_backend()` or injected directly.
 - **`group`** *(optional)*: Consumer group identifier forwarded to `backend.consume()` when supported.
 
 ### Runtime behaviour

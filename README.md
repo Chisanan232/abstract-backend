@@ -68,8 +68,8 @@ Set `QUEUE_BACKEND=redis` (the entry-point exposed by `abe-redis`) and `load_bac
 ## Quick start ⚡️
 
 ```python
-from abe.backends.queue.loader import load_backend
-from abe.backends.queue.consumer import AsyncLoopConsumer
+from abe.backends.message_queue.loader import load_backend
+from abe.backends.message_queue.consumer import AsyncLoopConsumer
 
 
 async def process(payload: dict[str, object]) -> None:
@@ -86,10 +86,10 @@ See `docs/contents/development/architecture/` for diagrams explaining the flow a
 
 ## Building providers 🧩
 
-1. Implement the protocols from `abe/types.py` (especially `QueueBackendProtocol`).
+1. Implement the protocols from `abe/types.py` (especially `MessageQueueBackendProtocol`).
 2. Expose a `from_env()` constructor for runtime configuration.
-3. Register an entry point under `abe.backends.queue` in `pyproject.toml`.
-4. Run the contract tests in `test/contract_test/backends/queue/` against your provider.
+3. Register an entry point under `abe.backends.message_queue` in `pyproject.toml`.
+4. Run the contract tests in `test/contract_test/backends/message_queue/` against your provider.
 5. Publish your package to PyPI; users activate it with `pip install` and `QUEUE_BACKEND`.
 
 The showcase at `/docs/src/pages/showcase.tsx` highlights template and reference implementations such as `abe-redis`.

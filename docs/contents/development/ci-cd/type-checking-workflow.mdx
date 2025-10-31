@@ -114,7 +114,7 @@ JSON types accessible
 
 # Protocol definitions (PEP 544)
 assert hasattr(types, 'EventHandlerProtocol')
-assert hasattr(types, 'QueueBackendProtocol')
+assert hasattr(types, 'MessageQueueBackendProtocol')
 Protocol types accessible
 
 # Type guard functions
@@ -138,7 +138,7 @@ JSON type guards work
 
 # Protocol type validation
 assert types.is_event_handler_protocol(lambda x: x) == True
-assert types.is_queue_backend_protocol(lambda x: x) == True
+assert types.is_message_queue_backend_protocol(lambda x: x) == True
 Protocol type guards work
 ```
 

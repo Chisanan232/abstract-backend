@@ -12,15 +12,20 @@ import logging
 import warnings
 from typing import Any, AsyncIterator, Dict, Tuple
 
-from abe.backends.queue.base import QueueBackend
-from abe.types import ConsumerGroup, QueueKey, QueueMessage, QueuePayload
+from abe.backends.message_queue.base import MessageQueueBackend
+from abe.types import (
+    ConsumerGroup,
+    MessageQueueKey,
+    MessageQueueMessage,
+    MessageQueuePayload,
+)
 
 # Set up logger for the memory backend
 logger = logging.getLogger(__name__)
 
 
-class MemoryBackend(QueueBackend):
-    """In-memory implementation of QueueBackend using asyncio.Queue.
+class MemoryBackend(MessageQueueBackend):
+    """In-memory implementation of `MessageQueueBackend` using asyncio.Queue.
 
     This class is intended for development and testing only.
     Messages are stored in a class-level asyncio.Queue to simulate
@@ -47,7 +52,7 @@ class MemoryBackend(QueueBackend):
         )
         return cls()
 
-    async def publish(self, key: QueueKey, payload: QueuePayload) -> None:
+    async def publish(self, key: MessageQueueKey, payload: MessageQueuePayload) -> None:
         """Publish a message to the in-memory queue.
 
         Args:
@@ -56,7 +61,11 @@ class MemoryBackend(QueueBackend):
         """
         await self._queue.put((key, payload))
 
-    async def consume(self, *, group: ConsumerGroup = None) -> AsyncIterator[QueueMessage]:
+    async def consume(
+        self,
+        *,
+        group: ConsumerGroup = None,
+    ) -> AsyncIterator[MessageQueueMessage]:
         """Consume messages from the in-memory queue.
 
         The group parameter is ignored in the memory backend implementation
