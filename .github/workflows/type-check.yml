@@ -146,9 +146,13 @@ jobs:
       - name: Test importing types from abe
         run: |
           uv run python -c "
-          from abe.types import WebhookEventPayload, EventHandlerProtocol, QueueBackendProtocol
+          from abe.types import (
+              WebhookEventPayload,
+              EventHandlerProtocol,
+              MessageQueueBackendProtocol,
+          )
           print('✅ Successfully imported core types')
-          print('✅ WebhookEventPayload, EventHandlerProtocol, QueueBackendProtocol available')
+          print('✅ WebhookEventPayload, EventHandlerProtocol, MessageQueueBackendProtocol available')
           "
 
       - name: Test type definitions are accessible
@@ -173,35 +177,35 @@ jobs:
           assert hasattr(types, 'SyncEventHandlerFunc')
           print('✅ Handler types accessible')
           
-          # Test Queue types
-          assert hasattr(types, 'QueueKey')
-          assert hasattr(types, 'QueuePayload')
-          assert hasattr(types, 'QueueMessage')
-          assert hasattr(types, 'QueueBackendConfig')
+          # Test Message queue types
+          assert hasattr(types, 'MessageQueueKey')
+          assert hasattr(types, 'MessageQueuePayload')
+          assert hasattr(types, 'MessageQueueMessage')
+          assert hasattr(types, 'MessageQueueBackendConfig')
           assert hasattr(types, 'ConsumerGroup')
-          print('✅ Queue types accessible')
+          print('✅ Message queue types accessible')
           
           # Test Protocol types
           assert hasattr(types, 'EventHandlerProtocol')
-          assert hasattr(types, 'QueueBackendProtocol')
+          assert hasattr(types, 'MessageQueueBackendProtocol')
           print('✅ Protocol types accessible')
           "
 
       - name: Test protocol implementations
         run: |
           uv run python -c "
-          from abe.types import EventHandlerProtocol, QueueBackendProtocol
+          from abe.types import EventHandlerProtocol, MessageQueueBackendProtocol
           from typing import get_type_hints
           
           # Test EventHandlerProtocol has handle_event method
           assert hasattr(EventHandlerProtocol, 'handle_event')
           print('✅ EventHandlerProtocol has handle_event method')
           
-          # Test QueueBackendProtocol has required methods
-          assert hasattr(QueueBackendProtocol, 'publish')
-          assert hasattr(QueueBackendProtocol, 'consume')
-          assert hasattr(QueueBackendProtocol, 'from_env')
-          print('✅ QueueBackendProtocol has all required methods')
+          # Test MessageQueueBackendProtocol has required methods
+          assert hasattr(MessageQueueBackendProtocol, 'publish')
+          assert hasattr(MessageQueueBackendProtocol, 'consume')
+          assert hasattr(MessageQueueBackendProtocol, 'from_env')
+          print('✅ MessageQueueBackendProtocol has all required methods')
           
           print('✅ Protocol implementations verified')
           "
