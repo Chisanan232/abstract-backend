@@ -6,21 +6,21 @@ sidebar_position: 2
 
 # Getting Started with Abstract Backend
 
-This template provides a modern Python project structure with **uv** package management, comprehensive development tooling, and automated workflows. It's designed to help you quickly bootstrap new Python projects with industry best practices.
+Abstract Backend lets you bind your application to a stable interface while discovering real backend implementations at runtime. This quick start walks through installing the core library, wiring a provider, and running your first consumer.
 
-## What's Included
+## What you'll learn
 
-✅ **Modern Package Management**: Pre-configured with [uv](https://docs.astral.sh/uv/) for fast, reliable dependency management  
-✅ **Development Tools**: Testing (pytest), linting (pylint), formatting (black), type checking (mypy)  
-✅ **CI/CD Workflows**: GitHub Actions for testing, code quality, and automated releases  
-✅ **Documentation**: Ready-to-use documentation setup with Docusaurus and MkDocs  
-✅ **Docker Support**: Containerization setup for easy deployment  
-✅ **Code Quality**: Pre-commit hooks and comprehensive configuration files  
+- Install the core `abstract-backend` package
+- Add a backend provider distributed via Python entry points
+- Configure environment variables (or defaults) to select the provider
+- Publish and consume messages using the shared interfaces
 
-## Quick Setup Guide
+## Recommended path
 
-Choose one of the sections below to get started:
+Follow these pages in order:
 
-- [Requirements](./requirements.mdx) - System and software prerequisites for using this template
-- [Installation](./installation.mdx) - Step-by-step guide to create a new project from this template
-- [How to Run](./how-to-run.mdx) - Instructions for setting up and customizing your new project
+- [Requirements](./requirements.mdx) – Supported Python versions and tooling you need
+- [Installation](./installation.mdx) – Install the core package and a backend provider
+- [How to Run](./how-to-run.mdx) – Wire the loader and consumer into an application
+
+Once you're comfortable with the basics, explore the [Architecture Overview](../../development/architecture/index.mdx) to understand how providers plug into the system.
