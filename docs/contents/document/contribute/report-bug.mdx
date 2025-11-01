@@ -6,14 +6,14 @@ sidebar_position: 1
 
 # Reporting Bugs
 
-We appreciate your help in identifying and reporting bugs in your repo. A well-documented bug report helps us understand and fix issues quickly.
+We appreciate your help in identifying and reporting bugs in Abstract Backend. A well-documented bug report helps us understand and fix issues quickly.
 
 ## Before Reporting
 
 Before submitting a bug report, please:
 
 1. **Check existing issues**: Search the [GitHub Issues](https://github.com/Chisanan232/abstract-backend/issues) to see if the bug has already been reported.
-2. **Update to the latest version**: Verify that you're using the latest version of the software, as the bug may have been fixed already.
+2. **Update to the latest version**: Verify that you're using the latest release of Abstract Backend or the latest `master` branch commit, as the bug may have been fixed already.
 3. **Confirm it's a bug**: Make sure the behavior you're experiencing is truly a bug and not expected behavior or a configuration issue.
 
 ## How to Submit a Bug Report
@@ -28,7 +28,7 @@ An effective bug report should include:
 2. **Environment details**:
    - Operating system and version
    - Python version
-   - your repo version
+   - Abstract Backend version (or commit SHA)
    - Installation method (pip, source)
    - Any relevant configuration
 
@@ -50,33 +50,28 @@ An effective bug report should include:
 ## Example Bug Report
 
 ```
-Title: Server crashes when handling concurrent requests with SSE transport
+Title: Memory backend loses messages when consumer restarts
 
 Environment:
-- OS: Ubuntu 22.04
-- Python: 3.10.4
-- your repo: 0.2.1
-- Installed via pip
+- OS: macOS 14.5
+- Python: 3.11.8
+- Abstract Backend: 0.5.0
+- Installed via `uv pip install .`
 
 Steps to Reproduce:
-1. Start the server with SSE transport: `clickup-mcp-server --transport sse`
-2. Create a test script that sends 10 concurrent requests
-3. Execute the test script
+1. Start the development server using `uv run abe-dev-server`
+2. Configure `MemoryBackend` as the default queue backend
+3. Publish five test messages to the `notifications` topic
+4. Restart the `AsyncLoopConsumer` while messages are in flight
 
 Expected Behavior:
-All requests should be processed correctly, and responses returned to clients.
+All five messages should be processed after the consumer restarts.
 
 Actual Behavior:
-Server crashes with the following error:
-```
-[ERROR] 2025-08-10 14:23:47 - Exception in SSE transport: RuntimeError: Cannot process concurrent requests
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.10/dist-packages/clickup_mcp_server/transport/sse.py", line 127, in handle_request
-    ...
-```
+Only the first two messages are processed; the remaining three are dropped without errors.
 
 Additional Information:
-This only happens with SSE transport. HTTP streaming works fine with concurrent requests.
+Setting `LOG_LEVEL=DEBUG` shows "Consumer restarted" in the logs, but no warnings about discarded messages.
 ```
 
 ## After Submitting
@@ -87,4 +82,4 @@ After you've submitted a bug report:
 - Provide additional information if requested
 - Consider helping test the fix when it becomes available
 
-Thank you for helping improve your repo!
+Thank you for helping improve Abstract Backend!

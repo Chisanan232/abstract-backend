@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Requesting Additions or Changes
 
-Have an idea for improving your repo? We welcome feature requests and suggestions from our community! This guide will help you submit effective feature requests.
+Have an idea for improving Abstract Backend? We welcome feature requests and suggestions from our community! This guide will help you submit effective feature requests.
 
 ## Before Submitting
 
@@ -14,7 +14,7 @@ Before submitting a feature request, please:
 
 1. **Check existing requests**: Search the [GitHub Issues](https://github.com/Chisanan232/abstract-backend/issues) to see if someone has already suggested a similar feature.
 2. **Read the documentation**: Make sure the feature doesn't already exist or isn't already planned in our roadmap.
-3. **Consider compatibility**: Think about how your suggestion fits with the existing architecture and goals of the project.
+3. **Consider compatibility**: Think about how your suggestion fits with the existing queue backend architecture and goals of the project.
 
 ## How to Submit a Feature Request
 
@@ -44,37 +44,37 @@ An effective feature request should include:
 ## Example Feature Request
 
 ```
-Title: Add WebSocket transport option for real-time updates
+Title: Add Redis Streams queue backend provider
 
 Problem Statement:
-Currently, your repo supports HTTP streaming and SSE for client communication. 
-However, for truly bidirectional real-time communication, these options have limitations. 
-Many modern web applications would benefit from WebSocket support for more efficient 
-real-time updates and lower latency.
+Abstract Backend currently ships with the in-memory queue backend. Teams running in production need
+durable message persistence and horizontal scalability. Without a Redis-based provider, any process
+restart can lead to message loss for critical workflows.
 
 Proposed Solution:
-Add a new transport option "websocket" that implements the WebSocket protocol. This would:
-- Allow bidirectional communication between client and server
-- Reduce overhead compared to HTTP polling or SSE
-- Enable real-time updates for task changes, comments, etc.
-- Follow the same MCP message format as existing transports
+Introduce a new queue backend implementation that integrates with Redis Streams. This would:
+- Provide persistent message storage beyond process lifetime
+- Support consumer groups for scaling workers horizontally
+- Reuse existing `MessageQueueBackend` protocol contracts
+- Offer configuration via environment variables or `MessageQueueBackendConfig`
 
 The implementation should include:
-1. New WebSocketTransport class implementing the Transport interface
-2. Client-side connection handling and reconnection logic
-3. Support for the same authentication mechanisms as existing transports
+1. `RedisStreamBackend` class implementing `MessageQueueBackend`
+2. Connection pooling and graceful shutdown handling
+3. Contract tests under `test/contract_test/backends/message_queue/`
+4. Documentation on configuration and operational considerations
 
 Alternative Solutions:
-1. Enhance the SSE implementation with custom headers for upstream communication
-2. Implement long-polling with improved efficiency
+1. Build a Postgres-backed queue backend using advisory locks
+2. Extend the Memory backend with disk persistence (less durable)
 
 Implementation Considerations:
-This would require adding a WebSocket library dependency (e.g., websockets for Python).
-Care should be taken to ensure proper connection management and resource cleanup.
+The provider should use `redis.asyncio` for compatibility with our async consumer. Care must be taken
+to acknowledge messages only after successful handler execution to avoid duplicates.
 
 Impact and Importance:
-This feature would greatly improve real-time applications built on your repo,
-reducing latency and improving the user experience for collaborative tools.
+This feature would allow production deployments to rely on Abstract Backend without message loss,
+unlocking more robust integrations for automation workflows.
 ```
 
 ## After Submitting
@@ -85,4 +85,4 @@ After you've submitted a feature request:
 - Be open to feedback and suggestions
 - Consider contributing to the implementation if you have the skills
 
-Thank you for helping improve your repo!
+Thank you for helping improve Abstract Backend!
