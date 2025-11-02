@@ -1,0 +1,133 @@
+---
+id: developer-studio
+title: Developer Studio Tutorial
+sidebar_position: 4
+---
+
+# Build a Provider with the Developer Studio
+
+Ready to publish your own message-queue provider for **Abstract Backend**? This tutorial walks you through the developer studio workflow—using the official implementation template, wiring it to the core SDK, and shipping a fully tested provider.
+
+## 1. Understand the tooling
+
+Abstract Backend separates the domain contracts (this repository) from provider implementations. The developer studio gives you:
+
+- ✅ A GitHub template: [`Chisanan232/abstract-backend-implementation-template`](https://github.com/Chisanan232/abstract-backend-implementation-template)
+- 📚 Documentation hub: [Template Docs](https://chisanan232.github.io/abstract-backend-implementation-template/)
+- 🧪 Pre-wired contract and integration tests so your provider stays compliant
+
+You will still develop locally with familiar tools (`uv`, `pip`, or `poetry`). The template simply bootstraps the folder layout, CI, and entry-point registration expected by Abstract Backend.
+
+## 2. Create your provider repository
+
+1. Open the template repository and click **Use this template → Create a new repository**.
+2. Choose a descriptive name such as `acme-queue-backend`.
+3. Keep the repository private until you are ready to open-source it (CI uses GitHub Actions secret support out of the box).
+
+> 💡 The template defaults to the `master` branch to match Abstract Backend's workflow. You can change this later, but keeping the same default makes synchronization simpler.
+
+## 3. Clone & install dependencies
+
+```bash
+# Replace acme-queue-backend with your repository name
+git clone https://github.com/YOUR-ORG/acme-queue-backend.git
+cd acme-queue-backend
+
+# Pin the Python runtime used by the template
+uv python install 3.11
+
+# Create and activate a project-local virtual environment
+uv venv
+source .venv/bin/activate
+
+# Install everything locked in `uv.lock` (dev extras included)
+uv sync --locked --all-extras --dev
+```
+
+`uv sync` reads the template's `pyproject.toml` and `uv.lock`, ensuring every contributor works with the exact same dependency set—including the Abstract Backend core package your provider depends on.
+
+## 4. Explore the project layout
+
+```
+└── src/
+    └── acme_backend/
+        ├── __init__.py
+        ├── backend.py        # Your MessageQueueBackend implementation
+        ├── config.py         # Read environment variables & settings
+        └── consumer.py       # Optional helper utilities
+└── tests/
+    ├── contract/            # Copies of Abstract Backend contract tests
+    ├── integration/         # End-to-end scenarios you customize
+    └── unit/                # Unit tests for your provider
+```
+
+Each folder includes TODO comments guiding what to modify. Contract tests import Abstract Backend directly to guarantee API compatibility.
+
+## 5. Implement the backend
+
+1. Open `src/acme_backend/backend.py` and fill in the methods required by `MessageQueueBackend`.
+2. Use `config.py` to parse connection strings, authentication tokens, or other provider-specific settings.
+3. Update entry points in `pyproject.toml` so Abstract Backend's loader can discover your package:
+
+```toml title="pyproject.toml"
+[project.entry-points."abe.backends.message_queue"]
+acme = "acme_backend.backend:AcmeBackend"
+```
+
+4. Run formatting and static checks:
+
+```bash
+uv run ruff check src tests
+uv run mypy src tests
+```
+
+## 6. Exercise the developer studio tests
+
+The template mirrors the testing strategy used in this repository:
+
+```bash
+# Unit tests validate your code in isolation
+uv run pytest tests/unit
+
+# Contract tests ensure interface compatibility with Abstract Backend
+uv run pytest tests/contract
+
+# Integration tests spin up optional services (Docker Compose included)
+uv run pytest tests/integration
+```
+
+> 🚨 If contract tests fail, inspect the error message—it pinpoints missing protocol methods or incorrect async signatures.
+
+## 7. Try the provider inside Abstract Backend
+
+Link your local provider into Abstract Backend for a full workflow run:
+
+```bash
+# Inside your provider repository
+aud pip install -e .
+
+# Switch to your Abstract Backend checkout
+cd /path/to/abstract-backend
+
+# Export the provider name so the loader picks it up
+export QUEUE_BACKEND=acme
+uv run pytest test/contract_test/backends/message_queue/test_loader.py -k acme
+```
+
+When `load_backend()` resolves to your provider, contract and e2e tests from the core project will run against it, proving compatibility.
+
+## 8. Publish and share
+
+1. Tag a release (`git tag v0.1.0 && git push --tags`).
+2. Publish to PyPI (`uv build && uv publish`).
+3. Announce the backend in Abstract Backend Discussions with installation instructions.
+
+> 📨 Include a link back to your provider documentation so other teams can follow your setup steps.
+
+## Additional resources
+
+- [`abstract-backend-implementation-template` documentation](https://chisanan232.github.io/abstract-backend-implementation-template/)
+- [Abstract Backend architecture overview](/dev/next/architecture)
+- [Contribution guide](../contribute/index.mdx) if you want to upstream improvements
+
+With the developer studio workflow, you can go from an empty repo to a production-ready provider in hours. Happy building!

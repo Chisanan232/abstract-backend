@@ -35,6 +35,11 @@ const sidebars: SidebarsConfig = {
           id: 'quick-start/how-to-run',
           label: '▶️ How to Run',
         },
+        {
+          type: 'doc',
+          id: 'quick-start/developer-studio',
+          label: '🏗️ Developer Studio Tutorial',
+        },
       ],
     },
     {
