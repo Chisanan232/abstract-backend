@@ -1,0 +1,85 @@
+---
+id: logging
+title: Logging Utilities
+sidebar_position: 6
+---
+
+# Logging Utilities
+
+Abstract Backend ships with a modern logging helper module (`abe/logging/utils.py`) that complements the `LoggingConfig` dataclass in `abe/logging/settings.py`. These utilities simplify configuring log handlers across providers and applications.
+
+## `LoggingConfig`
+
+Located in `abe/logging/settings.py`, `LoggingConfig` is a dataclass describing the logging environment:
+
+- `level`: Root logging level (default `INFO`).
+- `format`, `date_format`: Control message structure.
+- `log_file`, `log_dir`, `max_bytes`, `backup_count`, `encoding`: Manage rotating file handlers.
+- `enable_console`, `enable_file`, `use_json_formatter`: Choose console/file handlers and JSON formatting.
+- `logger_levels`: Dict of module-specific overrides.
+- `propagate`: Control propagation to ancestor loggers.
+
+Call `LoggingConfig.validate()` to enforce level/rotation constraints.
+
+## Utility functions
+
+All utilities live in `abe/logging/utils.py`.
+
+### `setup_logging_from_config(config: LoggingConfig) -> None`
+
+Configures Python logging using `logging.config.dictConfig()` after generating a handler dictionary via `get_logging_dict_config()`. Sets the `asyncio` logger to `WARNING` to reduce noise.
+
+### `get_logging_dict_config(config: LoggingConfig) -> dict`
+
+Builds a `dictConfig`-compatible dictionary. Adds JSON formatter automatically when `use_json_formatter=True` and `pythonjsonlogger` is installed.
+
+### `get_logger(name: str) -> logging.Logger`
+
+Retrieves a configured logger. Use `get_logger(__name__)` in modules to inherit root settings.
+
+### `set_logger_level(logger_name: str, level: str) -> None`
+
+Overrides a logger’s level at runtime. Raises `ValueError` if the level is not one of `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`.
+
+### `get_logger_level(logger_name: str) -> str`
+
+Returns the current level name for a logger. Useful for diagnostics and tests.
+
+### `create_log_file_path(log_dir: str, log_file: str | None = None) -> str`
+
+Ensures the directory exists and returns the path to the log file. Defaults to `app.log` when `log_file` is omitted.
+
+## Provider and consumer best practices
+
+- Call `setup_logging_from_config()` early in service startup so provider logs integrate with application logging.
+- Share a single `LoggingConfig` across producers and consumers to guarantee consistent formatting and rotation policies.
+- Use `logger_levels` to quiet noisy dependencies (e.g., `urllib3`) without suppressing critical messages from providers.
+
+## Examples
+
+```python title="logging_setup.py"
+from abe.logging.settings import LoggingConfig
+from abe.logging.utils import setup_logging_from_config, get_logger
+
+
+def init_logging() -> None:
+    config = LoggingConfig(
+        level="INFO",
+        log_dir="logs",
+        enable_file=True,
+        logger_levels={"abe.backends.message_queue": "DEBUG"},
+    )
+    setup_logging_from_config(config)
+
+
+def main() -> None:
+    init_logging()
+    logger = get_logger(__name__)
+    logger.info("Logging configured")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+See `docs/LOGGING.md` for an in-depth guide with advanced scenarios.

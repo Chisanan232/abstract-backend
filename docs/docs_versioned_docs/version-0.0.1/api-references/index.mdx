@@ -1,0 +1,30 @@
+---
+id: api-references
+title: API References
+sidebar_position: 3
+---
+
+# API References
+
+Use this section as the authoritative catalogue of the Abstract Backend APIs. Each page documents the contracts you target in your own code and the hooks providers must implement.
+
+## Core interfaces
+
+- [`MessageQueueBackend` protocol](./message-queue-backend.mdx) – Async contract every provider implements.
+- [`EventConsumer` & helpers](./event-consumer.mdx) – Standard consumption loop and lifecycle management.
+- [`load_backend()` loader](./loader.mdx) – Entry-point discovery rules and configuration.
+- [Shared types](./types.mdx) – Type aliases exported from `abe/types.py` for payloads and handler signatures.
+
+## Provider utilities
+
+- [`MemoryBackend`](./memory-backend.mdx) – Development fallback shipped with the library and its limitations.
+- [`LoggingConfig` helpers](./logging.mdx) – Optional utilities for providers that want consistent logging behaviour.
+
+Every reference page includes:
+
+- Function and method signatures with type hints.
+- Expected behaviour and error handling.
+- Configuration/environment variables recognised by the component.
+- Examples for both application developers and provider authors.
+
+If you are building a new provider, read all core interface pages first; if you are consuming the library, focus on the loader and consumer docs.

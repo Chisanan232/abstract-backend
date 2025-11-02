@@ -1,0 +1,99 @@
+---
+id: installation
+title: Installation
+sidebar_position: 2
+---
+
+```mdx-code-block
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+```
+
+# Installing Abstract Backend and Providers
+
+Use this guide to install the core library, layer in provider packages, and verify that entry-point discovery works end-to-end.
+
+## Step 1 · Install the core package
+
+Pick the workflow that matches your dependency manager.
+
+<Tabs>
+<TabItem value="pip" label="pip" default>
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install abstract-backend
+```
+
+</TabItem>
+<TabItem value="uv" label="uv">
+
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install abstract-backend
+```
+
+</TabItem>
+<TabItem value="poetry" label="Poetry">
+
+```bash
+poetry add abstract-backend
+```
+
+</TabItem>
+</Tabs>
+
+At this point you have access to the shared abstractions: `QueueBackend`, `EventConsumer`, the plugin loader, and the in-memory `MemoryBackend` fallback.
+
+## Step 2 · Install one or more providers
+
+Providers are distributed as normal Python packages that register the `abe.backends.message_queue` entry point group. Install as many as you need:
+
+```bash
+pip install abe-backend-memory              # ships with the repo (development only)
+pip install abe-backend-redis              # example third-party provider
+pip install abe-backend-sqs                # another provider
+```
+
+Replace the package names with the providers published by your organization. Providers must expose a `from_env()` class method that creates the backend instance.
+
+## Step 3 · Select a provider at runtime
+
+Abstract Backend chooses the first non-memory provider it finds unless you override it. Set the `QUEUE_BACKEND` environment variable to pick a specific implementation:
+
+```bash
+export QUEUE_BACKEND=redis   # macOS/Linux
+set QUEUE_BACKEND=redis      # Windows (cmd)
+$env:QUEUE_BACKEND="redis"   # Windows (PowerShell)
+```
+
+Skip this step to accept the auto-selection behavior (or fall back to the memory backend when no providers are installed).
+
+## Step 4 · Verify discovery
+
+Run this snippet after installation to make sure your provider can be resolved:
+
+```python
+from abe.backends.message_queue.loader import load_backend
+
+backend = load_backend()
+print(type(backend).__name__)
+```
+
+You should see the class name of the provider you installed (for example `RedisBackend`). If the memory fallback loads instead, double-check the environment variable and that the provider package exposes the entry point.
+
+## Optional · Installing straight from source
+
+If you are contributing to the library itself, clone the repository and install it in editable mode:
+
+```bash
+git clone https://github.com/Chisanan232/abstract-backend.git
+cd abstract-backend
+pip install -e .[dev]
+```
+
+Editable installs keep your working tree and installed package in sync while you experiment.
+
+Move on to [How to Run](./how-to-run.mdx) to wire the loader and consumer into your application.

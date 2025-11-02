@@ -1,0 +1,115 @@
+---
+id: runtime-flow
+title: Runtime Flow
+sidebar_position: 2
+---
+
+# Runtime Flow
+
+This page walks through how Abstract Backend resolves providers, publishes events, and drives consumers. Use it to understand the runtime responsibilities shared between the abstraction core and provider packages.
+
+## High-level sequence
+
+```mermaid
+sequenceDiagram
+    actor Dev as "Application Code"
+    participant Loader as "load_backend()"
+    participant Entry as "Entry Points"
+    participant Provider as "Concrete Backend"
+    participant Consumer as "AsyncLoopConsumer"
+
+    Dev->>Loader: load_backend()
+    Loader->>Entry: fetch group "abe.backends.message_queue"
+    alt QUEUE_BACKEND set
+        Loader->>Entry: filter for requested backend
+    else auto-selection
+        Loader->>Entry: pick first non-memory backend
+    end
+    Entry-->>Loader: backend metadata
+    Loader->>Provider: instantiate via from_env()
+    Provider-->>Loader: configured backend instance
+    Loader-->>Dev: MessageQueueBackend
+
+    Dev->>Provider: publish(key, payload)
+    loop message stream
+        Provider-->>Consumer: yield MessageQueueMessage via consume()
+        Consumer->>Dev: handler(payload)
+    end
+```
+
+## Detailed phases
+
+### 1. Provider discovery
+
+- `load_backend()` in `abe/backends/message_queue/loader.py` reads the `abe.backends.message_queue` entry-point group via `importlib.metadata.entry_points()`.
+- If `QUEUE_BACKEND` is set, it looks up the matching entry-point name and loads that implementation.
+- Without an override, it returns the first non-memory backend; if none exist, it falls back to `MemoryBackend` (and warns).
+- The loaded provider must expose `from_env()` to construct itself from environment configuration.
+
+### 2. Publishing events
+
+- Application code calls `backend.publish(key, payload)` where `key` is a `MessageQueueKey` and `payload` is a `MessageQueuePayload` (both from `abe/types.py`).
+- Providers are responsible for serialization, routing, and error propagation. Errors should surface as rich exceptions so callers can retry or alert.
+
+### 3. Consuming events
+
+- `AsyncLoopConsumer` wraps `backend.consume(group=...)` in an asyncio task.
+- Each yielded `MessageQueueMessage` is passed to your handler coroutine. The helper logs unexpected exceptions but keeps the loop alive unless a fatal error occurs.
+- `shutdown()` cancels the consumption task and ensures queues acknowledge in-flight messages when possible.
+
+### 4. Observability and resilience
+
+- `abe/logging/utils.py` provides utilities (`LoggingConfig`, `setup_logging_from_config()`) to align logs across providers and consumers.
+- Providers should integrate with these helpers when emitting their own logs for consistent formatting.
+- Contract tests under `test/contract_test/backends/message_queue/` assert that new implementations honour cancellation handling and message semantics.
+## Deployment considerations
+
+```mermaid
+flowchart LR
+    subgraph Control Plane
+        A["CI/CD Pipeline"]
+    end
+    subgraph Runtime
+        B["Producer Service"]
+        C["Consumer Service"]
+        D["Provider Dependency (e.g. Redis)"]
+    end
+
+    A -->|"pip install abstract-backend\npip install provider"| B
+    A -->|"Ship same deps"| C
+    B -->|"load_backend()\nQUEUE_BACKEND=redis"| D
+    C -->|"AsyncLoopConsumer\nQUEUE_BACKEND=redis"| D
+```
+- Deploy producers and consumers with the same provider packages installed so `load_backend()` resolves consistently.
+- Inject `QUEUE_BACKEND` (and provider-specific variables) through your configuration system to avoid hard-coded choices.
+
+```python title="app/bootstrap.py"
+from abe.backends.message_queue.loader import load_backend
+from abe.backends.message_queue.consumer import AsyncLoopConsumer
+from abe.logging.utils import setup_logging_from_config, LoggingConfig
+
+
+def configure_logging() -> None:
+    config = LoggingConfig(level="INFO", logger_levels={"myapp.db": "WARNING"})
+    setup_logging_from_config(config)
+
+
+async def create_consumer(handler):
+    backend = load_backend()
+    consumer = AsyncLoopConsumer(backend, group="billing")
+    await consumer.run(handler)
+
+
+async def publish_event(key: str, payload: dict[str, object]) -> None:
+    backend = load_backend()
+    await backend.publish(key, payload)
+```
+
+This pattern keeps logging, provider selection, and event processing aligned across services.
+
+
+## Related docs
+
+- [Provider Lifecycle](./provider-lifecycle.mdx)
+- [MessageQueueBackend protocol reference](/docs/next/api-references/message-queue-backend)
+- [AsyncLoopConsumer reference](/docs/next/api-references/event-consumer)

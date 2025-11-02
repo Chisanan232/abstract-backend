@@ -1,0 +1,44 @@
+---
+id: requirements
+title: Requirements
+sidebar_position: 1
+---
+
+# Requirements
+
+Whether you want to consume a backend that already exists or publish a new backend implementation, have the following prerequisites ready before you start.
+
+## Runtime prerequisites
+
+- **Python**: 3.12, 3.13, or 3.14. The library ships with type information that targets these versions.
+- **pip** (or another PEP 517 installer): Needed to install `abstract-backend` and any backend provider distributions.
+- **Operating systems**: Linux, macOS, and Windows are all supported. The reference memory backend uses `asyncio` only and has no native extensions.
+
+## Recommended tooling for development
+
+- **uv** or **pipx**: Useful for managing isolated environments. The project itself is authored with uv, but any virtual environment tool works for consumers.
+- **Git** ≥ 2.20: Required if you plan to work with the repository or contribute new providers.
+- **An async-friendly IDE**: VS Code, PyCharm, or another editor with asyncio and type-checking support makes protocol development easier.
+
+## Provider-specific considerations
+
+Each backend provider may require extra system packages (for example, Redis client libraries). Consult the provider’s documentation after installation.
+
+Abstract Backend expects providers to expose a `from_env()` factory method. Prepare any environment variables or configuration files that your chosen provider documents (for example `REDIS_URL` or `AWS_ACCESS_KEY_ID`).
+
+## Optional extras
+
+- **Node.js 18+**: Only needed if you plan to build this documentation site locally.
+
+## Verify your setup
+
+```bash
+python --version
+pip --version
+
+# optional but recommended
+uv --version
+git --version
+```
+
+If these commands run without errors, you are ready to install `abstract-backend` and proceed to the [Installation](./installation.mdx) guide.

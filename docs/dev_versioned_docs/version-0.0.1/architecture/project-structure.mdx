@@ -1,0 +1,66 @@
+---
+id: project-structure
+title: Project Structure
+sidebar_position: 2
+---
+
+# Project Structure & Organization
+
+Abstract Backend ships as an installable library plus a fully-documented reference implementation. This page reflects the current repository layout so you can navigate production code, tests, and docs with confidence.
+
+## High-Level Layout
+
+```
+abstract-backend/
+├── abe/                               # Published Python package
+│   ├── backends/
+│   │   └── message_queue/             # Message queue protocols + helpers
+│   ├── logging/                       # LoggingConfig + runtime utilities
+│   ├── types.py                       # Shared type aliases and Protocols
+│   └── py.typed                       # PEP 561 marker
+├── docs/                              # Docusaurus content + site assets
+├── examples/                          # Runnable usage samples
+├── scripts/                           # CI and operational tooling
+├── test/                              # Pytest suites (unit, integration, contract, e2e)
+├── .github/                           # GitHub Actions workflows & templates
+├── uv.lock                            # Locked dependency graph (uv)
+├── pyproject.toml                     # Project metadata + tool configuration
+└── ...                                # Config files (.pre-commit-config.yaml, mypy.ini, etc.)
+```
+
+## `abe/` package
+
+- **`abe/backends/message_queue/`** features the production message-queue abstraction. It includes the `MessageQueueBackend` protocol in `abe/backends/message_queue/base/protocol.py`, the runtime consumer in `abe/backends/message_queue/consumer.py`, the dynamic loader in `abe/backends/message_queue/loader.py`, and the development-only `MemoryBackend` under `abe/backends/message_queue/service/memory.py`.
+- **`abe/logging/`** exposes structured logging support through `abe/logging/settings.py` (the `LoggingConfig` dataclass) and `abe/logging/utils.py` (setup helpers, logger controls, and path utilities).
+- **`abe/types.py`** exports JSON aliases, handler protocols, and the `MessageQueueBackendProtocol`. The file is included in `py.typed` so downstream projects receive type information.
+- **`abe/__init__.py`** wires the public API, re-exporting critical types and helpers for package consumers.
+
+## Documentation (`docs/`)
+
+- **`docs/contents/`** holds authored Markdown/MDX for architecture guides, quick starts, API references, and contributor docs.
+- **`docs/src/`** contains Docusaurus React components, CSS, and layout customisations (for example `docs/src/components/HomepageFeatures/index.tsx`).
+- **`docs/static/`** stores images and static assets referenced by the site.
+- Docusaurus configuration, sidebars, and versioning live alongside the content; `package.json` scripts run the docs locally or in CI.
+
+## Examples (`examples/`)
+
+- **`examples/type_checking/`** illustrates the Protocols from `abe/types.py`, showing how to implement handlers and message-queue backends that satisfy the exported contracts.
+
+## Tests (`test/`)
+
+- **`test/unit_test/`** covers granular behaviour, including message-queue consumers (`test/unit_test/backends/queue/test_consumer.py`) and logging utilities.
+- **`test/integration_test/`** exercises end-to-end flows within a single process, such as logging configuration scenarios.
+- **`test/contract_test/`** codifies provider expectations—for example, `test/contract_test/backends/queue/base/test_queue_backend_contract.py` validates compliance with `MessageQueueBackendProtocol`.
+- **`test/e2e_test/`** is reserved for whole-system validations that replicate production flows when applicable.
+
+## Automation & Tooling
+
+- **`.github/workflows/`** defines CI pipelines (type checking, docs previews, release orchestration) and reusable workflow definitions consumed across repositories.
+- **`scripts/ci/verify_type_checking.sh`** enforces that `abe/types.py` exports the expected aliases and protocols; other scripts under `scripts/docker/` and `scripts/ci/` support repeatable local and CI tasks.
+- **Root configuration** files include `pyproject.toml`, `mypy.ini`, `.pylintrc`, `.coveragerc`, `pytest.ini`, `.pre-commit-config.yaml`, and `codecov.yml`, ensuring consistent tooling across contributors.
+
+## Auxiliary Artifacts
+
+- Additional metadata such as `LICENSE`, `README.md`, and `sonar-project.properties` live at the repository root for discoverability.
+
+Maintaining this organisation keeps production modules (`abe/`), developer documentation (`docs/`), and quality gates (`test/`, `scripts/`, `.github/`) in sync. When you introduce new backends, utilities, or docs, mirror the existing patterns so they remain easy to discover and integrate into automation.

@@ -1,0 +1,88 @@
+---
+id: request-changes
+title: Request Additions or Changes
+sidebar_position: 2
+---
+
+# Requesting Additions or Changes
+
+Have an idea for improving Abstract Backend? We welcome feature requests and suggestions from our community! This guide will help you submit effective feature requests.
+
+## Before Submitting
+
+Before submitting a feature request, please:
+
+1. **Check existing requests**: Search the [GitHub Issues](https://github.com/Chisanan232/abstract-backend/issues) to see if someone has already suggested a similar feature.
+2. **Read the documentation**: Make sure the feature doesn't already exist or isn't already planned in our roadmap.
+3. **Consider compatibility**: Think about how your suggestion fits with the existing queue backend architecture and goals of the project.
+
+## How to Submit a Feature Request
+
+Please submit feature requests through our [GitHub Issues](https://github.com/Chisanan232/abstract-backend/issues) page using the "Feature Request" template.
+
+### What to Include
+
+An effective feature request should include:
+
+1. **Clear and descriptive title**: Summarize the proposed feature concisely.
+2. **Problem statement**: Describe the problem that this feature would solve.
+   - What are you trying to accomplish?
+   - Why is it difficult or impossible with the current implementation?
+   - Who else might benefit from this feature?
+
+3. **Proposed solution**: Describe your idea for implementing the feature.
+   - Be as specific as possible
+   - Include mockups or diagrams if applicable
+   - Consider edge cases and potential issues
+
+4. **Alternative solutions**: Have you considered other ways to solve this problem?
+
+5. **Implementation considerations**: If you have technical insights about how to implement the feature, please share them.
+
+6. **Impact and importance**: Explain why this feature would be valuable to users and the project.
+
+## Example Feature Request
+
+```
+Title: Add Redis Streams queue backend provider
+
+Problem Statement:
+Abstract Backend currently ships with the in-memory queue backend. Teams running in production need
+durable message persistence and horizontal scalability. Without a Redis-based provider, any process
+restart can lead to message loss for critical workflows.
+
+Proposed Solution:
+Introduce a new queue backend implementation that integrates with Redis Streams. This would:
+- Provide persistent message storage beyond process lifetime
+- Support consumer groups for scaling workers horizontally
+- Reuse existing `MessageQueueBackend` protocol contracts
+- Offer configuration via environment variables or `MessageQueueBackendConfig`
+
+The implementation should include:
+1. `RedisStreamBackend` class implementing `MessageQueueBackend`
+2. Connection pooling and graceful shutdown handling
+3. Contract tests under `test/contract_test/backends/message_queue/`
+4. Documentation on configuration and operational considerations
+
+Alternative Solutions:
+1. Build a Postgres-backed queue backend using advisory locks
+2. Extend the Memory backend with disk persistence (less durable)
+
+Implementation Considerations:
+The provider should use `redis.asyncio` for compatibility with our async consumer. Care must be taken
+to acknowledge messages only after successful handler execution to avoid duplicates.
+
+Impact and Importance:
+This feature would allow production deployments to rely on Abstract Backend without message loss,
+unlocking more robust integrations for automation workflows.
+```
+
+## After Submitting
+
+After you've submitted a feature request:
+
+- Be responsive to questions about your proposal
+- Be open to feedback and suggestions
+- Consider contributing to the implementation if you have the skills
+
+Thank you for helping improve Abstract Backend!
