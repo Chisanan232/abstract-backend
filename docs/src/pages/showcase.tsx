@@ -6,26 +6,26 @@ import styles from './showcase.module.css';
 
 const PROJECTS: ShowcaseProject[] = [
   {
-    title: 'Slack-MCP-Server-Backend-MQ-Template',
+    title: 'abstract-backend-implementation-template',
     description:
-      'Starter repository that combines Abstract Backend with a Slack MCP server scaffold, giving teams a ready-to-ship template for building provider implementations.',
-    website: 'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template',
-    source: 'https://github.com/Chisanan232/Slack-MCP-Server-Backend-MQ-Template',
-    tags: ['template', 'mcp', 'message-queue', 'starter'],
+      'Official template repository for building Abstract Backend providers. It packages the developer studio workflow, contract tests, and docs so teams can ship new implementations quickly.',
+    website: 'https://github.com/Chisanan232/abstract-backend-implementation-template',
+    source: 'https://github.com/Chisanan232/abstract-backend-implementation-template',
+    tags: ['template', 'developer-studio', 'message-queue', 'starter'],
     isTemplate: true,
   },
   {
-    title: 'MCP-BackEnd-Message-Queue-Redis',
+    title: 'abe-redis',
     description:
-      'Concrete Redis-backed provider that implements the Abstract Backend queue contracts, demonstrating how to extend the template with a production-ready backend.',
-    website: 'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis',
-    source: 'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis',
-    tags: ['implementation', 'redis', 'message-queue', 'mcp'],
+      'Production-ready Redis provider implementing the Abstract Backend queue contracts. Built on the template, it showcases durable streams, consumer groups, and real deployment guidance.',
+    website: 'https://github.com/Chisanan232/abe-redis',
+    source: 'https://github.com/Chisanan232/abe-redis',
+    tags: ['implementation', 'redis', 'message-queue', 'template'],
     badges: [
       {
-        href: 'https://github.com/Chisanan232/MCP-BackEnd-Message-Queue-Redis/releases',
+        href: 'https://github.com/Chisanan232/abe-redis/releases',
         image:
-          'https://img.shields.io/github/v/release/Chisanan232/MCP-BackEnd-Message-Queue-Redis?display_name=tag&sort=semver&logo=github',
+          'https://img.shields.io/github/v/release/Chisanan232/abe-redis?display_name=tag&sort=semver&logo=github',
         alt: 'GitHub release status',
       },
       {
