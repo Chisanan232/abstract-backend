@@ -1,1 +1,1 @@
-v0.0.0 - Sample release note title 🍻
+v0.0.1 - Newborn project about backend component abstraction 🍻
