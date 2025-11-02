@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "abstract-backend"
-version = "0.0.0"
+version = "0.0.1"
 description = "🧑‍🏫 A library as an abstract layer to rule BackEnd side components and support it as Python plugin features."
 authors = [{ name = "Chisanan232", email = "chi10211201@cycu.org.tw" }]
 requires-python = ">=3.12,<4.0"
