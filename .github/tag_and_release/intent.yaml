@@ -44,17 +44,17 @@ git:
     email: "actions@github.com"     # Git commit author email
 
 # === DOCKER CONFIGURATION ===
-docker:
-  registries:
-    dockerhub: docker.io           # DockerHub registry URL
-    ghcr: ghcr.io                  # GitHub Container Registry URL
-  
-  health_check:
-    port: 8000                     # Port for container health checks
-    path: "/health"                # Health check endpoint path
-  
-  # Flexible Docker run options - supports multiple env vars, volumes, networks, etc.
-  run_options: "-e API_TOKEN=test_token -e DEBUG=true"  # Custom Docker run options for testing
+#docker:
+#  registries:
+#    dockerhub: docker.io           # DockerHub registry URL
+#    ghcr: ghcr.io                  # GitHub Container Registry URL
+#
+#  health_check:
+#    port: 8000                     # Port for container health checks
+#    path: "/health"                # Health check endpoint path
+#
+#  # Flexible Docker run options - supports multiple env vars, volumes, networks, etc.
+#  run_options: "-e API_TOKEN=test_token -e DEBUG=true"  # Custom Docker run options for testing
 
 # === VALIDATION CONFIGURATION ===
 validation:
