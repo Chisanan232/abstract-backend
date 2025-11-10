@@ -43,7 +43,7 @@ Changelog = "https://chisanan232.github.io/abstract-backend/docs/next/changelog"
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.1,<9",
+    "pytest>=8.4.1,<10",
     "pytest-cov>=6.2.1,<8",
     "coverage>=7.9.2,<8",
     "pytest-rerunfailures>=15.1,<17",
