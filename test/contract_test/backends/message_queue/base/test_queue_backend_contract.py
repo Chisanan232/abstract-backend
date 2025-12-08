@@ -26,12 +26,12 @@ class MessageQueueBackendContractTest(abc.ABC):
     def create_backend(self) -> MessageQueueBackend:
         """Create a new instance of the backend being tested."""
 
-    @pytest.fixture  # type: ignore[misc]
+    @pytest.fixture
     def backend(self) -> MessageQueueBackend:
         """Fixture providing a fresh backend instance for each test."""
         return self.create_backend()
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_publish_and_consume(self, backend: MessageQueueBackend) -> None:
         """Test that a message can be published and consumed."""
         # Publish a message
@@ -56,7 +56,7 @@ class MessageQueueBackendContractTest(abc.ABC):
         # The message content should match what was published
         assert received_msg == test_payload
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_multiple_messages(self, backend: MessageQueueBackend) -> None:
         """Test publishing and consuming multiple messages."""
         # Publish multiple messages
@@ -87,7 +87,7 @@ class MessageQueueBackendContractTest(abc.ABC):
         for msg in messages:
             assert msg in received_messages
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_consumer_group(self, backend: MessageQueueBackend) -> None:
         """Test consuming with a consumer group."""
         # Publish a test message
@@ -113,7 +113,7 @@ class MessageQueueBackendContractTest(abc.ABC):
             if "not supported" not in str(e).lower() and "unsupported" not in str(e).lower():
                 raise
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_message_ordering(self, backend: MessageQueueBackend) -> None:
         """Test that message ordering is preserved if the backend guarantees it."""
         # Check if this backend guarantees ordering
@@ -158,7 +158,7 @@ class MessageQueueBackendContractTest(abc.ABC):
         for i, msg in enumerate(received):
             assert msg["order"] == i
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_backend_handles_complex_data(self, backend: MessageQueueBackend) -> None:
         """Test that the backend can handle complex nested data structures."""
         # Create a complex nested structure
@@ -187,7 +187,7 @@ class MessageQueueBackendContractTest(abc.ABC):
         # Verify all the data was preserved
         assert received == complex_data
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_from_env_creates_valid_instance(self) -> None:
         """Test that from_env creates a valid instance of the backend."""
         # Get the class of the backend being tested

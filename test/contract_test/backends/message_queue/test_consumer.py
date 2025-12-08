@@ -17,7 +17,7 @@ class TestAsyncLoopConsumerContract(EventConsumerContractTest):
         """Create a new AsyncLoopConsumer instance for testing."""
         return AsyncLoopConsumer(backend, group=group)
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_run_idempotence(self, mock_backend: mock.AsyncMock) -> None:
         """Test that calling run multiple times doesn't restart the consumer."""
         # Set up the mock backend

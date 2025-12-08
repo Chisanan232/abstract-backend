@@ -52,7 +52,7 @@ repos:
         package: abe,test
   #      exclude: ^test/unit_test.{1,64}.py
         args:
-  #        - --strict
+          - --strict
           - --ignore-missing-imports
           - --show-traceback
         additional_dependencies: [types-PyYAML>=6.0.12.9]
