@@ -44,7 +44,7 @@ def reset_env_func() -> None:
     """Helper function for reset_env fixture."""
 
 
-@pytest.fixture  # type: ignore[misc]
+@pytest.fixture
 def reset_env() -> Any:
     """Reset environment variables before each test."""
     old_env = os.environ.copy()

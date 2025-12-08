@@ -36,20 +36,20 @@ class EventConsumerContractTest(abc.ABC):
             An instance of the EventConsumer implementation being tested
         """
 
-    @pytest.fixture  # type: ignore[misc]
+    @pytest.fixture
     def mock_backend(self) -> mock.AsyncMock:
         """Fixture providing a mock backend for testing."""
         backend = mock.AsyncMock(spec=MessageQueueBackend)
         return backend
 
-    @pytest.fixture  # type: ignore[misc]
+    @pytest.fixture
     def memory_backend(self) -> MemoryBackend:
         """Fixture providing a real memory backend for testing."""
         # Reset the class-level queue to ensure tests don't interfere with each other
         MemoryBackend._queue = asyncio.Queue()
         return MemoryBackend()
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_basic_message_processing(self, mock_backend: mock.AsyncMock) -> None:
         """Test that the consumer processes messages using the provided handler."""
         # Set up the mock backend to yield test messages
@@ -78,7 +78,7 @@ class EventConsumerContractTest(abc.ABC):
         assert len(processed_messages) == len(test_messages)
         assert processed_messages == test_messages
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_consumer_group_support(self, mock_backend: mock.AsyncMock) -> None:
         """Test that the consumer passes consumer group to the backend."""
         # Create the consumer with a group
@@ -96,7 +96,7 @@ class EventConsumerContractTest(abc.ABC):
         # Verify the backend was called with the correct group
         mock_backend.consume.assert_called_once_with(group=group_name)
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_error_handling(self, mock_backend: mock.AsyncMock) -> None:
         """Test that the consumer properly handles errors in the handler."""
         # Set up the mock backend to yield test messages
@@ -124,7 +124,7 @@ class EventConsumerContractTest(abc.ABC):
         assert 3 in processed_ids
         assert 2 not in processed_ids  # This one failed
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_graceful_shutdown(self, mock_backend: mock.AsyncMock) -> None:
         """Test that the consumer shuts down gracefully."""
 
@@ -157,7 +157,7 @@ class EventConsumerContractTest(abc.ABC):
         # Verify some messages were processed before shutdown
         assert len(processed_messages) > 0
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_real_world_processing_with_memory_backend(self, memory_backend: MemoryBackend) -> None:
         """Test with a real memory backend to ensure end-to-end functionality."""
         # Create sample Slack-like messages

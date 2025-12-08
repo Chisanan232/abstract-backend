@@ -136,7 +136,7 @@ class TestMessageQueueBackendProtocol:
         assert hasattr(backend, "consume")
         assert hasattr(type(backend), "from_env")
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_protocol_usage(self) -> None:
         """Test using a backend through protocol annotations."""
 
@@ -159,7 +159,7 @@ class TestMessageQueueBackendProtocol:
         assert result == {"value": 42}
         assert mock_backend.keys == ["test"]
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_async_generator_protocol(self) -> None:
         """Test that consume() correctly follows async generator protocol."""
         # Create an AsyncGenMessageQueueBackend that properly implements async generator
@@ -184,7 +184,7 @@ class TestMessageQueueBackendProtocol:
         assert messages[0] == {"id": 1}
         assert messages[1] == {"id": 2}
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_error_handling(self) -> None:
         """Test error handling behavior when using protocol implementations."""
         failing_backend = FailingMessageQueueBackend()
@@ -250,7 +250,7 @@ class DictBackend:
 class TestExtendedBackendCompliance:
     """Test additional backend implementations for protocol compliance."""
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_dict_backend_compliance(self) -> None:
         """Test that DictBackend complies with the MessageQueueBackend protocol."""
         # Create a backend
@@ -272,7 +272,7 @@ class TestExtendedBackendCompliance:
         assert {"value": "test1"} in messages
         assert {"value": "test2"} in messages
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_from_env_factory_pattern(self) -> None:
         """Test that the from_env method follows the factory pattern correctly."""
         # This test verifies that from_env is properly implemented as a class method

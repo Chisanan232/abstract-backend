@@ -67,7 +67,7 @@ class ErrorThrowingBackend(MockBackend):
 class TestAsyncLoopConsumer:
     """Test the AsyncLoopConsumer implementation."""
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_run_calls_handler_for_each_message(self) -> None:
         """Test that the handler is called for each consumed message."""
         # Create a mock backend
@@ -91,7 +91,7 @@ class TestAsyncLoopConsumer:
         mock_handler.assert_any_call({"id": 1})
         mock_handler.assert_any_call({"id": 2})
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_run_with_consumer_group(self) -> None:
         """Test running the consumer with a consumer group."""
         # Create a mock backend
@@ -115,7 +115,7 @@ class TestAsyncLoopConsumer:
         # Verify the backend was called with the group
         assert mock_backend.group_used == group_name
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_handler_error_doesnt_stop_consumer(self) -> None:
         """Test that the consumer continues even if the handler raises an exception."""
         # Create a mock backend
@@ -146,7 +146,7 @@ class TestAsyncLoopConsumer:
         assert 3 in processed_ids
         assert 2 not in processed_ids
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_shutdown(self) -> None:
         """Test that shutdown cancels the consumer task."""
         # Create a mock backend that blocks indefinitely
@@ -174,7 +174,7 @@ class TestAsyncLoopConsumer:
         # Verify the task was cancelled
         assert task.cancelled() or task.done()
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_idempotent_run(self) -> None:
         """Test that calling run multiple times doesn't restart the consumer."""
         # Create a mock backend
@@ -209,7 +209,7 @@ class TestAsyncLoopConsumer:
         # Only one consume call should happen
         assert mock_backend.consumed_count == 1
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_shutdown_handles_not_running(self) -> None:
         """Test that shutdown gracefully handles the case when not running."""
         # Create a mock backend
@@ -225,7 +225,7 @@ class TestAsyncLoopConsumer:
         assert not consumer._running
         assert consumer._task is None
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_shutdown_logs_cancellation(self, caplog: Any) -> None:
         """Test that shutdown logs task cancellation."""
         # Set up logging capture
@@ -255,7 +255,7 @@ class TestAsyncLoopConsumer:
         assert "Consumer task cancelled successfully" in caplog.text
         assert "Consumer shutdown complete" in caplog.text
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_shutdown_handles_unexpected_errors(self, caplog: Any) -> None:
         """Test that shutdown handles unexpected errors during task cancellation."""
         # Set up logging capture
@@ -285,7 +285,7 @@ class TestAsyncLoopConsumer:
         assert consumer._task is None
         assert not consumer._running
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_shutdown_with_already_done_task(self, caplog: Any) -> None:
         """Test shutdown when the task is already done."""
         # Set up logging capture
@@ -316,7 +316,7 @@ class TestAsyncLoopConsumer:
         # Check that appropriate log messages were generated
         assert "Consumer task was already completed" in caplog.text
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_handler_raises_cancelled_error(self, caplog: Any) -> None:
         """Test that CancelledError in handler is properly re-raised."""
         # Set up logging capture
@@ -340,7 +340,7 @@ class TestAsyncLoopConsumer:
         # The task should be cancelled or done
         assert task.done()
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_handler_raises_timeout_error(self, caplog: Any) -> None:
         """Test that TimeoutError in handler is caught and logged."""
         # Set up logging capture
@@ -371,7 +371,7 @@ class TestAsyncLoopConsumer:
         # Verify error was logged
         assert "Error processing message" in caplog.text
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_handler_raises_value_error(self, caplog: Any) -> None:
         """Test that ValueError in handler is caught and logged."""
         # Set up logging capture
@@ -403,7 +403,7 @@ class TestAsyncLoopConsumer:
         assert "Error processing message" in caplog.text
         assert "Invalid value in message" in caplog.text
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_handler_raises_runtime_error(self, caplog: Any) -> None:
         """Test that RuntimeError in handler is caught and logged."""
         # Set up logging capture
@@ -435,7 +435,7 @@ class TestAsyncLoopConsumer:
         assert "Error processing message" in caplog.text
         assert "Runtime error occurred" in caplog.text
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_shutdown_with_timeout_error(self, caplog: Any) -> None:
         """Test that TimeoutError during shutdown is properly handled."""
         # Set up logging capture
@@ -464,7 +464,7 @@ class TestAsyncLoopConsumer:
         assert consumer._task is None
         assert not consumer._running
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_shutdown_with_cancelled_error_then_exception(self, caplog: Any) -> None:
         """Test shutdown handling when CancelledError is followed by another exception."""
         # Set up logging capture
@@ -493,7 +493,7 @@ class TestAsyncLoopConsumer:
         assert consumer._task is None
         assert not consumer._running
 
-    @pytest.mark.asyncio  # type: ignore[misc]
+    @pytest.mark.asyncio
     async def test_multiple_handler_exceptions_continue_processing(self, caplog: Any) -> None:
         """Test that multiple handler exceptions don't stop message processing."""
         # Set up logging capture

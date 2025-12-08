@@ -16,7 +16,7 @@ from abe.backends.message_queue.loader import load_backend
 from abe.backends.message_queue.service.memory import MemoryBackend
 
 
-@pytest.fixture  # type: ignore[misc]
+@pytest.fixture
 def reset_env() -> Any:
     """Reset environment variables before each test."""
     old_env = os.environ.copy()
