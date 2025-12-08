@@ -33,7 +33,7 @@ class AsyncLoopConsumer(EventConsumer):
         self.backend = backend
         self.group = group
         self._running = False
-        self._task: Optional[asyncio.Task] = None
+        self._task: Optional[asyncio.Task[None]] = None
 
     async def run(self, handler: Callable[[Dict[str, Any]], Awaitable[None]]) -> None:
         """Start consuming messages and processing them with the handler.
