@@ -54,6 +54,7 @@ jobs:
     uses: Chisanan232/GitHub-Action_Reusable_Workflows-Python/.github/workflows/rw_organize_test_cov_reports.yaml@master
     with:
       test_type: unit-test
+      source_folder: abe
 
   integration-test_codecov:
 #    name: For integration test, organize and generate the testing report and upload it to Codecov
@@ -65,6 +66,7 @@ jobs:
     uses: Chisanan232/GitHub-Action_Reusable_Workflows-Python/.github/workflows/rw_organize_test_cov_reports.yaml@master
     with:
       test_type: integration-test
+      source_folder: abe
 
   contract-test_codecov:
 #    name: For contract test, organize and generate the testing report and upload it to Codecov
@@ -76,6 +78,7 @@ jobs:
     uses: Chisanan232/GitHub-Action_Reusable_Workflows-Python/.github/workflows/rw_organize_test_cov_reports.yaml@master
     with:
       test_type: contract-test
+      source_folder: abe
 
   e2e-test_codecov:
 #    name: For end-to-end test, organize and generate the testing report and upload it to Codecov
@@ -87,6 +90,7 @@ jobs:
     uses: Chisanan232/GitHub-Action_Reusable_Workflows-Python/.github/workflows/rw_organize_test_cov_reports.yaml@master
     with:
       test_type: e2e-test
+      source_folder: abe
 
   all_test:
 #    name: Organize and generate the testing report and upload it to Codecov
@@ -101,3 +105,4 @@ jobs:
     uses: Chisanan232/GitHub-Action_Reusable_Workflows-Python/.github/workflows/rw_organize_test_cov_reports.yaml@master
     with:
       test_type: all-test
+      source_folder: abe
